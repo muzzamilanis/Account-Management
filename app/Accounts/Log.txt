@@ -1,0 +1,14 @@
+TimeStamp: 5/31/2025 1:23:53 PM	Message: Registration Attempt: The remote server returned an error: (500) Internal Server Error.
+TimeStamp: 5/31/2025 1:49:13 PM	Message: During Opening Database: SQL logic error or missing database
+duplicate column name: PaymentPaid
+System.Data.SQLite.SQLiteException (0x80004005): SQL logic error or missing database
+duplicate column name: PaymentPaid
+   at System.Data.SQLite.SQLite3.Prepare(SQLiteConnection cnn, String strSql, SQLiteStatement previous, UInt32 timeoutMS, String& strRemain)
+   at System.Data.SQLite.SQLiteCommand.BuildNextCommand()
+   at System.Data.SQLite.SQLiteCommand.GetStatement(Int32 index)
+   at System.Data.SQLite.SQLiteDataReader.NextResult()
+   at System.Data.SQLite.SQLiteDataReader..ctor(SQLiteCommand cmd, CommandBehavior behave)
+   at System.Data.SQLite.SQLiteCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.SQLite.SQLiteCommand.ExecuteNonQuery(CommandBehavior behavior)
+   at System.Data.SQLite.SQLiteCommand.ExecuteNonQuery()
+   at Autos_Accounts.MainWindow.openData()
