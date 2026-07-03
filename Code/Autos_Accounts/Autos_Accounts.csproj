@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>Autos_Accounts</RootNamespace>
     <AssemblyName>Autos_Accounts</AssemblyName>
@@ -14,6 +14,8 @@
     <Platforms>x86</Platforms>
     <StartupObject>Autos_Accounts.Application</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Disable auto-discovery of XAML as Page items; we declare them explicitly below -->
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
   </PropertyGroup>
 
   <!-- NuGet Packages -->
@@ -22,16 +24,167 @@
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
   </ItemGroup>
 
+  <!-- Exclude obfuscated/VB-specific decompiler artefacts that won't compile under .NET 5 C# -->
+  <ItemGroup>
+    <Compile Remove="-Module-.cs" />
+    <Compile Remove="My\MyProject.cs" />
+    <Compile Remove="My\MySettingsProperty.cs" />
+    <Compile Remove="My\MyWpfExtension.cs" />
+    <Compile Remove="My\Resources\Resources.cs" />
+  </ItemGroup>
+
+  <!-- Explicitly declare all XAML pages so BAML knows their code-behind partners -->
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserLogin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AddAccount.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AddAgentForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AddCustomer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PurchaseAuto.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SaleAuto.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AccounttoAccount.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DutyExpEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MiscExpEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="OfficeExpEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PaymentAgentEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PaymentPkrEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ReceiptEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="dictionary1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <!-- Code-behind partnership declarations -->
+  <ItemGroup>
+    <Compile Update="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserLogin.xaml.cs">
+      <DependentUpon>UserLogin.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddAccount.xaml.cs">
+      <DependentUpon>AddAccount.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddAgentForm.xaml.cs">
+      <DependentUpon>AddAgentForm.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddCustomer.xaml.cs">
+      <DependentUpon>AddCustomer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="PurchaseAuto.xaml.cs">
+      <DependentUpon>PurchaseAuto.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="SaleAuto.xaml.cs">
+      <DependentUpon>SaleAuto.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AccounttoAccount.xaml.cs">
+      <DependentUpon>AccounttoAccount.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="DutyExpEntry.xaml.cs">
+      <DependentUpon>DutyExpEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MiscExpEntry.xaml.cs">
+      <DependentUpon>MiscExpEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="OfficeExpEntry.xaml.cs">
+      <DependentUpon>OfficeExpEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="PaymentAgentEntry.xaml.cs">
+      <DependentUpon>PaymentAgentEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="PaymentPkrEntry.xaml.cs">
+      <DependentUpon>PaymentPkrEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ReceiptEntry.xaml.cs">
+      <DependentUpon>ReceiptEntry.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
   <!-- Local DLL References (no NuGet equivalent) -->
   <ItemGroup>
     <Reference Include="AES256">
-      <HintPath>..\..\AES256.dll</HintPath>
+      <HintPath>..\..\app\Accounts\AES256.dll</HintPath>
+      <Private>true</Private>
     </Reference>
     <Reference Include="CodeReason.Reports">
-      <HintPath>..\..\CodeReason.Reports.dll</HintPath>
+      <HintPath>..\..\app\Accounts\CodeReason.Reports.dll</HintPath>
+      <Private>true</Private>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="ReachFramework" />
+  </ItemGroup>
+
+  <!-- Exclude report template from XAML compilation (uses CodeReason.Reports types) -->
+  <ItemGroup>
+    <Page Remove="templates\simplereport.xaml" />
+    <Content Include="templates\simplereport.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <!-- Resource Files -->
@@ -53,14 +206,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>MySettings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-
-  <!-- Report Template -->
-  <ItemGroup>
-    <Page Include="templates\simplereport.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 
 </Project>

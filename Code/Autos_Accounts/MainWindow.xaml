@@ -1712,9 +1712,9 @@
 									<Label>Amount Received:</Label>
 									<xctk:IntegerUpDown
 										Name="txtAmountReceived"
-										UpDownBase_x0060_1.Minimum="0"
+										Minimum="0"
 										Width="125"
-										UpDownBase_x0060_1.Maximum="{Binding ElementName=txtSalePrice, Path=Text}" />
+										Maximum="{Binding ElementName=txtSalePrice, Path=Text}" />
 								</WrapPanel>
 								<WrapPanel>
 									<Label>Payment Recieved In:</Label>
