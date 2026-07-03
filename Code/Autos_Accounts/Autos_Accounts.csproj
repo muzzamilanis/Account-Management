@@ -1,40 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{47C0C5F0-21CA-404C-A7D0-630BAAD21DFB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <RootNamespace>Autos_Accounts</RootNamespace>
     <AssemblyName>Autos_Accounts</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ApplicationIcon>Autos_Accounts.ico</ApplicationIcon>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
     <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>x86</Platforms>
+    <StartupObject>Autos_Accounts.Application</StartupObject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
+  <!-- NuGet Packages -->
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
+  </ItemGroup>
+
+  <!-- Local DLL References (no NuGet equivalent) -->
   <ItemGroup>
     <Reference Include="AES256">
       <HintPath>..\..\AES256.dll</HintPath>
@@ -43,94 +31,22 @@
       <HintPath>..\..\CodeReason.Reports.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="ReachFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Management" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\..\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
   </ItemGroup>
+
+  <!-- Resource Files -->
   <ItemGroup>
-    <AppDesigner Include="Properties\" />
+    <Resource Include="car-logo.ico" />
+    <Resource Include="car_logo2_91g_icon.ico" />
+    <Resource Include="Autos_Accounts.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="-Module-.cs" />
-    <Compile Include="AccounttoAccount.xaml.cs">
-      <DependentUpon>AccounttoAccount.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AddAccount.xaml.cs">
-      <DependentUpon>AddAccount.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AddAgentForm.xaml.cs">
-      <DependentUpon>AddAgentForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AddCustomer.xaml.cs">
-      <DependentUpon>AddCustomer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Application.xaml.cs">
-      <DependentUpon>Application.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="clsComputerInfo.cs" />
-    <Compile Include="ConfusedByAttribute.cs" />
-    <Compile Include="DutyExpEntry.xaml.cs">
-      <DependentUpon>DutyExpEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Functions.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MiscExpEntry.xaml.cs">
-      <DependentUpon>MiscExpEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MultiCheckedToEnabledConverter.cs" />
-    <Compile Include="MySettings.Designer.cs">
-      <DependentUpon>MySettings.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="My\MyProject.cs" />
-    <Compile Include="My\MySettingsProperty.cs" />
-    <Compile Include="My\MyWpfExtension.cs" />
-    <Compile Include="My\Resources\Resources.cs" />
-    <Compile Include="OfficeExpEntry.xaml.cs">
-      <DependentUpon>OfficeExpEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PaymentAgentEntry.xaml.cs">
-      <DependentUpon>PaymentAgentEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PaymentPkrEntry.xaml.cs">
-      <DependentUpon>PaymentPkrEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PurchaseAuto.xaml.cs">
-      <DependentUpon>PurchaseAuto.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ReceiptEntry.xaml.cs">
-      <DependentUpon>ReceiptEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SaleAuto.xaml.cs">
-      <DependentUpon>SaleAuto.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserLogin.xaml.cs">
-      <DependentUpon>UserLogin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XamlGeneratedNamespace\GeneratedInternalTypeHelper.cs" />
-  </ItemGroup>
+
+  <!-- Embedded Resources -->
   <ItemGroup>
     <EmbeddedResource Include="Resources.resources" />
   </ItemGroup>
+
+  <!-- App Settings -->
   <ItemGroup>
     <None Include="app.config" />
     <None Include="MySettings.settings">
@@ -138,79 +54,13 @@
       <LastGenOutput>MySettings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <!-- Report Template -->
   <ItemGroup>
-    <Page Include="AccounttoAccount.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="AddAccount.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="AddAgentForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="AddCustomer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Application.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="dictionary1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DutyExpEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MiscExpEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OfficeExpEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PaymentAgentEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PaymentPkrEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PurchaseAuto.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ReceiptEntry.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SaleAuto.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="templates\simplereport.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserLogin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="car-logo.ico" />
-    <Resource Include="car_logo2_91g_icon.ico" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

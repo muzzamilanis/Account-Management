@@ -1,87 +1,89 @@
 <!--Class 'Autos_Accounts.AddAgentForm' has IComponentConnector.Connect method, but cannot be parsed.-->
 <Window
-	x:Class="Autos_Accounts.AddAgentForm" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Autos_Accounts"
-	Title="Add Agent Entry"
-	Height="300"
-	Width="300"
-	WindowStartupLocation="CenterScreen"
-	ResizeMode="NoResize"
-	Background="{StaticResource bg2}">
-	<FrameworkElement.Resources>
-		<ResourceDictionary>
-			<Style
-				TargetType="{x:Type TextBox}"
-				x:Key="{x:Type TextBox}">
-				<Setter
-					Property="MinWidth"
-					Value="100" />
-			</Style>
-		</ResourceDictionary>
-	</FrameworkElement.Resources>
-	<Grid>
-		<DockPanel
-			Name="dockAddAgent">
-			<WrapPanel
-				DockPanel.Dock="Bottom"
-				HorizontalAlignment="Right"
-				Height="35">
-				<Button
-					Name="OK"
-					Content="OK"
-					Width="67"
-					IsDefault="True" />
-				<Button
-					Name="Cancel"
-					Content="Cancel"
-					Width="67"
-					IsCancel="True" />
-			</WrapPanel>
-			<TextBlock
-				Name="AccInfoText"
-				FontSize="16"
-				FontFamily="Segoe UI"
-				Margin="3"
-				Text="Add Agent Entry"
-				HorizontalAlignment="Center"
-				DockPanel.Dock="Top" />
-			<StackPanel
-				VerticalAlignment="Center">
-				<WrapPanel>
-					<Label>Date:</Label>
-					<DatePicker
-						Name="AgentdatePicker"
-						SelectedDateFormat="Short"
-						SelectedDate="{x:Static sys:DateTime.Now}" />
-				</WrapPanel>
-				<DockPanel>
-					<Label>Agent Name:</Label>
-					<TextBox
-						Name="txtAgentName" />
-				</DockPanel>
-				<DockPanel>
-					<Label>C.N.I.C. No.:</Label>
-					<xctk:MaskedTextBox
-						Name="txtCnicNo"
-						Mask="00000-0000000-0"
-						IncludeLiteralsInValue="False"
-						CaretIndex="0"
-						ResetOnSpace="False"
-						ResetOnPrompt="True"
-						ValueDataType="{x:Type sys:String}" />
-				</DockPanel>
-				<DockPanel>
-					<Label>Phone No.:</Label>
-					<TextBox
-						Name="txtAgentPhoneNo"
-						MaxLength="16"
-						ContextMenu="{x:Null}" />
-				</DockPanel>
-				<DockPanel>
-					<Label>Address:</Label>
-					<TextBox
-						Name="txtAgentAddress" />
-				</DockPanel>
-			</StackPanel>
-		</DockPanel>
-	</Grid>
+    x:Class="Autos_Accounts.AddAgentForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Autos_Accounts"
+    Title="Add Agent Entry"
+    Height="360" Width="360"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Background="{StaticResource bg1}">
+
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <Style TargetType="{x:Type TextBox}" x:Key="{x:Type TextBox}"
+                   BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="MinWidth" Value="160"/>
+            </Style>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+
+    <DockPanel Name="dockAddAgent" LastChildFill="True">
+
+        <!-- Title Header -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="18 14">
+            <StackPanel>
+                <TextBlock Name="AccInfoText"
+                           Text="Add Agent Entry"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{StaticResource AccentBrush}"
+                           FontFamily="Segoe UI Variable, Segoe UI"/>
+                <Rectangle Height="1.5" Margin="0 8 0 0">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#38BDF8" Offset="0"/>
+                            <GradientStop Color="#0F172A" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer Buttons -->
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="12 10">
+            <WrapPanel HorizontalAlignment="Right">
+                <Button Name="OK" Content="Save Agent" Width="100" IsDefault="True"/>
+                <Button Name="Cancel" Content="Cancel" Width="80" IsCancel="True"
+                        Style="{StaticResource OutlineButton}"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- Form Body -->
+        <Border Background="{StaticResource bg2}" Padding="16 8">
+            <StackPanel VerticalAlignment="Center">
+                <WrapPanel>
+                    <Label>Date:</Label>
+                    <DatePicker Name="AgentdatePicker" SelectedDateFormat="Short"
+                                SelectedDate="{x:Static sys:DateTime.Now}"/>
+                </WrapPanel>
+                <DockPanel>
+                    <Label>Agent Name:</Label>
+                    <TextBox Name="txtAgentName"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label>C.N.I.C. No.:</Label>
+                    <xctk:MaskedTextBox Name="txtCnicNo"
+                                        Mask="00000-0000000-0"
+                                        IncludeLiteralsInValue="False"
+                                        CaretIndex="0"
+                                        ResetOnSpace="False"
+                                        ResetOnPrompt="True"
+                                        ValueDataType="{x:Type sys:String}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label>Phone No.:</Label>
+                    <TextBox Name="txtAgentPhoneNo" MaxLength="16" ContextMenu="{x:Null}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label>Address:</Label>
+                    <TextBox Name="txtAgentAddress"/>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+    </DockPanel>
 </Window>

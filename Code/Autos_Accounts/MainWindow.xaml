@@ -1,13 +1,21 @@
 <!--Class 'Autos_Accounts.MainWindow' has IComponentConnector.Connect method, but cannot be parsed.-->
 <Window
-	x:Class="Autos_Accounts.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:xrd="clr-namespace:CodeReason.Reports.Document;assembly=CodeReason.Reports" xmlns:local="clr-namespace:Autos_Accounts"
-	Title="Autos Accounts"
+	x:Class="Autos_Accounts.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	xmlns:xrd="clr-namespace:CodeReason.Reports.Document;assembly=CodeReason.Reports"
+	xmlns:local="clr-namespace:Autos_Accounts"
+	Title="Jaini Auto Accounts Manager"
 	WindowState="Maximized"
 	MinHeight="600"
 	Height="644"
 	Width="800"
 	Background="{StaticResource bg1}"
-	Foreground="#FFAAD3E4">
+	Foreground="{StaticResource TextPrimary}">
 	<FrameworkElement.Resources>
 		<ResourceDictionary>
 			<local:MultiCheckedToEnabledConverter
@@ -30,31 +38,25 @@
 			<Style
 				TargetType="{x:Type TabControl}"
 				x:Key="{x:Type TabControl}">
-				<Setter
-					Property="Template">
+				<Setter Property="Template">
 					<Setter.Value>
-						<ControlTemplate
-							TargetType="{x:Type TabControl}">
+						<ControlTemplate TargetType="{x:Type TabControl}">
 							<DockPanel>
-								<Border
-									Panel.ZIndex="50"
-									Margin="0,0,-1,0"
-									Width="192"
-									BorderThickness="0"
-									Background="{StaticResource bg1}"
-									BorderBrush="{StaticResource bg3}"
-									Height="{Binding ElementName=MainGrid, Path=ActualHeight}">
-									<TabPanel
+								<!-- Sidebar panel -->
+								<Border Panel.ZIndex="50"
 										Margin="0,0,0,0"
-										IsItemsHost="True" />
+										Width="210"
+										BorderThickness="0,0,1,0"
+										Background="{StaticResource bg1}"
+										BorderBrush="{StaticResource bg3}"
+										Height="{Binding ElementName=MainGrid, Path=ActualHeight}">
+									<TabPanel Margin="0" IsItemsHost="True"/>
 								</Border>
-								<Border
-									Background="#FFF5F5F5"
-									BorderThickness="0,1,0,1"
-									Padding="6,6,2,6"
-									BorderBrush="{StaticResource bg3}">
-									<ContentPresenter
-										ContentSource="SelectedContent" />
+								<!-- Content panel -->
+								<Border Background="{StaticResource bg2}"
+										BorderThickness="0"
+										Padding="8,8,4,8">
+									<ContentPresenter ContentSource="SelectedContent"/>
 								</Border>
 							</DockPanel>
 						</ControlTemplate>
@@ -68,49 +70,42 @@
 					Property="Margin"
 					Value="3" />
 			</Style>
-			<Style
-				TargetType="{x:Type TabItem}"
-				x:Key="{x:Type TabItem}">
-				<Setter
-					Property="Foreground"
-					Value="#FFAAD3E4" />
-				<Setter
-					Property="FontFamily"
-					Value="Segoe UI" />
-				<Setter
-					Property="FontSize"
-					Value="12" />
-				<Setter
-					Property="Padding"
-					Value="0,10,0,10" />
-				<Setter
-					Property="Background"
-					Value="#00FFFFFF" />
-				<Setter
-					Property="Template">
+			<!-- Modern TabItem: left accent indicator + hover state -->
+			<Style TargetType="{x:Type TabItem}" x:Key="{x:Type TabItem}">
+				<Setter Property="Foreground"        Value="{StaticResource TextSecondary}"/>
+				<Setter Property="FontFamily"        Value="Segoe UI Variable, Segoe UI"/>
+				<Setter Property="FontSize"          Value="12"/>
+				<Setter Property="Padding"           Value="14 11 10 11"/>
+				<Setter Property="Background"        Value="Transparent"/>
+				<Setter Property="Cursor"            Value="Hand"/>
+				<Setter Property="Template">
 					<Setter.Value>
-						<ControlTemplate
-							TargetType="{x:Type TabItem}">
+						<ControlTemplate TargetType="{x:Type TabItem}">
 							<Grid>
-								<Border
-									Name="Border"
-									BorderThickness="0,1,0,1"
-									Panel.ZIndex="50"
-									Margin="0,0,0,0"
-									BorderBrush="{StaticResource bg3}">
-									<ContentPresenter
-										Name="ContentSite"
-										ContentSource="Header"
-										Width="172"
-										VerticalAlignment="Center">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="3"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<!-- Left accent bar -->
+								<Border Name="AccentBar"
+										Grid.Column="0"
+										Background="Transparent"
+										CornerRadius="0 2 2 0"/>
+								<!-- Tab background + content -->
+								<Border Name="Border"
+										Grid.Column="1"
+										Background="{TemplateBinding Background}"
+										BorderThickness="0"
+										CornerRadius="0 6 6 0"
+										Padding="{TemplateBinding Padding}">
+									<ContentPresenter Name="ContentSite"
+													  ContentSource="Header"
+													  Width="178"
+													  VerticalAlignment="Center">
 										<FrameworkElement.Resources>
 											<ResourceDictionary>
-												<Style
-													TargetType="{x:Type TextBlock}"
-													x:Key="{x:Type TextBlock}">
-													<Setter
-														Property="TextBlock.Padding"
-														Value="12" />
+												<Style TargetType="{x:Type TextBlock}" x:Key="{x:Type TextBlock}">
+													<Setter Property="Padding" Value="2 0"/>
 												</Style>
 											</ResourceDictionary>
 										</FrameworkElement.Resources>
@@ -118,29 +113,15 @@
 								</Border>
 							</Grid>
 							<ControlTemplate.Triggers>
-								<Trigger
-									Property="TabItem.IsSelected"
-									Value="True">
-									<Setter
-										Property="BorderThickness"
-										Value="0" />
-									<Setter
-										Property="Panel.ZIndex"
-										Value="100" />
-									<Setter
-										Property="Margin"
-										Value="0,0,0,0" />
-									<Setter
-										TargetName="ContentSite"
-										Property="FontSize"
-										Value="17" />
-									<Setter
-										TargetName="Border"
-										Property="Background"
-										Value="{StaticResource bg2}" />
-									<Setter
-										Property="Foreground"
-										Value="#FF1A3F4B" />
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter TargetName="Border"    Property="Background"  Value="{StaticResource SurfaceHover}"/>
+									<Setter Property="Foreground"                        Value="{StaticResource TextPrimary}"/>
+								</Trigger>
+								<Trigger Property="IsSelected" Value="True">
+									<Setter TargetName="AccentBar" Property="Background" Value="{StaticResource AccentBrush}"/>
+									<Setter TargetName="Border"    Property="Background" Value="{StaticResource bg2}"/>
+									<Setter TargetName="ContentSite" Property="FontSize" Value="13"/>
+									<Setter Property="Foreground"                        Value="{StaticResource AccentBrush}"/>
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
@@ -166,91 +147,82 @@
 			</ResourceDictionary>
 		</FrameworkElement.Resources>
 		<Grid.RowDefinitions>
-			<RowDefinition
-				Height="92" />
-			<RowDefinition
-				Height="*" />
-			<RowDefinition
-				Height="63" />
+			<RowDefinition Height="72"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="48"/>
 		</Grid.RowDefinitions>
-		<Grid
-			Row="2">
-			<WrapPanel
-				Name="WrapExcEdit"
-				Visibility="Hidden">
-				<Label>Amount in Yen:</Label>
-				<TextBox
-					Name="txtEditExcRate"
-					Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}"
-					ContextMenu="{x:Null}" />
-				<Button
-					Name="btnExcEdit"
-					Content="OK"
-					Width="92"
-					IsDefault="True" />
-			</WrapPanel>
-			<WrapPanel
-				Name="WrapExcRate"
-				Margin="0,10,0,0">
-				<TextBlock
-					Name="txtExcRate">
-					<Hyperlink
-						Name="hyplnk">Edit Rate<FrameworkContentElement.Style><Style
-								TargetType="{x:Type Hyperlink}"><Setter
-									Property="Foreground"
-									Value="{StaticResource bg2}" /><Style.Triggers><Trigger
-										Property="ContentElement.IsMouseOver"
-										Value="True"><Setter
-											Property="Foreground"
-											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink> <Run
-						Text="￥"
-						FontSize="18" /> <Run
-						FontSize="18"
-						Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}" /></TextBlock>
-			</WrapPanel>
-			<WrapPanel
-				Name="AdjustLink"
-				Visibility="Collapsed"
-				HorizontalAlignment="Center"
-				Background="{StaticResource bg2}"
-				Margin="10">
-				<TextBlock
-					HorizontalAlignment="Center"
-					Margin="10">
-					<Hyperlink
-						Name="BtnYenAdjust">Click here to Adjust Stock AmountPayable<FrameworkContentElement.Style><Style
-								TargetType="{x:Type Hyperlink}"><Setter
-									Property="Foreground"
-									Value="{StaticResource bg4}" /><Style.Triggers><Trigger
-										Property="ContentElement.IsMouseOver"
-										Value="True"><Setter
-											Property="Foreground"
-											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink>
-				</TextBlock>
-			</WrapPanel>
-			<WrapPanel
-				HorizontalAlignment="Right"
-				Margin="0,10,10,0">
-				<TextBlock
-					HorizontalAlignment="Right">
-					<Run
-						Text="Developed By: " /> <Hyperlink
-						Name="hyplnk2">hostineasy.com<FrameworkContentElement.Style><Style
-								TargetType="{x:Type Hyperlink}"><Setter
-									Property="Foreground"
-									Value="{StaticResource bg2}" /><Style.Triggers><Trigger
-										Property="ContentElement.IsMouseOver"
-										Value="True"><Setter
-											Property="Foreground"
-											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink></TextBlock>
-			</WrapPanel>
-		</Grid>
-		<TextBlock
-			FontSize="40"
-			FontFamily="Segoe Ui"
-			FontWeight="Bold"
-			Foreground="{StaticResource bg2}"
-			HorizontalAlignment="Center">Jaini Auto Accounts Manager</TextBlock>
+		<!-- ══ Footer Status Bar (Row 2) ══ -->
+		<Border Grid.Row="2"
+				Background="{StaticResource bg1}"
+				BorderBrush="{StaticResource bg3}"
+				BorderThickness="0,1,0,0"
+				Padding="16 0">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<!-- Exchange-rate edit (hidden by default, shown from code-behind) -->
+				<WrapPanel Name="WrapExcEdit" Visibility="Hidden"
+						   Grid.Column="0" VerticalAlignment="Center">
+					<Label Foreground="{StaticResource TextSecondary}">Amount in Yen:</Label>
+					<TextBox Name="txtEditExcRate"
+							 Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}"
+							 ContextMenu="{x:Null}"/>
+					<Button Name="btnExcEdit" Content="OK" Width="70" IsDefault="True"/>
+				</WrapPanel>
+
+				<!-- Exchange-rate display -->
+				<WrapPanel Name="WrapExcRate" Grid.Column="0" VerticalAlignment="Center">
+					<TextBlock Name="txtExcRate">
+						<Hyperlink Name="hyplnk">Edit Rate<FrameworkContentElement.Style><Style TargetType="{x:Type Hyperlink}"><Setter Property="Foreground" Value="{StaticResource AccentBrush}"/><Style.Triggers><Trigger Property="ContentElement.IsMouseOver" Value="True"><Setter Property="Foreground" Value="{StaticResource AccentHover}"/></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink>
+						<Run Text=" ￥" FontSize="14"/>
+						<Run FontSize="14" FontWeight="SemiBold"
+							 Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}"/>
+					</TextBlock>
+				</WrapPanel>
+
+				<!-- Yen-adjust link (shown from code-behind when needed) -->
+				<WrapPanel Name="AdjustLink" Grid.Column="1"
+						   Visibility="Collapsed" HorizontalAlignment="Center"
+						   VerticalAlignment="Center">
+					<TextBlock>
+						<Hyperlink Name="BtnYenAdjust">Click here to Adjust Stock Amount Payable<FrameworkContentElement.Style><Style TargetType="{x:Type Hyperlink}"><Setter Property="Foreground" Value="{StaticResource bg4}"/><Style.Triggers><Trigger Property="ContentElement.IsMouseOver" Value="True"><Setter Property="Foreground" Value="{StaticResource AccentBrush}"/></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink>
+					</TextBlock>
+				</WrapPanel>
+
+				<!-- Developer credit -->
+				<WrapPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+					<TextBlock Foreground="{StaticResource TextMuted}" FontSize="11">
+						<Run Text="Developed by: "/>
+						<Hyperlink Name="hyplnk2">hostineasy.com<FrameworkContentElement.Style><Style TargetType="{x:Type Hyperlink}"><Setter Property="Foreground" Value="{StaticResource AccentBrush}"/><Style.Triggers><Trigger Property="ContentElement.IsMouseOver" Value="True"><Setter Property="Foreground" Value="{StaticResource AccentHover}"/></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink>
+					</TextBlock>
+				</WrapPanel>
+			</Grid>
+		</Border>
+		<!-- ══ App Title Bar (Row 0) ══ -->
+		<Border Background="{StaticResource bg1}" BorderBrush="{StaticResource bg3}"
+				BorderThickness="0,0,0,1" Padding="24 0">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel VerticalAlignment="Center">
+					<TextBlock Text="Jaini Auto Accounts Manager"
+							   FontSize="24" FontWeight="Bold"
+							   FontFamily="Segoe UI Variable, Segoe UI"
+							   Foreground="{StaticResource AccentBrush}"/>
+					<TextBlock Text="Auto Dealership Accounts System"
+							   FontSize="11"
+							   FontFamily="Segoe UI Variable, Segoe UI"
+							   Foreground="{StaticResource TextMuted}"
+							   Margin="0 2 0 0"/>
+				</StackPanel>
+			</Grid>
+		</Border>
 		<DockPanel
 			Name="stackData"
 			Grid.Row="1"
