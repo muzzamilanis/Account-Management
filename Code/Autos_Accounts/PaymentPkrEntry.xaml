@@ -1,0 +1,80 @@
+<!--Class 'Autos_Accounts.PaymentPkrEntry' has IComponentConnector.Connect method, but cannot be parsed.-->
+<Window
+	x:Class="Autos_Accounts.PaymentPkrEntry" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:local="clr-namespace:Autos_Accounts"
+	Title="Party Payment Entry"
+	Height="300"
+	Width="300"
+	WindowStartupLocation="CenterScreen"
+	ResizeMode="NoResize"
+	Background="{StaticResource bg2}">
+	<Grid>
+		<DockPanel
+			Name="dockSaleEntry">
+			<WrapPanel
+				DockPanel.Dock="Bottom"
+				HorizontalAlignment="Right"
+				Height="35">
+				<Button
+					Name="OK"
+					Content="OK"
+					Width="67"
+					IsDefault="True" />
+				<Button
+					Name="Cancel"
+					Content="Cancel"
+					Width="67"
+					IsCancel="True" />
+			</WrapPanel>
+			<TextBlock
+				Name="AccInfoText"
+				FontSize="16"
+				FontFamily="Segoe UI"
+				Margin="3"
+				Text="New Party Payment Entry"
+				HorizontalAlignment="Center"
+				DockPanel.Dock="Top" />
+			<StackPanel
+				Name="UniPaymentPkrDetails"
+				VerticalAlignment="Top">
+				<WrapPanel>
+					<Label>Paying to:</Label>
+					<ComboBox
+						Name="comboPaymentPkrCust"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						ItemsSource="{Binding customer}" />
+					<Button
+						Name="BtnAddCustatPay"
+						Content="Add Customer"
+						Margin="5,0" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Date:</Label>
+					<DatePicker
+						Name="PaymentPkrdatePicker"
+						SelectedDateFormat="Short"
+						SelectedDate="{x:Static sys:DateTime.Now}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Amount:</Label>
+					<TextBox
+						Name="txtPaymentPkrAmount"
+						ContextMenu="{x:Null}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Detail:</Label>
+					<TextBox
+						Name="txtPaymentPkrDetail" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Paying from:</Label>
+					<ComboBox
+						Name="comboPaymentPkrAccounts"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						ItemsSource="{Binding Accounts}" />
+				</WrapPanel>
+			</StackPanel>
+		</DockPanel>
+	</Grid>
+</Window>

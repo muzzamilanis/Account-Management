@@ -1,0 +1,75 @@
+<!--Class 'Autos_Accounts.MiscExpEntry' has IComponentConnector.Connect method, but cannot be parsed.-->
+<Window
+	x:Class="Autos_Accounts.MiscExpEntry" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Autos_Accounts" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	Title="Misc Expense Entry"
+	Height="300"
+	Width="300"
+	WindowStartupLocation="CenterScreen"
+	ResizeMode="NoResize"
+	Background="{StaticResource bg2}">
+	<Grid>
+		<DockPanel
+			Name="dockSaleEntry">
+			<WrapPanel
+				DockPanel.Dock="Bottom"
+				HorizontalAlignment="Right"
+				Height="35">
+				<Button
+					Name="OK"
+					Content="OK"
+					Width="67"
+					IsDefault="True" />
+				<Button
+					Name="Cancel"
+					Content="Cancel"
+					Width="67"
+					IsCancel="True" />
+			</WrapPanel>
+			<TextBlock
+				Name="AccInfoText"
+				FontSize="16"
+				FontFamily="Segoe UI"
+				Margin="3"
+				Text="New Misc Expense Entry"
+				HorizontalAlignment="Center"
+				DockPanel.Dock="Top" />
+			<StackPanel
+				Name="UniReceiptDetails"
+				VerticalAlignment="Top">
+				<DockPanel>
+					<Label>Auto Chassis No.</Label>
+					<ComboBox
+						Name="comboMiscChassis"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						ItemsSource="{Binding chassis}" />
+				</DockPanel>
+				<WrapPanel>
+					<Label>Date:</Label>
+					<DatePicker
+						Name="MiscdatePicker"
+						SelectedDateFormat="Short"
+						SelectedDate="{x:Static sys:DateTime.Now}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Expense Amount:</Label>
+					<TextBox
+						Name="txtMiscExpAmount"
+						ContextMenu="{x:Null}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Expense Detail:</Label>
+					<TextBox
+						Name="txtMiscExpDetail" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Account:</Label>
+					<ComboBox
+						Name="comboMiscAccounts"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top" />
+				</WrapPanel>
+			</StackPanel>
+		</DockPanel>
+	</Grid>
+</Window>

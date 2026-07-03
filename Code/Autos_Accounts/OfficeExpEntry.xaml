@@ -1,0 +1,68 @@
+<!--Class 'Autos_Accounts.OfficeExpEntry' has IComponentConnector.Connect method, but cannot be parsed.-->
+<Window
+	x:Class="Autos_Accounts.OfficeExpEntry" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:local="clr-namespace:Autos_Accounts"
+	Title="OfficeExpEntry"
+	Height="250"
+	Width="300"
+	WindowStartupLocation="CenterScreen"
+	ResizeMode="NoResize"
+	Background="{StaticResource bg2}">
+	<Grid>
+		<DockPanel
+			Name="dockSaleEntry">
+			<WrapPanel
+				DockPanel.Dock="Bottom"
+				HorizontalAlignment="Right"
+				Height="35">
+				<Button
+					Name="OK"
+					Content="OK"
+					Width="67"
+					IsDefault="True" />
+				<Button
+					Name="Cancel"
+					Content="Cancel"
+					Width="67"
+					IsCancel="True" />
+			</WrapPanel>
+			<TextBlock
+				Name="AccInfoText"
+				FontSize="16"
+				FontFamily="Segoe UI"
+				Margin="3"
+				Text="New Office Expense Entry"
+				HorizontalAlignment="Center"
+				DockPanel.Dock="Top" />
+			<StackPanel
+				Name="UniOfficeDetails"
+				VerticalAlignment="Top">
+				<WrapPanel>
+					<Label>Date:</Label>
+					<DatePicker
+						Name="OfficedatePicker"
+						SelectedDateFormat="Short"
+						SelectedDate="{x:Static sys:DateTime.Now}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Expense Amount:</Label>
+					<TextBox
+						Name="txtOfficeExpAmount"
+						ContextMenu="{x:Null}" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Expense Detail:</Label>
+					<TextBox
+						Name="txtOfficeExpDetail" />
+				</WrapPanel>
+				<WrapPanel>
+					<Label>Payment by:</Label>
+					<ComboBox
+						Name="comboOfficeAccounts"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						ItemsSource="{Binding BankAccounts}" />
+				</WrapPanel>
+			</StackPanel>
+		</DockPanel>
+	</Grid>
+</Window>

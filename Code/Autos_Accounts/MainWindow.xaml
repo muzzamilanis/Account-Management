@@ -1,0 +1,2000 @@
+<!--Class 'Autos_Accounts.MainWindow' has IComponentConnector.Connect method, but cannot be parsed.-->
+<Window
+	x:Class="Autos_Accounts.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:xrd="clr-namespace:CodeReason.Reports.Document;assembly=CodeReason.Reports" xmlns:local="clr-namespace:Autos_Accounts"
+	Title="Autos Accounts"
+	WindowState="Maximized"
+	MinHeight="600"
+	Height="644"
+	Width="800"
+	Background="{StaticResource bg1}"
+	Foreground="#FFAAD3E4">
+	<FrameworkElement.Resources>
+		<ResourceDictionary>
+			<local:MultiCheckedToEnabledConverter
+				x:Key="MultiCheckedToEnabledConverter" />
+			<LinearGradientBrush
+				StartPoint="0,0"
+				EndPoint="1,0"
+				x:Key="SelectedBorderBrush">
+				<GradientBrush.GradientStops>
+					<GradientStopCollection>
+						<GradientStop
+							Color="Gray"
+							Offset="0.965" />
+						<GradientStop
+							Color="WhiteSmoke"
+							Offset="1.0" />
+					</GradientStopCollection>
+				</GradientBrush.GradientStops>
+			</LinearGradientBrush>
+			<Style
+				TargetType="{x:Type TabControl}"
+				x:Key="{x:Type TabControl}">
+				<Setter
+					Property="Template">
+					<Setter.Value>
+						<ControlTemplate
+							TargetType="{x:Type TabControl}">
+							<DockPanel>
+								<Border
+									Panel.ZIndex="50"
+									Margin="0,0,-1,0"
+									Width="192"
+									BorderThickness="0"
+									Background="{StaticResource bg1}"
+									BorderBrush="{StaticResource bg3}"
+									Height="{Binding ElementName=MainGrid, Path=ActualHeight}">
+									<TabPanel
+										Margin="0,0,0,0"
+										IsItemsHost="True" />
+								</Border>
+								<Border
+									Background="#FFF5F5F5"
+									BorderThickness="0,1,0,1"
+									Padding="6,6,2,6"
+									BorderBrush="{StaticResource bg3}">
+									<ContentPresenter
+										ContentSource="SelectedContent" />
+								</Border>
+							</DockPanel>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+			<Style
+				TargetType="{x:Type DockPanel}"
+				x:Key="{x:Type DockPanel}">
+				<Setter
+					Property="Margin"
+					Value="3" />
+			</Style>
+			<Style
+				TargetType="{x:Type TabItem}"
+				x:Key="{x:Type TabItem}">
+				<Setter
+					Property="Foreground"
+					Value="#FFAAD3E4" />
+				<Setter
+					Property="FontFamily"
+					Value="Segoe UI" />
+				<Setter
+					Property="FontSize"
+					Value="12" />
+				<Setter
+					Property="Padding"
+					Value="0,10,0,10" />
+				<Setter
+					Property="Background"
+					Value="#00FFFFFF" />
+				<Setter
+					Property="Template">
+					<Setter.Value>
+						<ControlTemplate
+							TargetType="{x:Type TabItem}">
+							<Grid>
+								<Border
+									Name="Border"
+									BorderThickness="0,1,0,1"
+									Panel.ZIndex="50"
+									Margin="0,0,0,0"
+									BorderBrush="{StaticResource bg3}">
+									<ContentPresenter
+										Name="ContentSite"
+										ContentSource="Header"
+										Width="172"
+										VerticalAlignment="Center">
+										<FrameworkElement.Resources>
+											<ResourceDictionary>
+												<Style
+													TargetType="{x:Type TextBlock}"
+													x:Key="{x:Type TextBlock}">
+													<Setter
+														Property="TextBlock.Padding"
+														Value="12" />
+												</Style>
+											</ResourceDictionary>
+										</FrameworkElement.Resources>
+									</ContentPresenter>
+								</Border>
+							</Grid>
+							<ControlTemplate.Triggers>
+								<Trigger
+									Property="TabItem.IsSelected"
+									Value="True">
+									<Setter
+										Property="BorderThickness"
+										Value="0" />
+									<Setter
+										Property="Panel.ZIndex"
+										Value="100" />
+									<Setter
+										Property="Margin"
+										Value="0,0,0,0" />
+									<Setter
+										TargetName="ContentSite"
+										Property="FontSize"
+										Value="17" />
+									<Setter
+										TargetName="Border"
+										Property="Background"
+										Value="{StaticResource bg2}" />
+									<Setter
+										Property="Foreground"
+										Value="#FF1A3F4B" />
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</ResourceDictionary>
+	</FrameworkElement.Resources>
+	<Grid
+		Margin="0,1,0,-1">
+		<FrameworkElement.Resources>
+			<ResourceDictionary>
+				<Style
+					TargetType="{x:Type StackPanel}"
+					x:Key="{x:Type StackPanel}">
+					<Setter
+						Property="Margin"
+						Value="2" />
+					<Setter
+						Property="VerticalAlignment"
+						Value="center" />
+				</Style>
+			</ResourceDictionary>
+		</FrameworkElement.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="92" />
+			<RowDefinition
+				Height="*" />
+			<RowDefinition
+				Height="63" />
+		</Grid.RowDefinitions>
+		<Grid
+			Row="2">
+			<WrapPanel
+				Name="WrapExcEdit"
+				Visibility="Hidden">
+				<Label>Amount in Yen:</Label>
+				<TextBox
+					Name="txtEditExcRate"
+					Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}"
+					ContextMenu="{x:Null}" />
+				<Button
+					Name="btnExcEdit"
+					Content="OK"
+					Width="92"
+					IsDefault="True" />
+			</WrapPanel>
+			<WrapPanel
+				Name="WrapExcRate"
+				Margin="0,10,0,0">
+				<TextBlock
+					Name="txtExcRate">
+					<Hyperlink
+						Name="hyplnk">Edit Rate<FrameworkContentElement.Style><Style
+								TargetType="{x:Type Hyperlink}"><Setter
+									Property="Foreground"
+									Value="{StaticResource bg2}" /><Style.Triggers><Trigger
+										Property="ContentElement.IsMouseOver"
+										Value="True"><Setter
+											Property="Foreground"
+											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink> <Run
+						Text="￥"
+						FontSize="18" /> <Run
+						FontSize="18"
+						Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=TwoWay}" /></TextBlock>
+			</WrapPanel>
+			<WrapPanel
+				Name="AdjustLink"
+				Visibility="Collapsed"
+				HorizontalAlignment="Center"
+				Background="{StaticResource bg2}"
+				Margin="10">
+				<TextBlock
+					HorizontalAlignment="Center"
+					Margin="10">
+					<Hyperlink
+						Name="BtnYenAdjust">Click here to Adjust Stock AmountPayable<FrameworkContentElement.Style><Style
+								TargetType="{x:Type Hyperlink}"><Setter
+									Property="Foreground"
+									Value="{StaticResource bg4}" /><Style.Triggers><Trigger
+										Property="ContentElement.IsMouseOver"
+										Value="True"><Setter
+											Property="Foreground"
+											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink>
+				</TextBlock>
+			</WrapPanel>
+			<WrapPanel
+				HorizontalAlignment="Right"
+				Margin="0,10,10,0">
+				<TextBlock
+					HorizontalAlignment="Right">
+					<Run
+						Text="Developed By: " /> <Hyperlink
+						Name="hyplnk2">hostineasy.com<FrameworkContentElement.Style><Style
+								TargetType="{x:Type Hyperlink}"><Setter
+									Property="Foreground"
+									Value="{StaticResource bg2}" /><Style.Triggers><Trigger
+										Property="ContentElement.IsMouseOver"
+										Value="True"><Setter
+											Property="Foreground"
+											Value="{StaticResource bg1}" /></Trigger></Style.Triggers></Style></FrameworkContentElement.Style></Hyperlink></TextBlock>
+			</WrapPanel>
+		</Grid>
+		<TextBlock
+			FontSize="40"
+			FontFamily="Segoe Ui"
+			FontWeight="Bold"
+			Foreground="{StaticResource bg2}"
+			HorizontalAlignment="Center">Jaini Auto Accounts Manager</TextBlock>
+		<DockPanel
+			Name="stackData"
+			Grid.Row="1"
+			Margin="0">
+			<TabControl
+				Name="MainGrid"
+				TabStripPlacement="Left">
+				<FrameworkElement.Resources>
+					<ResourceDictionary>
+						<Style
+							TargetType="{x:Type TabItem}"
+							x:Key="SideBarSectionStyle">
+							<Setter
+								Property="IsEnabled"
+								Value="False" />
+							<Setter
+								Property="FontSize"
+								Value="16" />
+							<Setter
+								Property="Foreground"
+								Value="#FF90EE90" />
+						</Style>
+					</ResourceDictionary>
+				</FrameworkElement.Resources>
+				<TabItem
+					Header="Welcome"
+					IsSelected="True">
+					<StackPanel>
+						<Button
+							Name="BtnCreateData">Create New Database</Button>
+						<Button
+							Name="BtnOpenData">Open Existing Database</Button>
+					</StackPanel>
+				</TabItem>
+				<TabItem
+					Header="Accounts">
+					<Grid>
+						<TabControl
+							Name="TabCtrAccounts"
+							TabStripPlacement="Left">
+							<TabItem
+								Header="Cash / Bank Accounts">
+								<Grid
+									Name="MainAccounts">
+									<DockPanel
+										Name="staAccounts">
+										<StackPanel
+											Name="GrpAccountsBtns"
+											DockPanel.Dock="Top"
+											Orientation="Horizontal"
+											HorizontalAlignment="Center">
+											<Button
+												Name="BtnAddAccount"
+												IsEnabled="False">Add Account</Button>
+											<Button
+												Name="BtnEditAccount"
+												IsEnabled="False">Edit Selected Account</Button>
+											<Button
+												Name="BtnDeleteAccount"
+												Visibility="Collapsed"
+												IsEnabled="False">Delete Selected Account</Button>
+										</StackPanel>
+										<Grid
+											Margin="2"
+											DockPanel.Dock="Top"
+											HorizontalAlignment="Left"
+											Height="30"
+											Width="{Binding ElementName=LstAccounts, Path=ActualWidth}">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition
+													Width="Auto" />
+												<ColumnDefinition />
+											</Grid.ColumnDefinitions>
+											<Label
+												Content="Filter:"
+												HorizontalAlignment="Left" />
+											<TextBox
+												Name="txtAccountFilter"
+												Grid.Column="1"
+												Width="auto" />
+										</Grid>
+										<StackPanel
+											DockPanel.Dock="Bottom">
+											<TextBlock
+												DockPanel.Dock="Bottom">
+												<Run
+													Text="Total Accounts: " /> <Run
+													FontWeight="Bold"
+													Text="{Binding ElementName=LstAccounts, Path=Items.Count, Mode=OneWay}" /></TextBlock>
+										</StackPanel>
+										<Grid
+											Name="AccountsGrid">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition
+													Width="4*" />
+												<ColumnDefinition
+													Width="6*" />
+											</Grid.ColumnDefinitions>
+											<ListView
+												Name="LstAccounts"
+												DockPanel.Dock="Left"
+												SelectionMode="Single">
+												<ItemsControl.ItemTemplate>
+													<DataTemplate>
+														<TextBlock
+															Text="{Binding AccountName}" />
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ListView>
+											<DockPanel
+												Name="AccountDetails"
+												Grid.Column="1"
+												VerticalAlignment="Top"
+												DataContext="{Binding ElementName=LstAccounts, Path=SelectedItem}">
+												<TextBlock
+													DockPanel.Dock="Top"
+													HorizontalAlignment="Center"
+													FontWeight="Bold"
+													Text="Selected Account Details"
+													LineHeight="25" />
+												<ScrollViewer
+													VerticalScrollBarVisibility="Auto">
+													<TextBlock
+														Name="TxtBlkAccountDetails"
+														FontFamily="Segoe UI"
+														ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+														LineHeight="25">
+														<Run
+															Text="Account Id: " /> <Run
+															Name="runRowId"
+															FontWeight="Bold"
+															Text="{Binding rowid}" /><LineBreak /><Run
+															Text="Date: " /> <Run
+															Name="runDate"
+															FontWeight="Bold"
+															Text="{Binding AccountDate}" /><LineBreak /><Run
+															Text="A/c Type: " /> <Run
+															Name="runAccountType"
+															FontWeight="Bold"
+															Text="{Binding AccountType}" /><LineBreak /><Run
+															Text="A/c Name: " /> <Run
+															Name="runAccountName"
+															FontWeight="Bold"
+															Text="{Binding AccountName}" /><LineBreak /><Run
+															Text="A/c No.: " /> <Run
+															Name="runAccountNumber"
+															FontWeight="Bold"
+															Text="{Binding AccountNumber}" /><LineBreak /><Run
+															Text="Title: " /> <Run
+															Name="runAccountTitle"
+															FontWeight="Bold"
+															Text="{Binding AccountTitle}" /><LineBreak /><Run
+															Text="Bank: " /> <Run
+															Name="runBankName"
+															FontWeight="Bold"
+															Text="{Binding BankName}" /><LineBreak /><Run
+															Text="Branch: " /> <Run
+															Name="runBankBranch"
+															FontWeight="Bold"
+															Text="{Binding BankBranch}" /><LineBreak /><Run
+															Text="Opening Balance: " /> <Run
+															Name="runOpeningBalance"
+															FontWeight="Bold"
+															Text="{Binding OpeningBalance}" /><LineBreak /><Run
+															Text="Current Balance: " /> <Run
+															Name="runCurrentBalance"
+															FontWeight="Bold"
+															Text="{Binding CurrentBalance}" /><LineBreak /></TextBlock>
+												</ScrollViewer>
+											</DockPanel>
+										</Grid>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="A/c to A/c Entry">
+								<Grid
+									Name="TabOfficeAccounts">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">A/c to A/c Entry</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnEditOfficeAccountEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridOfficeAccount"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding Date}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding Amount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding Detail}" />
+													<DataGridTextColumn
+														Header="Credit From"
+														Binding="{Binding CreditFrom}" />
+													<DataGridTextColumn
+														Header="Debit To"
+														Binding="{Binding DebitTo}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<StackPanel
+											Name="UniOfficeAccountDetails"
+											VerticalAlignment="Top">
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="OfficeAccountdatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Amount:</Label>
+												<TextBox
+													Name="txtOfficeAccountAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Detail:</Label>
+												<TextBox
+													Name="txtOfficeAccountDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Credit From:</Label>
+												<ComboBox
+													Name="comboCAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding BankAccounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Debit To:</Label>
+												<ComboBox
+													Name="comboDAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding BankAccounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnOfficeAccountEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Ac/Ac Entry</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Misc. Auto Expense">
+								<Grid
+									Name="TabMiscExp">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Auto Miscellaneous Expense Entry</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewMiscExpEntry"
+													Visibility="Collapsed"
+													Content="Create New Entry" />
+												<Button
+													Name="btnEditMiscExpEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridMiscExp"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Chassis"
+														Binding="{Binding chassis}" />
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding DATE}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding MiscExpAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding MiscExpDetail}" />
+													<DataGridTextColumn
+														Header="Account"
+														Binding="{Binding MiscExpPaidBy}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<StackPanel
+											Name="UniMiscDetails"
+											VerticalAlignment="Top">
+											<DockPanel>
+												<Label>Auto Chassis No.</Label>
+												<ComboBox
+													Name="comboMiscChassis"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding chassis}" />
+											</DockPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="MiscdatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Amount:</Label>
+												<TextBox
+													Name="txtMiscExpAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Detail:</Label>
+												<TextBox
+													Name="txtMiscExpDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Account:</Label>
+												<ComboBox
+													Name="comboMiscAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnMiscExpEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Expense</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Duty Payments">
+								<Grid
+									Name="TabDutyExp">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Duty Expense Entry</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewDutyExpEntry"
+													Visibility="Collapsed"
+													Content="Create New Entry" />
+												<Button
+													Name="btnEditDutyExpEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridDutyExp"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Chassis"
+														Binding="{Binding chassis}" />
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding DATE}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding DutyExpAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding DutyExpDetail}" />
+													<DataGridTextColumn
+														Header="Account"
+														Binding="{Binding DutyExpPaidBy}" />
+													<DataGridTextColumn
+														Header="Agent"
+														Binding="{Binding DutyExpAgent}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<UniformGrid
+											Name="UniDutyDetails"
+											VerticalAlignment="Top"
+											Columns="2">
+											<DockPanel>
+												<Label>Auto Chassis No.</Label>
+												<ComboBox
+													Name="comboDutyChassis"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding chassis}" />
+											</DockPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="DutydatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Amount:</Label>
+												<TextBox
+													Name="txtDutyExpAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Detail:</Label>
+												<TextBox
+													Name="txtDutyExpDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Agent:</Label>
+												<ComboBox
+													Name="comboDutyAgents"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding Name}" />
+												<Button
+													Name="btnDutyAddAgent">Add New</Button>
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnDutyExpEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Expense</Button>
+											</WrapPanel>
+										</UniformGrid>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Office Expense">
+								<Grid
+									Name="TabOfficeExp">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Office Expense Entry</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewOfficeExpEntry"
+													Visibility="Collapsed"
+													Content="Create New Entry" />
+												<Button
+													Name="btnEditOfficeExpEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridOfficeExp"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding Date}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding OfficeExpAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding OfficeExpDetail}" />
+													<DataGridTextColumn
+														Header="Account"
+														Binding="{Binding OfficeExpPaidBy}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<StackPanel
+											Name="UniOfficeDetails"
+											VerticalAlignment="Top">
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="OfficedatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Amount:</Label>
+												<TextBox
+													Name="txtOfficeExpAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Detail:</Label>
+												<TextBox
+													Name="txtOfficeExpDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Payment by:</Label>
+												<ComboBox
+													Name="comboOfficeAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding BankAccounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnOfficeExpEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Expense</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Receipts">
+								<Grid
+									Name="TabReceipt">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Receipt</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewReceiptEntry"
+													Visibility="Collapsed"
+													Content="Create New Receipt Entry" />
+												<Button
+													Name="btnEditReceiptEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridReceipts"
+												IsReadOnly="True"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding DATE}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding receiptAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding receiptDetail}" />
+													<DataGridTextColumn
+														Header="Received In"
+														Binding="{Binding receivedIn}" />
+													<DataGridTextColumn
+														Header="Customer"
+														Binding="{Binding receivedFrom}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<UniformGrid
+											Name="UniReceiptDetails"
+											VerticalAlignment="Top"
+											Columns="2">
+											<WrapPanel>
+												<Label>Received From:</Label>
+												<ComboBox
+													Name="comboReceiptCust"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding customer}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="ReceiptdatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Amount:</Label>
+												<TextBox
+													Name="txtReceiptAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Detail:</Label>
+												<TextBox
+													Name="txtReceiptDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Recieving In:</Label>
+												<ComboBox
+													Name="comboReceiptAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding Accounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnReceiptEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Receipt</Button>
+											</WrapPanel>
+										</UniformGrid>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Yen Payments">
+								<Grid
+									Name="TabPayment">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Payment</TextBlock>
+										<StackPanel
+											Name="UniPaymentDetails"
+											VerticalAlignment="Top">
+											<WrapPanel>
+												<TextBlock
+													FontSize="15"
+													FontFamily="Segoe Ui"
+													FontWeight="Bold"
+													Foreground="{StaticResource bg1}"
+													HorizontalAlignment="Center"
+													Text="Total Accounts Payable (Yen): " />
+												<TextBlock
+													Name="TotalAccountsPayable"
+													FontSize="15"
+													FontFamily="Segoe Ui"
+													FontWeight="Bold"
+													Foreground="{StaticResource bg1}"
+													HorizontalAlignment="Center" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="PaymentdatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Amount in Yen:</Label>
+												<TextBox
+													Name="txtPaymentAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Exchange Rate:</Label>
+												<TextBox
+													Name="txtPaymentRate"
+													Text="{Binding Source={x:Static local:MySettings.Default}, Path=exchangeRate, Mode=OneWay}"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Amount in PKR:</Label>
+												<TextBox
+													Name="txtPaymentAmountPkr"
+													IsEnabled="False" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Detail:</Label>
+												<TextBox
+													Name="txtPaymentDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Paid From:</Label>
+												<ComboBox
+													Name="comboPaymentAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding Accounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnPaymentEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Payment</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Party Payments">
+								<Grid
+									Name="TabPaymentPkr">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Party Payment</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewPayPkrEntry"
+													Visibility="Collapsed"
+													Content="Create New Entry" />
+												<Button
+													Name="btnEditPayPkrEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridPayPkr"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding DATE}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding PaymentAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding PaymentDetail}" />
+													<DataGridTextColumn
+														Header="Account"
+														Binding="{Binding PaidFrom}" />
+													<DataGridTextColumn
+														Header="Customer"
+														Binding="{Binding PaidTo}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+										<StackPanel
+											Name="UniPaymentPkrDetails"
+											VerticalAlignment="Top">
+											<WrapPanel>
+												<Label>Paying to:</Label>
+												<ComboBox
+													Name="comboPaymentPkrCust"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding customer}" />
+												<Button
+													Name="BtnAddCustatPay"
+													Content="Add Customer"
+													Margin="5,0" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="PaymentPkrdatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Amount:</Label>
+												<TextBox
+													Name="txtPaymentPkrAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Detail:</Label>
+												<TextBox
+													Name="txtPaymentPkrDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Paying from:</Label>
+												<ComboBox
+													Name="comboPaymentPkrAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding Accounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnPaymentPkrEntry"
+													IsDefault="True"
+													IsEnabled="False">Enter Payment</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Agent Payments">
+								<Grid
+									Name="TabPaymentAgent">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Agent Payment</TextBlock>
+										<StackPanel
+											DockPanel.Dock="Bottom"
+											Margin="2">
+											<WrapPanel
+												HorizontalAlignment="Center">
+												<Button
+													Name="btnNewPayAgentEntry"
+													Content="Create New Entry" />
+												<Button
+													Name="btnEditPayAgentEntry"
+													Content="Edit Selected Entry"
+													IsEnabled="False" />
+											</WrapPanel>
+											<DataGrid
+												Name="DataGridPayAgent"
+												IsReadOnly="True"
+												MinHeight="165"
+												Height="200"
+												AutoGenerateColumns="False"
+												CanUserAddRows="False"
+												ScrollViewer.HorizontalScrollBarVisibility="Auto"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												SelectionMode="Single"
+												Margin="-2,0,2,0"
+												ItemsSource="{Binding}">
+												<DataGrid.Columns>
+													<DataGridTextColumn
+														Header="Date"
+														Binding="{Binding DATE}" />
+													<DataGridTextColumn
+														Header="Amount"
+														Binding="{Binding PaymentAmount}" />
+													<DataGridTextColumn
+														Header="Detail"
+														Binding="{Binding PaymentDetail}" />
+													<DataGridTextColumn
+														Header="Account"
+														Binding="{Binding PaidFrom}" />
+													<DataGridTextColumn
+														Header="Agent"
+														Binding="{Binding PaidTo}" />
+												</DataGrid.Columns>
+											</DataGrid>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+							<TabItem
+								Header="Profit Withdrawal">
+								<Grid
+									Name="TabProfitWithdrawal">
+									<DockPanel>
+										<TextBlock
+											DockPanel.Dock="Top"
+											FontSize="20"
+											FontFamily="Segoe Ui"
+											FontWeight="Bold"
+											Foreground="{StaticResource bg1}"
+											HorizontalAlignment="Center">Profit Withdrawal Entry</TextBlock>
+										<StackPanel
+											Name="UniProfitWithdrawalDetails"
+											VerticalAlignment="Top">
+											<WrapPanel>
+												<TextBlock
+													FontSize="15"
+													FontFamily="Segoe Ui"
+													FontWeight="Bold"
+													Foreground="{StaticResource bg1}"
+													HorizontalAlignment="Center"
+													Text="Total Profit Available in Account: " />
+												<TextBlock
+													Name="TotalProfit"
+													FontSize="15"
+													FontFamily="Segoe Ui"
+													FontWeight="Bold"
+													Foreground="{StaticResource bg1}"
+													HorizontalAlignment="Center" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Date:</Label>
+												<DatePicker
+													Name="ProfitWithdrawaldatePicker"
+													SelectedDateFormat="Short"
+													SelectedDate="{x:Static sys:DateTime.Now}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Amount:</Label>
+												<TextBox
+													Name="txtProfitWithdrawalAmount"
+													ContextMenu="{x:Null}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Expense Detail:</Label>
+												<TextBox
+													Name="txtProfitWithdrawalDetail" />
+											</WrapPanel>
+											<WrapPanel>
+												<Label>Payment by:</Label>
+												<ComboBox
+													Name="comboProfitWithdrawalAccounts"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													ItemsSource="{Binding BankAccounts}" />
+											</WrapPanel>
+											<WrapPanel>
+												<Button
+													Name="btnProfitWithdrawalEntry"
+													IsDefault="True"
+													IsEnabled="False">Withdraw Profit</Button>
+											</WrapPanel>
+										</StackPanel>
+									</DockPanel>
+								</Grid>
+							</TabItem>
+						</TabControl>
+					</Grid>
+				</TabItem>
+				<TabItem
+					Header="Manage Stocks">
+					<Grid
+						Name="MainRow">
+						<DockPanel
+							Name="staData">
+							<StackPanel
+								Name="GrpStocksBtns"
+								DockPanel.Dock="Top"
+								Orientation="Horizontal"
+								HorizontalAlignment="Center">
+								<Button
+									Name="BtnAddStocks"
+									IsEnabled="False">Add Purchased Stocks</Button>
+								<Button
+									Name="BtnEditStock"
+									IsEnabled="False">Edit Selected Stock(s)</Button>
+								<Button
+									Name="BtnDeleteStocks"
+									IsEnabled="False"
+									Visibility="Collapsed">Delete Selected Stock(s)</Button>
+							</StackPanel>
+							<Grid
+								DockPanel.Dock="Top"
+								HorizontalAlignment="Left"
+								Height="30"
+								Width="{Binding ElementName=LstStocks, Path=ActualWidth}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="Auto" />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Label
+									Name="lblFilter"
+									Content="Filter:"
+									HorizontalAlignment="Left" />
+								<TextBox
+									Name="txtFilter"
+									Grid.Column="1"
+									Width="Auto" />
+							</Grid>
+							<StackPanel
+								DockPanel.Dock="Bottom">
+								<TextBlock
+									DockPanel.Dock="Bottom">
+									<Run
+										Text="Total Stock: " /> <Run
+										FontWeight="Bold"
+										Text="{Binding ElementName=LstDomain, Path=Items.Count, Mode=OneWay}" /></TextBlock>
+							</StackPanel>
+							<Grid
+								Name="DomainGrid">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="4*" />
+									<ColumnDefinition
+										Width="6*" />
+								</Grid.ColumnDefinitions>
+								<ListView
+									Name="LstStocks"
+									DockPanel.Dock="Left"
+									SelectionMode="Extended">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<TextBlock
+												Text="{Binding Chassis}" />
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ListView>
+								<DockPanel
+									Name="StockDetails"
+									Grid.Column="1"
+									VerticalAlignment="Top"
+									DataContext="{Binding ElementName=LstStocks, Path=SelectedItem}">
+									<TextBlock
+										DockPanel.Dock="Top"
+										HorizontalAlignment="Center"
+										FontWeight="Bold"
+										Text="Selected Auto Details"
+										LineHeight="25" />
+									<ScrollViewer
+										VerticalScrollBarVisibility="Auto">
+										<TextBlock
+											Name="TxtBlkDomainDetails"
+											FontFamily="Segoe UI"
+											ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+											LineHeight="25">
+											<Run
+												Text="Stock ID" /> <Run
+												Name="runStockId"
+												FontWeight="Bold"
+												Text="{Binding rowid}" /><LineBreak /><Run
+												Text="Date: " /> <Run
+												Name="runStockDAte"
+												FontWeight="Bold"
+												Text="{Binding DATE}" /><LineBreak /><Run
+												Text="Chassis No.: " /> <Run
+												Name="runStockchassis"
+												FontWeight="Bold"
+												Text="{Binding Chassis}" /><LineBreak /><Run
+												Text="Model: " /> <Run
+												Name="runStockModel"
+												FontWeight="Bold"
+												Text="{Binding Model}" /><LineBreak /><Run
+												Text="Color: " /> <Run
+												Name="runStockColor"
+												FontWeight="Bold"
+												Text="{Binding Color}" /><LineBreak /><Run
+												Text="Price (Yen): " /> <Run
+												Name="runStockPriceYen"
+												FontWeight="Bold"
+												Text="{Binding PriceYen}" /><LineBreak /><Run
+												Text="Rate: " /> <Run
+												Name="runStockRate"
+												FontWeight="Bold"
+												Text="{Binding Rate}" /><LineBreak /><Run
+												Text="Price (PKR): " /> <Run
+												Name="runStockPricePkr"
+												FontWeight="Bold"
+												Text="{Binding PricePkr}" /><LineBreak /><Run
+												Text="Duty: " /> <Run
+												Name="runStockDuty"
+												FontWeight="Bold"
+												Text="{Binding Duty}" /><LineBreak /><Run
+												Text="Misc. Expense: " /> <Run
+												Name="runStockMiscExpense"
+												FontWeight="Bold"
+												Text="{Binding MiscExpense}" /><LineBreak /><Run
+												Text="Total Cost (PKR):" /> <Run
+												Name="runStockCost"
+												FontWeight="Bold"
+												Text="{Binding Cost}" /><LineBreak /><Run
+												Text="Status: " /> <Run
+												Name="runStockStatus"
+												FontWeight="Bold"
+												Text="{Binding Status}" /><LineBreak /><Run
+												Text="Amount Paid (Yen): " /> <Run
+												Name="runStockAmountPaidYen"
+												FontWeight="Bold"
+												Text="{Binding PaidYen}" /><LineBreak /><Run
+												Text="Amount Paid: " /> <Run
+												Name="runStockAmountPaid"
+												FontWeight="Bold"
+												Text="{Binding PaidAmount}" /><LineBreak /><Run
+												Text="Comments: " /> <Run
+												Name="runStockComments"
+												FontWeight="Bold"
+												Text="{Binding Comments}" /></TextBlock>
+									</ScrollViewer>
+								</DockPanel>
+							</Grid>
+						</DockPanel>
+					</Grid>
+				</TabItem>
+				<TabItem
+					Header="Manage Parties">
+					<Grid
+						Name="TabCustomer">
+						<DockPanel
+							Name="staCustData">
+							<StackPanel
+								Name="GrpCustBtns"
+								DockPanel.Dock="Top"
+								Orientation="Horizontal"
+								HorizontalAlignment="Center">
+								<Button
+									Name="BtnAddCust"
+									IsEnabled="False">Add New Customer</Button>
+								<Button
+									Name="BtnEditCust"
+									IsEnabled="False">Edit Selected Customer</Button>
+								<Button
+									Name="BtnDeleteCust"
+									Visibility="Collapsed"
+									IsEnabled="False">Delete Selected Customer(s)</Button>
+							</StackPanel>
+							<Grid
+								DockPanel.Dock="Top"
+								HorizontalAlignment="Left"
+								Height="30"
+								Width="{Binding ElementName=LstCust, Path=ActualWidth}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="Auto" />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Label
+									Name="lblCustFilter"
+									Content="Filter:"
+									HorizontalAlignment="Left" />
+								<TextBox
+									Name="txtCustFilter"
+									Grid.Column="1"
+									Width="auto" />
+							</Grid>
+							<StackPanel
+								DockPanel.Dock="Bottom">
+								<TextBlock
+									DockPanel.Dock="Bottom">
+									<Run
+										Text="Total Customers: " /> <Run
+										FontWeight="Bold"
+										Text="{Binding ElementName=LstCust, Path=Items.Count, Mode=OneWay}" /></TextBlock>
+							</StackPanel>
+							<Grid
+								Name="CustGrid">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="4*" />
+									<ColumnDefinition
+										Width="6*" />
+								</Grid.ColumnDefinitions>
+								<ListView
+									Name="LstCust"
+									DockPanel.Dock="Left"
+									SelectionMode="Extended">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<TextBlock
+												Text="{Binding Name}" />
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ListView>
+								<DockPanel
+									Name="CustDetails"
+									Grid.Column="1"
+									VerticalAlignment="Top"
+									DataContext="{Binding ElementName=LstCust, Path=SelectedItem}">
+									<TextBlock
+										DockPanel.Dock="Top"
+										HorizontalAlignment="Center"
+										FontWeight="Bold"
+										Text="Selected Customer Details"
+										LineHeight="25" />
+									<ScrollViewer
+										VerticalScrollBarVisibility="Auto">
+										<TextBlock
+											Name="TxtBlkCustDetails"
+											FontFamily="Segoe UI"
+											ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+											LineHeight="25">
+											<Run
+												Text="Id: " /> <Run
+												Name="RunCustId"
+												FontWeight="Bold"
+												Text="{Binding rowid}" /> <Run
+												Text="Date: " /> <Run
+												Name="RunCustDate"
+												FontWeight="Bold"
+												Text="{Binding DATE}" /><LineBreak /><Run
+												Text="Title: " /> <Run
+												Name="RunCustTitle"
+												FontWeight="Bold"
+												Text="{Binding Title}" /><LineBreak /><Run
+												Text="Name: " /> <Run
+												Name="RunCustName"
+												FontWeight="Bold"
+												Text="{Binding Name}" /><LineBreak /><Run
+												Text="C.N.I.C. No.: " /> <Run
+												Name="RunCustCNIC"
+												FontWeight="Bold"
+												Text="{Binding CNIC}" /><LineBreak /><Run
+												Text="Phone No.: " /> <Run
+												Name="RunCustPhone"
+												FontWeight="Bold"
+												Text="{Binding Phone}" /><LineBreak /><Run
+												Text="Address: " /> <Run
+												Name="RunCustAddress"
+												FontWeight="Bold"
+												Text="{Binding Address}" /><LineBreak /><Run
+												Name="runCustRecPay"
+												Text="Payment Receivable: " /> <Run
+												Name="RunCustPaymentReceivable"
+												FontWeight="Bold"
+												Text="{Binding PaymentReceivable}" /></TextBlock>
+									</ScrollViewer>
+								</DockPanel>
+							</Grid>
+						</DockPanel>
+					</Grid>
+				</TabItem>
+				<TabItem
+					Header="Manage Agents">
+					<Grid
+						Name="TabAgent">
+						<DockPanel
+							Name="staAgentData">
+							<StackPanel
+								Name="GrpAgentBtns"
+								DockPanel.Dock="Top"
+								Orientation="Horizontal"
+								HorizontalAlignment="Center">
+								<Button
+									Name="BtnAddAgent"
+									IsEnabled="False">Add New Agent</Button>
+								<Button
+									Name="BtnEditAgent"
+									IsEnabled="False">Edit Selected Agent</Button>
+							</StackPanel>
+							<Grid
+								DockPanel.Dock="Top"
+								HorizontalAlignment="Left"
+								Height="30"
+								Width="{Binding ElementName=LstAgent, Path=ActualWidth}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="Auto" />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Label
+									Name="lblAgentFilter"
+									Content="Filter:"
+									HorizontalAlignment="Left" />
+								<TextBox
+									Name="txtAgentFilter"
+									Grid.Column="1"
+									Width="auto" />
+							</Grid>
+							<StackPanel
+								DockPanel.Dock="Bottom">
+								<TextBlock
+									DockPanel.Dock="Bottom">
+									<Run
+										Text="Total Agents: " /> <Run
+										FontWeight="Bold"
+										Text="{Binding ElementName=LstAgent, Path=Items.Count, Mode=OneWay}" /></TextBlock>
+							</StackPanel>
+							<Grid
+								Name="AgentGrid">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition
+										Width="4*" />
+									<ColumnDefinition
+										Width="6*" />
+								</Grid.ColumnDefinitions>
+								<ListView
+									Name="LstAgent"
+									DockPanel.Dock="Left"
+									SelectionMode="Extended">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<TextBlock
+												Text="{Binding Name}" />
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ListView>
+								<DockPanel
+									Name="AgentDetails"
+									Grid.Column="1"
+									VerticalAlignment="Top"
+									DataContext="{Binding ElementName=LstAgent, Path=SelectedItem}">
+									<TextBlock
+										DockPanel.Dock="Top"
+										HorizontalAlignment="Center"
+										FontWeight="Bold"
+										Text="Selected Agent Details"
+										LineHeight="25" />
+									<ScrollViewer
+										VerticalScrollBarVisibility="Auto">
+										<TextBlock
+											Name="TxtBlkAgentDetails"
+											FontFamily="Segoe UI"
+											ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+											LineHeight="25">
+											<Run
+												Text="Id: " /> <Run
+												Name="RunAgentId"
+												FontWeight="Bold"
+												Text="{Binding rowid}" /><LineBreak /><Run
+												Text="Date: " /> <Run
+												Name="RunAgentDate"
+												FontWeight="Bold"
+												Text="{Binding DATE}" /><LineBreak /><Run
+												Text="Name: " /> <Run
+												Name="RunAgentName"
+												FontWeight="Bold"
+												Text="{Binding Name}" /><LineBreak /><Run
+												Text="C.N.I.C. No.: " /> <Run
+												Name="RunAgentCNIC"
+												FontWeight="Bold"
+												Text="{Binding CNIC}" /><LineBreak /><Run
+												Text="Phone No.: " /> <Run
+												Name="RunAgentPhone"
+												FontWeight="Bold"
+												Text="{Binding Phone}" /><LineBreak /><Run
+												Text="Address: " /> <Run
+												Name="RunAgentAddress"
+												FontWeight="Bold"
+												Text="{Binding Address}" /><LineBreak /><Run
+												Name="runAgentRecPay"
+												Text="Payment Receivable: " /> <Run
+												Name="RunAgentPaymentReceivable"
+												FontWeight="Bold"
+												Text="{Binding PaymentReceivable}" /></TextBlock>
+									</ScrollViewer>
+								</DockPanel>
+							</Grid>
+						</DockPanel>
+					</Grid>
+				</TabItem>
+				<TabItem
+					Header="Sale Autos">
+					<Grid
+						Name="TabSale">
+						<DockPanel>
+							<TextBlock
+								Margin="0,0,0,5"
+								DockPanel.Dock="Top"
+								FontSize="20"
+								FontFamily="Segoe Ui"
+								FontWeight="Bold"
+								Foreground="{StaticResource bg1}"
+								HorizontalAlignment="Center">Auto Sale Entry</TextBlock>
+							<StackPanel
+								DockPanel.Dock="Bottom"
+								Margin="2">
+								<WrapPanel
+									HorizontalAlignment="Center">
+									<Button
+										Name="btnNewSaleEntry"
+										Content="Create New Sale Entry" />
+									<Button
+										Name="btnEditSaleEntry"
+										Content="Edit Selected Entry"
+										IsEnabled="False" />
+								</WrapPanel>
+								<DataGrid
+									Name="DataGridSales"
+									IsReadOnly="True"
+									Height="200"
+									AutoGenerateColumns="False"
+									CanUserAddRows="False"
+									ScrollViewer.HorizontalScrollBarVisibility="Auto"
+									ScrollViewer.VerticalScrollBarVisibility="Auto"
+									SelectionMode="Single"
+									Margin="-2,0,2,0"
+									ItemsSource="{Binding}">
+									<DataGrid.Columns>
+										<DataGridTextColumn
+											Header="Date"
+											Binding="{Binding SaleDate}" />
+										<DataGridTextColumn
+											Header="Chassis"
+											Binding="{Binding SaleChassis}" />
+										<DataGridTextColumn
+											Header="Customer"
+											Binding="{Binding SaleCustomer}" />
+										<DataGridTextColumn
+											Header="Price"
+											Binding="{Binding SalePrice}" />
+										<DataGridTextColumn
+											Header="Advanced Received"
+											Binding="{Binding SaleAmountReceived}" />
+										<DataGridTextColumn
+											Header="Received In"
+											Binding="{Binding PaymentReceivedIn}" />
+									</DataGrid.Columns>
+								</DataGrid>
+							</StackPanel>
+							<UniformGrid
+								Name="UniDetails"
+								VerticalAlignment="Top"
+								Columns="2">
+								<WrapPanel>
+									<Label>Auto Chassis No.</Label>
+									<ComboBox
+										Name="comboChassis"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top" />
+								</WrapPanel>
+								<WrapPanel>
+									<Label>Customer:</Label>
+									<ComboBox
+										Name="comboCust"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										ItemsSource="{Binding customer}" />
+								</WrapPanel>
+								<WrapPanel>
+									<Label>Sale Price:</Label>
+									<TextBox
+										Name="txtSalePrice"
+										ContextMenu="{x:Null}" />
+								</WrapPanel>
+								<WrapPanel>
+									<Label>Amount Received:</Label>
+									<xctk:IntegerUpDown
+										Name="txtAmountReceived"
+										UpDownBase_x0060_1.Minimum="0"
+										Width="125"
+										UpDownBase_x0060_1.Maximum="{Binding ElementName=txtSalePrice, Path=Text}" />
+								</WrapPanel>
+								<WrapPanel>
+									<Label>Payment Recieved In:</Label>
+									<ComboBox
+										Name="comboSaleAccounts"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										ItemsSource="{Binding Accounts}" />
+								</WrapPanel>
+								<WrapPanel>
+									<Label>Date:</Label>
+									<DatePicker
+										Name="SaleDatePicker"
+										SelectedDateFormat="Short"
+										SelectedDate="{x:Static sys:DateTime.Now}" />
+								</WrapPanel>
+								<WrapPanel>
+									<Button
+										Name="btnSaleEntry"
+										IsDefault="True"
+										IsEnabled="False">Click to Sale</Button>
+								</WrapPanel>
+							</UniformGrid>
+						</DockPanel>
+					</Grid>
+				</TabItem>
+				<TabItem
+					Header="Report">
+					<Grid>
+						<DockPanel>
+							<StackPanel
+								DockPanel.Dock="Top">
+								<WrapPanel
+									Margin="10">
+									<ComboBox
+										Name="comboReport"
+										SelectedValuePath="Content"
+										Width="250">
+										<ComboBoxItem
+											IsSelected="True">Sold Cars</ComboBoxItem>
+										<ComboBoxItem>Accounts</ComboBoxItem>
+										<ComboBoxItem>Stocks</ComboBoxItem>
+										<ComboBoxItem>Accounts Receivable</ComboBoxItem>
+										<ComboBoxItem>Accounts Payable</ComboBoxItem>
+										<ComboBoxItem>Trial Balance</ComboBoxItem>
+										<ComboBoxItem>Income Statement</ComboBoxItem>
+										<ComboBoxItem>Office Expenses</ComboBoxItem>
+										<ComboBoxItem>Misc. Auto Expenses</ComboBoxItem>
+										<ComboBoxItem>Duty Expenses</ComboBoxItem>
+										<ComboBoxItem>Receipts</ComboBoxItem>
+										<ComboBoxItem>Party Ledger</ComboBoxItem>
+										<ComboBoxItem>Yen Payments</ComboBoxItem>
+									</ComboBox>
+									<ComboBox
+										Name="comboReportAccounts"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										Visibility="Collapsed"
+										MinWidth="150"
+										ItemsSource="{Binding Accounts}" />
+									<ComboBox
+										Name="comboReportCustomers"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										Visibility="Collapsed"
+										MinWidth="150"
+										ItemsSource="{Binding Name}" />
+									<ComboBox
+										Name="comboReportDutyAgents"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Top"
+										Visibility="Collapsed"
+										MinWidth="150"
+										ItemsSource="{Binding Name}" />
+									<ComboBox
+										Name="comboReportStockDuty"
+										Visibility="Collapsed"
+										MinWidth="150">
+										<ComboBoxItem
+											IsSelected="True">All</ComboBoxItem>
+										<ComboBoxItem>Duty Paid</ComboBoxItem>
+										<ComboBoxItem>Duty Not Paid</ComboBoxItem>
+									</ComboBox>
+									<WrapPanel
+										Name="reportDate">
+										<Label
+											Content="From: " />
+										<DatePicker
+											Name="reportDateFrom"
+											SelectedDateFormat="Short"
+											SelectedDate="2017-01-01" />
+										<Label
+											Content="To: " />
+										<DatePicker
+											Name="reportDateTo"
+											SelectedDateFormat="Short"
+											SelectedDate="{x:Static sys:DateTime.Now}" />
+									</WrapPanel>
+									<Button
+										Name="btnGenerateReport"
+										Content="Generate Report" />
+								</WrapPanel>
+							</StackPanel>
+							<StackPanel
+								DockPanel.Dock="Bottom">
+								<Button
+									Name="btnClosing"
+									Content="Close All Entries"
+									Visibility="Collapsed" />
+							</StackPanel>
+							<DocumentViewer
+								Name="documentViewer2"
+								Visibility="Collapsed" />
+							<FlowDocumentScrollViewer
+								Name="flowviewertrial"
+								Visibility="Collapsed">
+								<FlowDocument
+									Name="flowTrialBalance"
+									PagePadding="25"
+									PageHeight="29.7cm"
+									PageWidth="21cm"
+									ColumnWidth="21cm">
+									<Section>
+										<Paragraph
+											TextAlignment="Center"
+											FontSize="22"
+											FontWeight="Bold">JAINI MOTORS</Paragraph>
+										<Paragraph>
+											<Run
+												Name="runT"
+												Text="Trial Balance" />
+											<LineBreak />
+											<Run
+												Name="runD" /> <Hyperlink>Print</Hyperlink></Paragraph>
+									</Section>
+									<Table
+										Name="TableTrialBalance"
+										CellSpacing="0"
+										BorderBrush="#FF000000"
+										BorderThickness="0.02cm"
+										FontFamily="Segoe UI">
+										<FrameworkContentElement.Resources>
+											<ResourceDictionary>
+												<Style
+													x:Name="headerFooterRowStyle"
+													TargetType="{x:Type TableRowGroup}"
+													x:Key="headerFooterRowStyle">
+													<Setter
+														Property="FontWeight"
+														Value="DemiBold" />
+													<Setter
+														Property="FontSize"
+														Value="14" />
+													<Setter
+														Property="Background"
+														Value="#FFD3D3D3" />
+												</Style>
+												<Style
+													TargetType="{x:Type Paragraph}"
+													x:Key="{x:Type Paragraph}">
+													<Setter
+														Property="Block.BorderBrush"
+														Value="#FF000000" />
+												</Style>
+												<Style
+													TargetType="{x:Type TableRowGroup}"
+													x:Key="dataRowStyle">
+													<Setter
+														Property="FontSize"
+														Value="12" />
+												</Style>
+												<Style
+													TargetType="{x:Type TableCell}"
+													x:Key="{x:Type TableCell}">
+													<Setter
+														Property="TableCell.Padding"
+														Value="0.1cm" />
+													<Setter
+														Property="TableCell.BorderBrush"
+														Value="#FF000000" />
+													<Setter
+														Property="TableCell.BorderThickness"
+														Value="0.01cm" />
+												</Style>
+											</ResourceDictionary>
+										</FrameworkContentElement.Resources>
+										<Table.Columns>
+											<TableColumn
+												Width="40*" />
+											<TableColumn
+												Width="20*" />
+											<TableColumn
+												Width="20*" />
+										</Table.Columns>
+										<TableRowGroup
+											Style="{StaticResource headerFooterRowStyle}">
+											<TableRow>
+												<TableCell />
+												<TableCell
+													TextAlignment="Right">
+													<Paragraph>
+														<Bold>Debit</Bold>
+													</Paragraph>
+												</TableCell>
+												<TableCell
+													TextAlignment="Right">
+													<Paragraph>
+														<Bold>Credit</Bold>
+													</Paragraph>
+												</TableCell>
+											</TableRow>
+										</TableRowGroup>
+										<TableRowGroup
+											Name="trg1"
+											Style="{StaticResource dataRowStyle}">
+											<xrd:TableRowForDataTable
+												TableName="StocksTable">
+												<TableCell>
+													<Paragraph>
+														<xrd:InlineTableCellValue
+															PropertyName="Chassis" />
+													</Paragraph>
+												</TableCell>
+												<TableCell>
+													<Paragraph>
+														<xrd:InlineTableCellValue
+															PropertyName="PaymentReceivable"
+															AggregateGroup="SalePriceGroup" />
+													</Paragraph>
+												</TableCell>
+											</xrd:TableRowForDataTable>
+										</TableRowGroup>
+										<TableRowGroup
+											Style="{StaticResource headerFooterRowStyle}">
+											<TableRow>
+												<TableCell
+													TextAlignment="Right">
+													<Paragraph />
+												</TableCell>
+											</TableRow>
+										</TableRowGroup>
+									</Table>
+									<Paragraph>
+										<TextBlock
+											FontSize="10">** Accounts Payable on Stock Purchase is calculated with default exchange rate</TextBlock>
+									</Paragraph>
+								</FlowDocument>
+							</FlowDocumentScrollViewer>
+						</DockPanel>
+					</Grid>
+				</TabItem>
+			</TabControl>
+		</DockPanel>
+	</Grid>
+</Window>
