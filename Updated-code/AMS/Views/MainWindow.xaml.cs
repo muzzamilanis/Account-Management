@@ -52,9 +52,9 @@ namespace AMS.Views
             var dlg = new SaveFileDialog
             {
                 Title = "Create New Database",
-                Filter = "AMS Database (*.amsdb)|*.amsdb|All Files (*.*)|*.*",
+                Filter = "AMS Database (*.bndb)|*.bndb|All Files (*.*)|*.*",
                 DefaultExt = "amsdb",
-                FileName = "accounts.amsdb"
+                FileName = "accounts.bndb"
             };
             if (dlg.ShowDialog() != true) return;
             try
@@ -81,7 +81,7 @@ namespace AMS.Views
             var dlg = new OpenFileDialog
             {
                 Title = "Open AMS Database",
-                Filter = "AMS Database (*.amsdb)|*.amsdb|SQLite DB (*.db;*.sqlite)|*.db;*.sqlite|All Files (*.*)|*.*",
+                Filter = "AMS Database (*.bndb)|*.bndb|SQLite DB (*.db;*.sqlite)|*.db;*.sqlite|All Files (*.*)|*.*",
                 Multiselect = false
             };
             if (dlg.ShowDialog() != true) return;
@@ -318,6 +318,23 @@ namespace AMS.Views
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void hyplnk_Click(object sender, RoutedEventArgs e)
+        {
+            WrapExcEdit.Visibility = Visibility.Visible;
+            PnlExcView.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnExcEdit_Click(object sender, RoutedEventArgs e)
+        {
+            // Explicitly force updating the bound ExchangeRate source
+            var bindingObj = txtEditExcRate.GetBindingExpression(TextBox.TextProperty);
+            if (bindingObj != null)
+                bindingObj.UpdateSource();
+
+            WrapExcEdit.Visibility = Visibility.Collapsed;
+            PnlExcView.Visibility = Visibility.Visible;
         }
 
         protected override void OnClosed(EventArgs e)

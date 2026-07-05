@@ -4,7 +4,11 @@
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon>Autos_Accounts.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Autos_Accounts.ico" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.118.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118.0" />

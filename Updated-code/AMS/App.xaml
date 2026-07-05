@@ -1,12 +1,59 @@
 <Application x:Class="AMS.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:AMS.Converters"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Themes/DarkTheme.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <!-- Classic Colors mimicking original Autos_Accounts -->
+        <SolidColorBrush x:Key="bg1" Color="#f0f0f0"/>
+        <SolidColorBrush x:Key="bg2" Color="#ffffff"/>
+        <SolidColorBrush x:Key="bg3" Color="#cccccc"/>
+        <SolidColorBrush x:Key="bg4" Color="#e5e5e5"/>
+
+        <SolidColorBrush x:Key="TextPrimary" Color="#000000"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#333333"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#666666"/>
+
+        <SolidColorBrush x:Key="AccentBrush" Color="#0078d7"/>
+        <SolidColorBrush x:Key="AccentHover" Color="#005a9e"/>
+        <SolidColorBrush x:Key="SurfaceHover" Color="#e6f2fa"/>
+
+        <!-- Add missing brushes and styles from old Theme -->
+        <SolidColorBrush x:Key="DangerBrush" Color="#d13438"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#107c10"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#ff8c00"/>
+
+        <!-- Converters -->
+        <conv:NullToVisibilityConverter x:Key="NullToVis"/>
+        <conv:StatusToColorConverter x:Key="StatusColor"/>
+
+        <!-- Dummy UI element styles to prevent crash -->
+        <Style x:Key="OutlineButton" TargetType="Button">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="10,4"/>
+        </Style>
+
+        <Style x:Key="CardBorder" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{StaticResource bg3}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="NavItemStyle" TargetType="RadioButton">
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+            <Setter Property="Margin" Value="0,4,0,2"/>
+        </Style>
+
     </Application.Resources>
 </Application>

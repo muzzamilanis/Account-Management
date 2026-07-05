@@ -31,10 +31,10 @@
                     <TextBlock Text="&#x1F697; Auto Management System"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{StaticResource AccentBrush}"
-                               FontFamily="{StaticResource AppFont}"/>
+                               />
                     <TextBlock Text="Please enter your password to continue"
                                FontSize="11" Foreground="{StaticResource TextSecondary}"
-                               FontFamily="{StaticResource AppFont}" Margin="0,6,0,0"/>
+                                Margin="0,6,0,0"/>
                 </StackPanel>
             </Border>
             <Rectangle Grid.Row="0" Height="2" VerticalAlignment="Bottom">

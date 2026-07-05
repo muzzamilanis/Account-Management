@@ -40,30 +40,11 @@
                                    Text="{Binding CompanyName}"
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{StaticResource AccentBrush}"
-                                   FontFamily="{StaticResource AppFont}"/>
+                                   />
                         <TextBlock Text="Auto Dealership Accounts System"
                                    FontSize="10" Foreground="{StaticResource TextMuted}"
-                                   FontFamily="{StaticResource AppFont}"/>
+                                   />
                     </StackPanel>
-                </StackPanel>
-
-                <!-- Center: Exchange Rate -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Border Background="#1A38BDF8" BorderBrush="{StaticResource AccentBrush}"
-                            BorderThickness="1" CornerRadius="6" Padding="12,6">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#x00A5; Rate:" Foreground="{StaticResource TextSecondary}"
-                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBox x:Name="TxtExcRate" Width="80"
-                                     Text="{Binding ExchangeRate, UpdateSourceTrigger=PropertyChanged, StringFormat='0', FallbackValue='0', TargetNullValue='0'}"
-                                     VerticalAlignment="Center" Height="26" FontWeight="Bold"
-                                     Foreground="{StaticResource AccentBrush}" Background="Transparent"
-                                     BorderThickness="0" FontSize="13"/>
-                            <TextBlock Text="PKR" Foreground="{StaticResource TextMuted}"
-                                       FontSize="11" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
 
                 <!-- Right: Actions -->
@@ -75,74 +56,12 @@
         </Border>
 
         <!-- ══ MAIN CONTENT AREA ══ -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="210"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
 
-            <!-- LEFT SIDEBAR -->
-            <Border Background="{StaticResource bg1}"
-                    BorderBrush="{StaticResource bg3}"
-                    BorderThickness="0,0,1,0">
-                <DockPanel>
-                    <!-- Database section -->
-                    <StackPanel DockPanel.Dock="Top" Margin="8,12,8,0">
-                        <TextBlock Text="DATABASE" FontSize="9" FontWeight="Bold"
-                                   Foreground="{StaticResource TextMuted}"
-                                   Margin="12,0,0,6"/>
-                        <RadioButton Content="&#x1F3E0;  Welcome" Style="{StaticResource NavItemStyle}"
-                                     IsChecked="True"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Welcome"/>
-                    </StackPanel>
-
-                    <Separator Margin="12,10"/>
-
-                    <!-- Main nav -->
-                    <StackPanel DockPanel.Dock="Top" Margin="8,0">
-                        <TextBlock Text="MANAGEMENT" FontSize="9" FontWeight="Bold"
-                                   Foreground="{StaticResource TextMuted}"
-                                   Margin="12,0,0,6"/>
-                        <RadioButton Content="&#x1F4B0;  Accounts" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Accounts"/>
-                        <RadioButton Content="&#x1F697;  Manage Stocks" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Stocks"/>
-                        <RadioButton Content="&#x1F464;  Manage Parties" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Customers"/>
-                        <RadioButton Content="&#x1F91D;  Manage Agents" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Agents"/>
-                        <RadioButton Content="&#x1F4C4;  Sale Autos" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Sales"/>
-                    </StackPanel>
-
-                    <Separator Margin="12,10"/>
-
-                    <StackPanel DockPanel.Dock="Top" Margin="8,0">
-                        <TextBlock Text="REPORTS" FontSize="9" FontWeight="Bold"
-                                   Foreground="{StaticResource TextMuted}"
-                                   Margin="12,0,0,6"/>
-                        <RadioButton Content="&#x1F4CA;  Reports" Style="{StaticResource NavItemStyle}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="Reports"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-
-            <!-- CONTENT PANELS -->
-            <Border Grid.Column="1" Background="{StaticResource bg2}" Padding="0">
-                <Grid>
+        <!-- MAIN CONTENT AREA -->
+        <TabControl Grid.Row="1" TabStripPlacement="Left" Margin="0">
                     <!-- WELCOME PAGE -->
-                    <Grid Visibility="{Binding CurrentPage, Converter={StaticResource NullToVis}}"
-                          x:Name="PageWelcome">
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Welcome">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Welcome">
+                        <Grid x:Name="PageWelcome">
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="&#x1F697;" FontSize="72" HorizontalAlignment="Center"
                                        Margin="0,0,0,20"/>
@@ -166,20 +85,12 @@
                                        Foreground="{StaticResource SuccessBrush}"
                                        Visibility="Collapsed"/>
                         </StackPanel>
-                    </Grid>
+                        </Grid>
+                    </TabItem>
 
                     <!-- ACCOUNTS PAGE -->
-                    <Grid x:Name="PageAccounts">
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Accounts">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Accounts">
+                        <Grid x:Name="PageAccounts">
                         <DockPanel>
                             <!-- Sub-nav tabs -->
                             <Border DockPanel.Dock="Top" Background="{StaticResource bg1}"
@@ -604,20 +515,12 @@
                                 </Grid>
                             </Grid>
                         </DockPanel>
-                    </Grid>
+                        </Grid>
+                    </TabItem>
 
                     <!-- STOCKS PAGE -->
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Stocks">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Manage Stocks">
+                        <Grid>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Stock" Click="BtnAddStock_Click"/>
@@ -704,19 +607,11 @@
                             </Grid>
                         </DockPanel>
                     </Grid>
+                    </TabItem>
 
                     <!-- CUSTOMERS PAGE -->
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Customers">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Manage Parties">
+                        <Grid>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Customer" Click="BtnAddCust_Click"/>
@@ -785,19 +680,11 @@
                             </Grid>
                         </DockPanel>
                     </Grid>
+                    </TabItem>
 
                     <!-- AGENTS PAGE -->
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Agents">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Manage Agents">
+                        <Grid>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Agent" Click="BtnAddAgent_Click"/>
@@ -862,19 +749,10 @@
                             </Grid>
                         </DockPanel>
                     </Grid>
-
+                    </TabItem>
                     <!-- SALES PAGE -->
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Sales">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Sale Autos">
+                        <Grid>
                         <DockPanel Margin="16">
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                 <Button Content="&#x2795; New Sale Entry" Click="BtnNewSale_Click"/>
@@ -898,19 +776,10 @@
                             </Border>
                         </DockPanel>
                     </Grid>
-
+                    </TabItem>
                     <!-- REPORTS PAGE -->
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPage}" Value="Reports">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                    <TabItem Header="Reports">
+                        <Grid>
                         <DockPanel>
                             <!-- Report controls toolbar -->
                             <Border DockPanel.Dock="Top" Background="{StaticResource bg1}"
@@ -1001,23 +870,45 @@
                             </Grid>
                         </DockPanel>
                     </Grid>
-                </Grid>
-            </Border>
-        </Grid>
+                    </TabItem>
+        </TabControl>
+
 
         <!-- ══ STATUS BAR ══ -->
         <Border Grid.Row="2" Background="{StaticResource bg1}"
                 BorderBrush="{StaticResource bg3}" BorderThickness="0,1,0,0" Padding="16,0">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="TxtStatus" VerticalAlignment="Center" FontSize="11"
                            Foreground="{StaticResource TextMuted}" Text="Ready — Open or create a database to begin"/>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="10"
-                           Foreground="{StaticResource TextMuted}" Text="Auto Management System v2.0"/>
+                
+                <!-- Classic Exchange Rate UX -->
+                <WrapPanel Grid.Column="1" Name="WrapExcEdit" Visibility="Collapsed" VerticalAlignment="Center" Margin="20,0,0,0">
+                    <Label Content="Amount in Yen:" />
+                    <TextBox Name="txtEditExcRate" Width="60" Text="{Binding ExchangeRate, UpdateSourceTrigger=Explicit}" Margin="0,0,10,0"/>
+                    <Button Name="btnExcEdit" Content="OK" Width="50" Click="btnExcEdit_Click"/>
+                </WrapPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0" x:Name="PnlExcView">
+                    <Label Content="Exchange Rate : " />
+                    <Label Name="lblExcRate" Content="{Binding ExchangeRate}" />
+                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">
+                        <Hyperlink Name="hyplnk" Click="hyplnk_Click">Edit Rate</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+
+                <TextBlock Grid.Column="6" VerticalAlignment="Center" FontSize="10"
+                           Foreground="{StaticResource TextMuted}" Text="Powered by Soft-Tech Solutions"/>
             </Grid>
         </Border>
     </Grid>
 </Window>
+
