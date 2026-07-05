@@ -28,12 +28,10 @@ namespace AMS.Services
         public void OpenDatabase(string filePath)
         {
             CloseConnection();
-            string password = SettingsService.Instance.Settings.DatabasePassword;
             var builder = new SQLiteConnectionStringBuilder
             {
                 DataSource = filePath,
-                Version = 3,
-                Password = password
+                Version = 3
             };
             _connection = new SQLiteConnection(builder.ConnectionString);
             _connection.Open();
@@ -395,7 +393,11 @@ namespace AMS.Services
         // --- DASHBOARD/REPORTS ---
         public double GetTotalProfit()
         {
-            var dt = ExecuteQuery("SELECT SUM(SalePrice - Cost) as Total FROM Stock WHERE Status='Sold'");
+            var dt = ExecuteQuery(
+                "SELECT SUM(sa.SalePrice - st.Cost) as Total " +
+                "FROM Stock st " +
+                "INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis " +
+                "WHERE st.Status = 'Sold'");
             if (dt.Rows.Count > 0 && dt.Rows[0]["Total"] != DBNull.Value)
                 return Convert.ToDouble(dt.Rows[0]["Total"]);
             return 0;
@@ -410,17 +412,57 @@ namespace AMS.Services
 
         public DataTable GetReportData(string reportType, DateTime fromDate, DateTime toDate)
         {
-            string query = "";
+            string query;
+            string from = fromDate.ToString("yyyy-MM-dd");
+            string to   = toDate.ToString("yyyy-MM-dd");
             switch (reportType)
             {
-                case "Stock Status": query = "SELECT Date, Chassis, Model, Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to"; break;
-                case "Sales History": query = "SELECT SaleDate as Date, SaleChassis, SaleCustomer, SalePrice FROM Sale WHERE SaleDate >= @from AND SaleDate <= @to"; break;
-                case "Customer Balances": query = "SELECT Name, Phone, PaymentReceivable, PaymentReceived FROM Customer"; break;
-                case "Agent Balances": query = "SELECT Name, Phone, PaymentReceivable FROM Agent"; break;
-                case "Expense Summary": query = "SELECT OfficeExpDate as Date, OfficeExpDetail as Detail, OfficeExpAmount as Amount FROM OfficeExp WHERE OfficeExpDate >= @from AND OfficeExpDate <= @to"; break;
-                default: query = "SELECT * FROM Account LIMIT 1"; break;
+                case "Sold Cars":
+                    query = "SELECT sa.SaleDate as Date, st.Chassis, st.Model, st.Color, st.Cost, sa.SalePrice, (sa.SalePrice - st.Cost) as Profit "
+                          + "FROM Stock st INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis "
+                          + "WHERE st.Status = 'Sold' AND sa.SaleDate >= @from AND sa.SaleDate <= @to";
+                    break;
+                case "Stocks":
+                    query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty, MiscExpense as [Misc Exp], Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
+                    break;
+                case "Accounts":
+                    query = "SELECT AccountType as Type, AccountName as Name, AccountNumber as [Acc No], BankName as Bank, OpeningBalance as [Opening Bal], CurrentBalance as [Current Bal] FROM Account";
+                    break;
+                case "Accounts Receivable":
+                    query = "SELECT Name, Phone, PaymentReceivable as [Receivable], PaymentReceived as [Received], (PaymentReceivable - PaymentReceived) as [Balance] FROM Customer WHERE PaymentReceivable > 0";
+                    break;
+                case "Accounts Payable":
+                    query = "SELECT Name, Phone, PaymentReceivable as [Payable], PaymentPaid as [Paid], (PaymentReceivable - PaymentPaid) as [Balance] FROM Agent WHERE PaymentReceivable > 0";
+                    break;
+                case "Trial Balance":
+                    query = "SELECT AccountName as Account, OpeningBalance as [Opening], CurrentBalance as [Current Balance] FROM Account";
+                    break;
+                case "Office Expenses":
+                    query = "SELECT OfficeExpDate as Date, OfficeExpDetail as Detail, OfficeExpAmount as Amount, OfficeExpPaidBy as [Paid By] FROM OfficeExp WHERE OfficeExpDate >= @from AND OfficeExpDate <= @to";
+                    break;
+                case "Misc. Auto Expenses":
+                    query = "SELECT Chassis, MiscExpDate as Date, MiscExpAmount as Amount, MiscExpDetail as Detail, MiscExpPaidBy as [Paid By] FROM MiscExp WHERE MiscExpDate >= @from AND MiscExpDate <= @to";
+                    break;
+                case "Duty Expenses":
+                    query = "SELECT Chassis, DutyExpDate as Date, DutyExpAmount as Amount, DutyExpDetail as Detail, DutyExpAgent as Agent, DutyExpPaidBy as [Paid By] FROM DutyExp WHERE DutyExpDate >= @from AND DutyExpDate <= @to";
+                    break;
+                case "Receipts":
+                    query = "SELECT ReceiptDate as Date, ReceiptAmount as Amount, ReceiptDetail as Detail, ReceivedIn as [Received In], ReceivedFrom as [Received From] FROM Receipt WHERE ReceiptDate >= @from AND ReceiptDate <= @to";
+                    break;
+                case "Yen Payments":
+                    query = "SELECT PaymentDate as Date, PaymentAmountYen as [Amount (Yen)], PaymentExcRate as Rate, PaymentAmountPkr as [Amount (PKR)], PaymentDetail as Detail, PaidFrom as Account FROM Payment WHERE PaymentDate >= @from AND PaymentDate <= @to";
+                    break;
+                case "Party Payments":
+                    query = "SELECT PaymentDate as Date, PaymentAmount as Amount, PaymentDetail as Detail, PaidFrom as [From Account], PaidTo as Customer FROM PaymentPkr WHERE PaymentDate >= @from AND PaymentDate <= @to";
+                    break;
+                case "Agent Payments":
+                    query = "SELECT PaymentDate as Date, PaymentAmount as Amount, PaymentDetail as Detail, PaidFrom as [From Account], PaidTo as Agent FROM PaymentAgent WHERE PaymentDate >= @from AND PaymentDate <= @to";
+                    break;
+                default:
+                    query = "SELECT AccountName as Name, CurrentBalance as [Balance] FROM Account";
+                    break;
             }
-            return ExecuteQuery(query, new Dictionary<string, object> { { "@from", fromDate.ToString("yyyy-MM-dd") }, { "@to", toDate.ToString("yyyy-MM-dd") } });
+            return ExecuteQuery(query, new Dictionary<string, object> { { "@from", from }, { "@to", to } });
         }
 
         public void WithdrawProfit(double amount, string accountName, string detail)

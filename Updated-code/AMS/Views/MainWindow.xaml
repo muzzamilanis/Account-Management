@@ -56,7 +56,7 @@
                             <TextBlock Text="&#x00A5; Rate:" Foreground="{StaticResource TextSecondary}"
                                        FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
                             <TextBox x:Name="TxtExcRate" Width="80"
-                                     Text="{Binding ExchangeRate, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding ExchangeRate, UpdateSourceTrigger=PropertyChanged, StringFormat='0', FallbackValue='0', TargetNullValue='0'}"
                                      VerticalAlignment="Center" Height="26" FontWeight="Bold"
                                      Foreground="{StaticResource AccentBrush}" Background="Transparent"
                                      BorderThickness="0" FontSize="13"/>
@@ -915,29 +915,90 @@
                             <!-- Report controls toolbar -->
                             <Border DockPanel.Dock="Top" Background="{StaticResource bg1}"
                                     BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1" Padding="16,10">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Report:" VerticalAlignment="Center"
                                                Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
-                                    <ComboBox x:Name="ComboReport" Width="220"
+                                    <ComboBox x:Name="ComboReport" Width="200" Margin="0,0,16,0"
                                               SelectionChanged="ComboReport_SelectionChanged"/>
                                     <TextBlock Text="From:" VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextSecondary}" Margin="16,0,8,0"/>
-                                    <DatePicker x:Name="DpReportFrom" Width="130"
+                                               Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
+                                    <DatePicker x:Name="DpReportFrom" Width="130" Margin="0,0,12,0"
                                                 SelectedDate="2017-01-01"/>
                                     <TextBlock Text="To:" VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextSecondary}" Margin="12,0,8,0"/>
-                                    <DatePicker x:Name="DpReportTo" Width="130"/>
-                                    <Button Content="&#x25B6; Generate" Margin="16,0,0,0"
+                                               Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
+                                    <DatePicker x:Name="DpReportTo" Width="130" Margin="0,0,16,0"/>
+                                    <Button Content="&#x25B6; Generate" Margin="0,0,8,0"
                                             Click="BtnGenerateReport_Click"/>
                                     <Button Content="&#x1F5A8; Print" Style="{StaticResource OutlineButton}"
                                             x:Name="BtnPrint" IsEnabled="False" Click="BtnPrint_Click"/>
-                                </StackPanel>
+                                </WrapPanel>
                             </Border>
-                            <!-- Report viewer -->
-                            <FlowDocumentScrollViewer x:Name="ReportViewer"
-                                                       VerticalScrollBarVisibility="Auto"
-                                                       HorizontalScrollBarVisibility="Auto"
-                                                       Background="White"/>
+
+                            <!-- Report area: empty state + viewer -->
+                            <Grid>
+                                <!-- Empty state -->
+                                <StackPanel x:Name="PnlReportEmpty"
+                                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                                            Visibility="Visible">
+                                    <TextBlock Text="&#x1F4CA;" FontSize="64" HorizontalAlignment="Center"
+                                               Margin="0,0,0,16" Opacity="0.4"/>
+                                    <TextBlock Text="No Report Generated"
+                                               FontSize="20" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Select a report type, set the date range, then click Generate."
+                                               FontSize="12" Foreground="{StaticResource TextMuted}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Border Background="#1A38BDF8" BorderBrush="{StaticResource AccentBrush}"
+                                                BorderThickness="1" CornerRadius="6" Padding="12,8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="1. Choose report   " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                                                <TextBlock Text="2. Set dates   " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                                                <TextBlock Text="3. Click " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
+                                                <TextBlock Text="Generate" Foreground="{StaticResource AccentBrush}" FontSize="11" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Report viewer -->
+                                <Border x:Name="PnlReportViewer" Margin="16" Visibility="Collapsed"
+                                        Background="White" CornerRadius="8"
+                                        BorderBrush="{StaticResource bg3}" BorderThickness="1">
+                                    <DockPanel>
+                                        <!-- Report header bar -->
+                                        <Border DockPanel.Dock="Top"
+                                                Background="{StaticResource bg1}"
+                                                BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1"
+                                                CornerRadius="8,8,0,0" Padding="16,10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="&#x1F4C4; " FontSize="14"
+                                                               Foreground="{StaticResource AccentBrush}"/>
+                                                    <TextBlock x:Name="TxtReportTitle" FontSize="14" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource AccentBrush}"/>
+                                                    <TextBlock x:Name="TxtReportCount" FontSize="11"
+                                                               Foreground="{StaticResource TextMuted}"
+                                                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1" x:Name="TxtReportDate" FontSize="10"
+                                                           Foreground="{StaticResource TextMuted}"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <FlowDocumentScrollViewer x:Name="ReportViewer"
+                                                                   VerticalScrollBarVisibility="Auto"
+                                                                   HorizontalScrollBarVisibility="Auto"
+                                                                   Background="White"
+                                                                   Padding="0"/>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
                         </DockPanel>
                     </Grid>
                 </Grid>

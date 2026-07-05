@@ -290,6 +290,16 @@ namespace AMS.Views
                 var doc = ReportService.Instance.BuildReport(reportType, company, data);
                 ReportViewer.Document = doc;
                 BtnPrint.IsEnabled = true;
+
+                // Show viewer, hide empty state
+                PnlReportEmpty.Visibility = Visibility.Collapsed;
+                PnlReportViewer.Visibility = Visibility.Visible;
+
+                // Update header labels
+                TxtReportTitle.Text = reportType;
+                TxtReportCount.Text = $"({data.Rows.Count} record{(data.Rows.Count != 1 ? "s" : "")})"; 
+                TxtReportDate.Text = $"Generated: {DateTime.Now:dd MMM yyyy  HH:mm}";
+
                 TxtStatus.Text = $"Report generated: {reportType} ({data.Rows.Count} records)";
             }
             catch (Exception ex) { MessageBox.Show($"Error generating report:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
