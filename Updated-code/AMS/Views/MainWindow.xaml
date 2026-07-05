@@ -5,7 +5,7 @@
         Title="Auto Management System"
         WindowState="Maximized"
         MinWidth="900" MinHeight="600"
-        Background="{StaticResource bg2}">
+        Background="{DynamicResource BaseBg}">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -19,8 +19,8 @@
         </Grid.RowDefinitions>
 
         <!-- ══ TOP HEADER BAR ══ -->
-        <Border Grid.Row="0" Background="{StaticResource bg1}"
-                BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1">
+        <Border Grid.Row="0" Background="{DynamicResource PrimaryBg}" TextElement.Foreground="{DynamicResource PrimaryFg}"
+                BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1">
             <Grid Margin="20,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -39,18 +39,28 @@
                         <TextBlock x:Name="TxtCompanyName"
                                    Text="{Binding CompanyName}"
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource AccentBrush}"
+                                   Foreground="{DynamicResource AccentBrush}"
                                    />
                         <TextBlock Text="Auto Dealership Accounts System"
-                                   FontSize="10" Foreground="{StaticResource TextMuted}"
-                                   />
+                                   FontSize="10" Foreground="#A0FFFFFF" />
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Right: Actions -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="&#x2699; Settings" Style="{StaticResource OutlineButton}"
-                            Command="{Binding OpenCompanySettingsCommand}" FontSize="11"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" TextElement.Foreground="{DynamicResource PrimaryFg}">
+                    <TextBlock Text="Theme:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox x:Name="CmbTheme" Width="100" Margin="0,0,12,0" SelectionChanged="CmbTheme_SelectionChanged">
+                        <ComboBoxItem Content="Original" IsSelected="True"/>
+                        <ComboBoxItem Content="ModernBlue"/>
+                        <ComboBoxItem Content="Classic"/>
+                    </ComboBox>
+                    
+                    <CheckBox x:Name="ChkDarkMode" Content="Dark Mode" VerticalAlignment="Center" Margin="0,0,16,0"
+                              Foreground="{DynamicResource PrimaryFg}" Click="ChkDarkMode_Click"/>
+                    
+                    <Button Content="&#x2699; Settings" Style="{DynamicResource OutlineButton}"
+                            Foreground="{DynamicResource PrimaryFg}" BorderBrush="{DynamicResource PrimaryFg}"
+                            Command="{Binding OpenCompanySettingsCommand}" FontSize="12"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -67,22 +77,22 @@
                                        Margin="0,0,0,20"/>
                             <TextBlock Text="{Binding CompanyName}"
                                        FontSize="28" FontWeight="Bold"
-                                       Foreground="{StaticResource AccentBrush}"
+                                       Foreground="{DynamicResource AccentBrush}"
                                        HorizontalAlignment="Center" Margin="0,0,0,6"/>
                             <TextBlock Text="Auto Dealership Accounts Manager"
-                                       FontSize="14" Foreground="{StaticResource TextSecondary}"
+                                       FontSize="14" Foreground="{DynamicResource BaseSecondaryFg}"
                                        HorizontalAlignment="Center" Margin="0,0,0,32"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button x:Name="BtnCreateDb" Content="&#x2795;  Create New Database"
                                         Width="200" Height="44" FontSize="13" Click="BtnCreateDb_Click"/>
                                 <Button x:Name="BtnOpenDb" Content="&#x1F4C2;  Open Existing Database"
-                                        Style="{StaticResource OutlineButton}"
+                                        Style="{DynamicResource OutlineButton}"
                                         Width="210" Height="44" FontSize="13" Margin="12,0,0,0"
                                         Click="BtnOpenDb_Click"/>
                             </StackPanel>
                             <TextBlock x:Name="TxtDbStatus" Margin="0,20,0,0"
                                        HorizontalAlignment="Center" FontSize="12"
-                                       Foreground="{StaticResource SuccessBrush}"
+                                       Foreground="{DynamicResource SuccessBrush}"
                                        Visibility="Collapsed"/>
                         </StackPanel>
                         </Grid>
@@ -93,31 +103,31 @@
                         <Grid x:Name="PageAccounts">
                         <DockPanel>
                             <!-- Sub-nav tabs -->
-                            <Border DockPanel.Dock="Top" Background="{StaticResource bg1}"
-                                    BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1">
+                            <Border DockPanel.Dock="Top" Background="{DynamicResource PrimaryBg}"
+                                    BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                                     <StackPanel Orientation="Horizontal" Margin="16,0">
                                         <RadioButton x:Name="TabCashBank" Content="Cash/Bank" GroupName="AccTab"
-                                                     IsChecked="True" Style="{StaticResource NavItemStyle}"
+                                                     IsChecked="True" Style="{DynamicResource NavItemStyle}"
                                                      Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabTransfer" Content="A/c Transfer" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabMisc" Content="Misc Expense" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabDuty" Content="Duty Payments" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabOfficeExp" Content="Office Expense" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabReceipts" Content="Receipts" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabYen" Content="Yen Payments" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabParty" Content="Party Payments" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabAgent" Content="Agent Payments" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                         <RadioButton x:Name="TabProfit" Content="Profit Withdrawal" GroupName="AccTab"
-                                                     Style="{StaticResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
                                     </StackPanel>
                                 </ScrollViewer>
                             </Border>
@@ -145,11 +155,11 @@
                                         <Button Content="&#x2795; Add Account" x:Name="BtnAddAccount"
                                                 Click="BtnAddAccount_Click"/>
                                         <Button Content="&#x270F; Edit Selected" x:Name="BtnEditAccount"
-                                                Style="{StaticResource OutlineButton}" IsEnabled="False"
+                                                Style="{DynamicResource OutlineButton}" IsEnabled="False"
                                                 Click="BtnEditAccount_Click"/>
-                                        <Separator Width="1" Height="24" Margin="8,0" Background="{StaticResource bg3}"/>
+                                        <Separator Width="1" Height="24" Margin="8,0" Background="{DynamicResource BaseBorder}"/>
                                         <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,8,0"
-                                                   Foreground="{StaticResource TextSecondary}"/>
+                                                   Foreground="{DynamicResource BaseSecondaryFg}"/>
                                         <TextBox x:Name="TxtAccFilter" Width="180" Height="28"
                                                  TextChanged="TxtAccFilter_TextChanged"/>
                                     </StackPanel>
@@ -159,17 +169,17 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <!-- Account list -->
-                                        <Border Style="{StaticResource CardBorder}" Margin="0,8,8,0">
+                                        <Border Style="{DynamicResource CardBorder}" Margin="0,8,8,0">
                                             <DockPanel>
                                                 <TextBlock DockPanel.Dock="Top" Text="Accounts"
-                                                           Style="{StaticResource SectionHeader}"/>
+                                                           Style="{DynamicResource SectionHeader}"/>
                                                 <ListBox x:Name="LstAccounts" SelectionChanged="LstAccounts_SelectionChanged">
                                                     <ListBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <StackPanel>
                                                                 <TextBlock Text="{Binding AccountName}" FontWeight="SemiBold"/>
                                                                 <TextBlock Text="{Binding AccountType}"
-                                                                           Foreground="{StaticResource TextMuted}" FontSize="10"/>
+                                                                           Foreground="{DynamicResource BaseMutedFg}" FontSize="10"/>
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </ListBox.ItemTemplate>
@@ -177,10 +187,10 @@
                                             </DockPanel>
                                         </Border>
                                         <!-- Account Detail -->
-                                        <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="0,8,0,0"
+                                        <Border Grid.Column="1" Style="{DynamicResource CardBorder}" Margin="0,8,0,0"
                                                 DataContext="{Binding SelectedItem, ElementName=LstAccounts}">
                                             <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
-                                                <TextBlock Text="Account Details" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock Text="Account Details" Style="{DynamicResource SectionHeader}"/>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="140"/>
@@ -197,23 +207,23 @@
                                                         <RowDefinition Height="32"/>
                                                         <RowDefinition Height="32"/>
                                                     </Grid.RowDefinitions>
-                                                    <TextBlock Grid.Row="0" Text="Type:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="0" Text="Type:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AccountType}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="1" Text="Name:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="1" Text="Name:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AccountName}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="2" Text="Account No:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="2" Text="Account No:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AccountNumber}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="3" Text="Title:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="3" Text="Title:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding AccountTitle}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="4" Text="Bank:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="4" Text="Bank:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding BankName}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="5" Text="Branch:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="5" Text="Branch:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding BankBranch}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="6" Text="Opening Balance:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="6" Text="Opening Balance:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding OpeningBalance, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                                    <TextBlock Grid.Row="7" Text="Current Balance:" Foreground="{StaticResource TextSecondary}"/>
+                                                    <TextBlock Grid.Row="7" Text="Current Balance:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                                     <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding CurrentBalance, StringFormat='N2'}"
-                                                               FontWeight="Bold" FontSize="15" Foreground="{StaticResource AccentBrush}"/>
+                                                               FontWeight="Bold" FontSize="15" Foreground="{DynamicResource AccentBrush}"/>
                                                 </Grid>
                                             </StackPanel>
                                         </Border>
@@ -236,9 +246,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x21C4; New Transfer" Click="BtnNewTransfer_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Account Transfers" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Account Transfers" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridTransfers" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -269,9 +279,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Misc Expense" Click="BtnNewMiscExp_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Misc Auto Expenses" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Misc Auto Expenses" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridMiscExp" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
@@ -302,9 +312,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Duty Expense" Click="BtnNewDutyExp_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Duty Expenses" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Duty Expenses" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridDutyExp" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
@@ -336,9 +346,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Office Expense" Click="BtnNewOfficeExp_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Office Expenses" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Office Expenses" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridOfficeExp" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding OfficeExpDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -368,9 +378,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Receipt" Click="BtnNewReceipt_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Receipts" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Receipts" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridReceipts" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding ReceiptDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -401,9 +411,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Yen Payment" Click="BtnNewYenPayment_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Yen Payments" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Yen Payments" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridYenPayments" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -435,9 +445,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Party Payment" Click="BtnNewPkrPayment_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Party Payments" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Party Payments" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridPkrPayments" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -468,9 +478,9 @@
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                             <Button Content="&#x2795; New Agent Payment" Click="BtnNewAgentPayment_Click"/>
                                         </StackPanel>
-                                        <Border Style="{StaticResource CardBorder}">
+                                        <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Agent Payments" Style="{StaticResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Agent Payments" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridAgentPayments" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -500,9 +510,9 @@
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40">
                                         <TextBlock Text="&#x1F4B8;" FontSize="56" HorizontalAlignment="Center" Margin="0,0,0,16"/>
                                         <TextBlock Text="Total Profit Available" FontSize="13"
-                                                   Foreground="{StaticResource TextSecondary}" HorizontalAlignment="Center"/>
+                                                   Foreground="{DynamicResource BaseSecondaryFg}" HorizontalAlignment="Center"/>
                                         <TextBlock x:Name="TxtTotalProfit" FontSize="32" FontWeight="Bold"
-                                                   Foreground="{StaticResource SuccessBrush}" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center"
                                                    Margin="0,8,0,24"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="Amount to Withdraw:" VerticalAlignment="Center" Margin="0,0,12,0"/>
@@ -524,11 +534,11 @@
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Stock" Click="BtnAddStock_Click"/>
-                                <Button Content="&#x270F; Edit" Style="{StaticResource OutlineButton}"
+                                <Button Content="&#x270F; Edit" Style="{DynamicResource OutlineButton}"
                                         x:Name="BtnEditStock" IsEnabled="False" Click="BtnEditStock_Click"/>
-                                <Separator Width="1" Height="24" Margin="8,0" Background="{StaticResource bg3}"/>
+                                <Separator Width="1" Height="24" Margin="8,0" Background="{DynamicResource BaseBorder}"/>
                                 <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,8,0"
-                                           Foreground="{StaticResource TextSecondary}"/>
+                                           Foreground="{DynamicResource BaseSecondaryFg}"/>
                                 <TextBox x:Name="TxtStockFilter" Width="180" Height="28"
                                          TextChanged="TxtStockFilter_TextChanged"/>
                             </StackPanel>
@@ -537,25 +547,25 @@
                                     <ColumnDefinition Width="220"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Style="{StaticResource CardBorder}" Margin="0,0,8,0">
+                                <Border Style="{DynamicResource CardBorder}" Margin="0,0,8,0">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top" Text="Inventory" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock DockPanel.Dock="Top" Text="Inventory" Style="{DynamicResource SectionHeader}"/>
                                         <ListBox x:Name="LstStocks" SelectionChanged="LstStocks_SelectionChanged">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <TextBlock Text="{Binding Chassis}" FontWeight="SemiBold"/>
-                                                        <TextBlock Text="{Binding Model}" Foreground="{StaticResource TextMuted}" FontSize="10"/>
+                                                        <TextBlock Text="{Binding Model}" Foreground="{DynamicResource BaseMutedFg}" FontSize="10"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
                                     </DockPanel>
                                 </Border>
-                                <Border Grid.Column="1" Style="{StaticResource CardBorder}"
+                                <Border Grid.Column="1" Style="{DynamicResource CardBorder}"
                                         DataContext="{Binding SelectedItem, ElementName=LstStocks}">
                                     <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
-                                        <TextBlock Text="Stock Details" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock Text="Stock Details" Style="{DynamicResource SectionHeader}"/>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="160"/>
@@ -572,34 +582,34 @@
                                                 <RowDefinition Height="30"/>
                                                 <RowDefinition Height="30"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Text="Chassis No:" Foreground="{StaticResource TextSecondary}"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Chassis}" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
-                                            <TextBlock Grid.Column="2" Text="Model:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Text="Chassis No:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Chassis}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                                            <TextBlock Grid.Column="2" Text="Model:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Column="3" Text="{Binding Model}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="1" Text="Color:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="1" Text="Color:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Color}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Status:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Status:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Status}" FontWeight="Bold"
                                                        Foreground="{Binding Status, Converter={StaticResource StatusColor}}"/>
-                                            <TextBlock Grid.Row="2" Text="Price (Yen):" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="2" Text="Price (Yen):" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PriceYen, StringFormat='N0'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Rate:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Rate:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Rate, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="3" Text="Price (PKR):" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="3" Text="Price (PKR):" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PricePkr, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Duty:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Duty:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Duty, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="4" Text="Misc Expense:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="4" Text="Misc Expense:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MiscExpense, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="2" Text="Total Cost:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="4" Grid.Column="2" Text="Total Cost:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding Cost, StringFormat='N2'}"
-                                                       FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
-                                            <TextBlock Grid.Row="5" Text="Paid (Yen):" Foreground="{StaticResource TextSecondary}"/>
+                                                       FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                                            <TextBlock Grid.Row="5" Text="Paid (Yen):" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PaidYen, StringFormat='N0'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="2" Text="Bal. Yen:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="2" Text="Bal. Yen:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding BalanceYen, StringFormat='N0'}"
-                                                       FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
-                                            <TextBlock Grid.Row="6" Text="Comments:" Foreground="{StaticResource TextSecondary}"/>
+                                                       FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
+                                            <TextBlock Grid.Row="6" Text="Comments:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comments}" TextWrapping="Wrap"/>
                                         </Grid>
                                     </StackPanel>
@@ -615,11 +625,11 @@
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Customer" Click="BtnAddCust_Click"/>
-                                <Button Content="&#x270F; Edit" Style="{StaticResource OutlineButton}"
+                                <Button Content="&#x270F; Edit" Style="{DynamicResource OutlineButton}"
                                         x:Name="BtnEditCust" IsEnabled="False" Click="BtnEditCust_Click"/>
-                                <Separator Width="1" Height="24" Margin="8,0" Background="{StaticResource bg3}"/>
+                                <Separator Width="1" Height="24" Margin="8,0" Background="{DynamicResource BaseBorder}"/>
                                 <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,8,0"
-                                           Foreground="{StaticResource TextSecondary}"/>
+                                           Foreground="{DynamicResource BaseSecondaryFg}"/>
                                 <TextBox x:Name="TxtCustFilter" Width="180" Height="28"
                                          TextChanged="TxtCustFilter_TextChanged"/>
                             </StackPanel>
@@ -628,25 +638,25 @@
                                     <ColumnDefinition Width="220"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Style="{StaticResource CardBorder}" Margin="0,0,8,0">
+                                <Border Style="{DynamicResource CardBorder}" Margin="0,0,8,0">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top" Text="Customers" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock DockPanel.Dock="Top" Text="Customers" Style="{DynamicResource SectionHeader}"/>
                                         <ListBox x:Name="LstCust" SelectionChanged="LstCust_SelectionChanged">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <TextBlock Text="{Binding FullName}" FontWeight="SemiBold"/>
-                                                        <TextBlock Text="{Binding Phone}" Foreground="{StaticResource TextMuted}" FontSize="10"/>
+                                                        <TextBlock Text="{Binding Phone}" Foreground="{DynamicResource BaseMutedFg}" FontSize="10"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
                                     </DockPanel>
                                 </Border>
-                                <Border Grid.Column="1" Style="{StaticResource CardBorder}"
+                                <Border Grid.Column="1" Style="{DynamicResource CardBorder}"
                                         DataContext="{Binding SelectedItem, ElementName=LstCust}">
                                     <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
-                                        <TextBlock Text="Customer Details" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock Text="Customer Details" Style="{DynamicResource SectionHeader}"/>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="150"/>
@@ -660,20 +670,20 @@
                                                 <RowDefinition Height="30"/>
                                                 <RowDefinition Height="30"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Text="Full Name:" Foreground="{StaticResource TextSecondary}"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding FullName}" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" FontSize="15"/>
-                                            <TextBlock Grid.Row="1" Text="CNIC:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Text="Full Name:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding FullName}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" FontSize="15"/>
+                                            <TextBlock Grid.Row="1" Text="CNIC:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CNIC}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="2" Text="Phone:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="2" Text="Phone:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Phone}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="3" Text="Address:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="3" Text="Address:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Address}" TextWrapping="Wrap"/>
-                                            <TextBlock Grid.Row="4" Text="Payment Received:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="4" Text="Payment Received:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceived, StringFormat='PKR N2'}"
-                                                       FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
-                                            <TextBlock Grid.Row="5" Text="Payment Receivable:" Foreground="{StaticResource TextSecondary}"/>
+                                                       FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
+                                            <TextBlock Grid.Row="5" Text="Payment Receivable:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR N2'}"
-                                                       FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
+                                                       FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
                                         </Grid>
                                     </StackPanel>
                                 </Border>
@@ -688,11 +698,11 @@
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,10,16,0">
                                 <Button Content="&#x2795; Add Agent" Click="BtnAddAgent_Click"/>
-                                <Button Content="&#x270F; Edit" Style="{StaticResource OutlineButton}"
+                                <Button Content="&#x270F; Edit" Style="{DynamicResource OutlineButton}"
                                         x:Name="BtnEditAgent" IsEnabled="False" Click="BtnEditAgent_Click"/>
-                                <Separator Width="1" Height="24" Margin="8,0" Background="{StaticResource bg3}"/>
+                                <Separator Width="1" Height="24" Margin="8,0" Background="{DynamicResource BaseBorder}"/>
                                 <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,8,0"
-                                           Foreground="{StaticResource TextSecondary}"/>
+                                           Foreground="{DynamicResource BaseSecondaryFg}"/>
                                 <TextBox x:Name="TxtAgentFilter" Width="180" Height="28"
                                          TextChanged="TxtAgentFilter_TextChanged"/>
                             </StackPanel>
@@ -701,25 +711,25 @@
                                     <ColumnDefinition Width="220"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Style="{StaticResource CardBorder}" Margin="0,0,8,0">
+                                <Border Style="{DynamicResource CardBorder}" Margin="0,0,8,0">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top" Text="Agents" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock DockPanel.Dock="Top" Text="Agents" Style="{DynamicResource SectionHeader}"/>
                                         <ListBox x:Name="LstAgent" SelectionChanged="LstAgent_SelectionChanged">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
-                                                        <TextBlock Text="{Binding Phone}" Foreground="{StaticResource TextMuted}" FontSize="10"/>
+                                                        <TextBlock Text="{Binding Phone}" Foreground="{DynamicResource BaseMutedFg}" FontSize="10"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
                                     </DockPanel>
                                 </Border>
-                                <Border Grid.Column="1" Style="{StaticResource CardBorder}"
+                                <Border Grid.Column="1" Style="{DynamicResource CardBorder}"
                                         DataContext="{Binding SelectedItem, ElementName=LstAgent}">
                                     <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
-                                        <TextBlock Text="Agent Details" Style="{StaticResource SectionHeader}"/>
+                                        <TextBlock Text="Agent Details" Style="{DynamicResource SectionHeader}"/>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="150"/>
@@ -732,17 +742,17 @@
                                                 <RowDefinition Height="30"/>
                                                 <RowDefinition Height="30"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Text="Name:" Foreground="{StaticResource TextSecondary}"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" FontSize="15"/>
-                                            <TextBlock Grid.Row="1" Text="CNIC:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Text="Name:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" FontSize="15"/>
+                                            <TextBlock Grid.Row="1" Text="CNIC:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CNIC}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="2" Text="Phone:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="2" Text="Phone:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Phone}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="3" Text="Address:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="3" Text="Address:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Address}" TextWrapping="Wrap"/>
-                                            <TextBlock Grid.Row="4" Text="Receivable:" Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Grid.Row="4" Text="Receivable:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR N2'}"
-                                                       FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
+                                                       FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
                                         </Grid>
                                     </StackPanel>
                                 </Border>
@@ -756,11 +766,11 @@
                         <DockPanel Margin="16">
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                 <Button Content="&#x2795; New Sale Entry" Click="BtnNewSale_Click"/>
-                                <Button Content="&#x1F504; Refresh" Style="{StaticResource OutlineButton}" Click="BtnRefreshSales_Click"/>
+                                <Button Content="&#x1F504; Refresh" Style="{DynamicResource OutlineButton}" Click="BtnRefreshSales_Click"/>
                             </StackPanel>
-                            <Border Style="{StaticResource CardBorder}">
+                            <Border Style="{DynamicResource CardBorder}">
                                 <DockPanel>
-                                    <TextBlock DockPanel.Dock="Top" Text="Sales History" Style="{StaticResource SectionHeader}"/>
+                                    <TextBlock DockPanel.Dock="Top" Text="Sales History" Style="{DynamicResource SectionHeader}"/>
                                     <DataGrid x:Name="GridSales" AutoGenerateColumns="False">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat='dd MMM yyyy'}" Width="100"/>
@@ -782,23 +792,23 @@
                         <Grid>
                         <DockPanel>
                             <!-- Report controls toolbar -->
-                            <Border DockPanel.Dock="Top" Background="{StaticResource bg1}"
-                                    BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1" Padding="16,10">
+                            <Border DockPanel.Dock="Top" Background="{DynamicResource PrimaryBg}"
+                                    BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1" Padding="16,10">
                                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Report:" VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
+                                               Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <ComboBox x:Name="ComboReport" Width="200" Margin="0,0,16,0"
                                               SelectionChanged="ComboReport_SelectionChanged"/>
                                     <TextBlock Text="From:" VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
+                                               Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportFrom" Width="130" Margin="0,0,12,0"
                                                 SelectedDate="2017-01-01"/>
                                     <TextBlock Text="To:" VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextSecondary}" Margin="0,0,8,0"/>
+                                               Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportTo" Width="130" Margin="0,0,16,0"/>
                                     <Button Content="&#x25B6; Generate" Margin="0,0,8,0"
                                             Click="BtnGenerateReport_Click"/>
-                                    <Button Content="&#x1F5A8; Print" Style="{StaticResource OutlineButton}"
+                                    <Button Content="&#x1F5A8; Print" Style="{DynamicResource OutlineButton}"
                                             x:Name="BtnPrint" IsEnabled="False" Click="BtnPrint_Click"/>
                                 </WrapPanel>
                             </Border>
@@ -813,19 +823,19 @@
                                                Margin="0,0,0,16" Opacity="0.4"/>
                                     <TextBlock Text="No Report Generated"
                                                FontSize="20" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextSecondary}"
+                                               Foreground="{DynamicResource BaseSecondaryFg}"
                                                HorizontalAlignment="Center" Margin="0,0,0,8"/>
                                     <TextBlock Text="Select a report type, set the date range, then click Generate."
-                                               FontSize="12" Foreground="{StaticResource TextMuted}"
+                                               FontSize="12" Foreground="{DynamicResource BaseMutedFg}"
                                                HorizontalAlignment="Center" Margin="0,0,0,24"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Border Background="#1A38BDF8" BorderBrush="{StaticResource AccentBrush}"
+                                        <Border Background="#1A38BDF8" BorderBrush="{DynamicResource AccentBrush}"
                                                 BorderThickness="1" CornerRadius="6" Padding="12,8">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="1. Choose report   " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
-                                                <TextBlock Text="2. Set dates   " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
-                                                <TextBlock Text="3. Click " Foreground="{StaticResource TextSecondary}" FontSize="11"/>
-                                                <TextBlock Text="Generate" Foreground="{StaticResource AccentBrush}" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="1. Choose report   " Foreground="{DynamicResource BaseSecondaryFg}" FontSize="11"/>
+                                                <TextBlock Text="2. Set dates   " Foreground="{DynamicResource BaseSecondaryFg}" FontSize="11"/>
+                                                <TextBlock Text="3. Click " Foreground="{DynamicResource BaseSecondaryFg}" FontSize="11"/>
+                                                <TextBlock Text="Generate" Foreground="{DynamicResource AccentBrush}" FontSize="11" FontWeight="Bold"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -834,12 +844,12 @@
                                 <!-- Report viewer -->
                                 <Border x:Name="PnlReportViewer" Margin="16" Visibility="Collapsed"
                                         Background="White" CornerRadius="8"
-                                        BorderBrush="{StaticResource bg3}" BorderThickness="1">
+                                        BorderBrush="{DynamicResource BaseBorder}" BorderThickness="1">
                                     <DockPanel>
                                         <!-- Report header bar -->
                                         <Border DockPanel.Dock="Top"
-                                                Background="{StaticResource bg1}"
-                                                BorderBrush="{StaticResource bg3}" BorderThickness="0,0,0,1"
+                                                Background="{DynamicResource PrimaryBg}"
+                                                BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1"
                                                 CornerRadius="8,8,0,0" Padding="16,10">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -848,15 +858,15 @@
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="&#x1F4C4; " FontSize="14"
-                                                               Foreground="{StaticResource AccentBrush}"/>
+                                                               Foreground="{DynamicResource AccentBrush}"/>
                                                     <TextBlock x:Name="TxtReportTitle" FontSize="14" FontWeight="SemiBold"
-                                                               Foreground="{StaticResource AccentBrush}"/>
+                                                               Foreground="{DynamicResource AccentBrush}"/>
                                                     <TextBlock x:Name="TxtReportCount" FontSize="11"
-                                                               Foreground="{StaticResource TextMuted}"
+                                                               Foreground="{DynamicResource BaseMutedFg}"
                                                                VerticalAlignment="Center" Margin="12,0,0,0"/>
                                                 </StackPanel>
                                                 <TextBlock Grid.Column="1" x:Name="TxtReportDate" FontSize="10"
-                                                           Foreground="{StaticResource TextMuted}"
+                                                           Foreground="{DynamicResource BaseMutedFg}"
                                                            VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
@@ -875,8 +885,8 @@
 
 
         <!-- ══ STATUS BAR ══ -->
-        <Border Grid.Row="2" Background="{StaticResource bg1}"
-                BorderBrush="{StaticResource bg3}" BorderThickness="0,1,0,0" Padding="16,0">
+        <Border Grid.Row="2" Background="{DynamicResource PrimaryBg}" TextElement.Foreground="{DynamicResource PrimaryFg}"
+                BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,1,0,0" Padding="16,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -888,7 +898,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="TxtStatus" VerticalAlignment="Center" FontSize="11"
-                           Foreground="{StaticResource TextMuted}" Text="Ready — Open or create a database to begin"/>
+                           Foreground="#A0FFFFFF" Text="Ready — Open or create a database to begin"/>
                 
                 <!-- Classic Exchange Rate UX -->
                 <WrapPanel Grid.Column="1" Name="WrapExcEdit" Visibility="Collapsed" VerticalAlignment="Center" Margin="20,0,0,0">
@@ -906,7 +916,7 @@
                 </StackPanel>
 
                 <TextBlock Grid.Column="6" VerticalAlignment="Center" FontSize="10"
-                           Foreground="{StaticResource TextMuted}" Text="Powered by Soft-Tech Solutions"/>
+                           Foreground="#A0FFFFFF" Text="Powered by Soft-Tech Solutions"/>
             </Grid>
         </Border>
     </Grid>

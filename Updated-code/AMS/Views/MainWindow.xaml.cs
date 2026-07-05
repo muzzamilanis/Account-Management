@@ -337,6 +337,25 @@ namespace AMS.Views
             PnlExcView.Visibility = Visibility.Visible;
         }
 
+        private void CmbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) return;
+            var selectedTheme = (CmbTheme.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            if (selectedTheme != null)
+            {
+                ThemeManager.Instance.ApplyTheme(selectedTheme, ChkDarkMode.IsChecked == true);
+            }
+        }
+
+        private void ChkDarkMode_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedTheme = (CmbTheme.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            if (selectedTheme != null)
+            {
+                ThemeManager.Instance.ApplyTheme(selectedTheme, ChkDarkMode.IsChecked == true);
+            }
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             DatabaseService.Instance.CloseConnection();

@@ -10,6 +10,8 @@ namespace AMS
         {
             base.OnStartup(e);
 
+            ThemeManager.Instance.ApplyTheme("Original", false);
+
             // Prevent app from shutting down when the login window closes
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
