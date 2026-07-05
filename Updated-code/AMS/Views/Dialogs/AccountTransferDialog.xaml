@@ -1,0 +1,32 @@
+<Window x:Class="AMS.Views.Dialogs.AccountTransferDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Account Transfer" Height="300" Width="400"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource bg2}">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="20,14">
+            <TextBlock Text="Account to Account Transfer" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+        </Border>
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="16,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Transfer" Command="{Binding SaveCommand}"/>
+                <Button Content="Cancel" Style="{StaticResource OutlineButton}" Command="{Binding CancelCommand}"/>
+            </StackPanel>
+        </Border>
+        <ScrollViewer Padding="24,16">
+            <StackPanel>
+                <TextBlock Text="DATE" Style="{StaticResource FieldLabel}"/>
+                <DatePicker SelectedDate="{Binding Transfer.Date}" Margin="0,4,0,14"/>
+                <TextBlock Text="CREDIT FROM" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding CreditFrom}" Margin="0,4,0,14"/>
+                <TextBlock Text="DEBIT TO" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding DebitTo}" Margin="0,4,0,14"/>
+                <TextBlock Text="AMOUNT" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Transfer.Amount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Transfer.Detail, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
