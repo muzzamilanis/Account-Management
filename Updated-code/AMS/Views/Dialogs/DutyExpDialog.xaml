@@ -1,0 +1,34 @@
+<Window x:Class="AMS.Views.Dialogs.DutyExpDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Duty Expense" Height="380" Width="400"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource bg2}">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="20,14">
+            <TextBlock Text="Duty Expense" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+        </Border>
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="16,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Enter Expense" Command="{Binding SaveCommand}"/>
+                <Button Content="Cancel" Style="{StaticResource OutlineButton}" Command="{Binding CancelCommand}"/>
+            </StackPanel>
+        </Border>
+        <ScrollViewer Padding="24,16">
+            <StackPanel>
+                <TextBlock Text="CHASSIS" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Chassis}" SelectedItem="{Binding SelectedChassis}" Margin="0,4,0,14"/>
+                <TextBlock Text="DATE" Style="{StaticResource FieldLabel}"/>
+                <DatePicker SelectedDate="{Binding Exp.DutyExpDate}" Margin="0,4,0,14"/>
+                <TextBlock Text="AMOUNT" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Exp.DutyExpAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Exp.DutyExpDetail, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="AGENT" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Agents}" SelectedItem="{Binding SelectedAgent}" Margin="0,4,0,14"/>
+                <TextBlock Text="PAID FROM ACCOUNT" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

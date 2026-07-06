@@ -1,85 +1,86 @@
 <!--Class 'Autos_Accounts.AddAccount' has IComponentConnector.Connect method, but cannot be parsed.-->
 <Window
-	x:Class="Autos_Accounts.AddAccount" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Autos_Accounts"
-	Title="Add Account"
-	Height="350"
-	Width="300"
-	ResizeMode="NoResize"
-	WindowStartupLocation="CenterScreen"
-	Background="{StaticResource bg2}">
-	<Grid>
-		<DockPanel
-			Name="dockAddAccounts">
-			<WrapPanel
-				DockPanel.Dock="Bottom"
-				HorizontalAlignment="Right"
-				Height="35">
-				<Button
-					Name="OK"
-					Content="OK"
-					Width="67"
-					IsDefault="True" />
-				<Button
-					Name="Cancel"
-					Content="Cancel"
-					Width="67"
-					IsCancel="True" />
-			</WrapPanel>
-			<TextBlock
-				Name="AccInfoText"
-				FontSize="16"
-				FontFamily="Segoe UI"
-				Margin="3"
-				Text="Add New Bank Account"
-				HorizontalAlignment="Center"
-				DockPanel.Dock="Top" />
-			<StackPanel
-				DockPanel.Dock="Top">
-				<WrapPanel>
-					<Label>A/c Type:</Label>
-					<ComboBox
-						Name="comboAcctype"
-						SelectedValuePath="Content">
-						<ComboBoxItem
-							IsSelected="True">Bank</ComboBoxItem>
-						<ComboBoxItem>Cash</ComboBoxItem>
-					</ComboBox>
-				</WrapPanel>
-				<WrapPanel>
-					<Label>A/c Name:</Label>
-					<TextBox
-						Name="txtAccName" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Balance Amount:</Label>
-					<TextBox
-						Name="txtAccBalance"
-						ContextMenu="{x:Null}" />
-				</WrapPanel>
-			</StackPanel>
-			<StackPanel
-				Name="stpBank">
-				<WrapPanel>
-					<Label>Bank Name:</Label>
-					<TextBox
-						Name="BankName" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Bank Branch:</Label>
-					<TextBox
-						Name="BankBranch" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>A/c No.</Label>
-					<TextBox
-						Name="txtAccNum" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>A/c Title</Label>
-					<TextBox
-						Name="txtAccTitle" />
-				</WrapPanel>
-			</StackPanel>
-		</DockPanel>
-	</Grid>
+    x:Class="Autos_Accounts.AddAccount"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Autos_Accounts"
+    Title="Add Account"
+    Height="400" Width="360"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    Background="{StaticResource bg1}">
+
+    <Border Margin="0" Background="{StaticResource bg2}" CornerRadius="0">
+        <DockPanel Name="dockAddAccounts" LastChildFill="True">
+
+            <!-- Title Header -->
+            <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="18 14">
+                <StackPanel>
+                    <TextBlock Name="AccInfoText"
+                               Text="Add New Bank Account"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{StaticResource AccentBrush}"
+                               FontFamily="Segoe UI Variable, Segoe UI"/>
+                    <Rectangle Height="1.5" Margin="0 8 0 0">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#38BDF8" Offset="0"/>
+                                <GradientStop Color="#0F172A" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </StackPanel>
+            </Border>
+
+            <!-- Footer Buttons -->
+            <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="12 10">
+                <WrapPanel HorizontalAlignment="Right">
+                    <Button Name="OK" Content="Save Account" Width="110" IsDefault="True"/>
+                    <Button Name="Cancel" Content="Cancel" Width="80" IsCancel="True"
+                            Style="{StaticResource OutlineButton}"/>
+                </WrapPanel>
+            </Border>
+
+            <!-- Form Body -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16 8">
+                <StackPanel>
+                    <WrapPanel>
+                        <Label>A/c Type:</Label>
+                        <ComboBox Name="comboAcctype" SelectedValuePath="Content">
+                            <ComboBoxItem IsSelected="True">Bank</ComboBoxItem>
+                            <ComboBoxItem>Cash</ComboBoxItem>
+                        </ComboBox>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <Label>A/c Name:</Label>
+                        <TextBox Name="txtAccName"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <Label>Balance Amount:</Label>
+                        <TextBox Name="txtAccBalance" ContextMenu="{x:Null}"/>
+                    </WrapPanel>
+                    <StackPanel Name="stpBank">
+                        <WrapPanel>
+                            <Label>Bank Name:</Label>
+                            <TextBox Name="BankName"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <Label>Bank Branch:</Label>
+                            <TextBox Name="BankBranch"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <Label>A/c No.</Label>
+                            <TextBox Name="txtAccNum"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <Label>A/c Title</Label>
+                            <TextBox Name="txtAccTitle"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
 </Window>

@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="BaseBg" Color="#18181b"/>
+    <SolidColorBrush x:Key="BaseAltBg" Color="#27272a"/>
+    <SolidColorBrush x:Key="BaseBorder" Color="#3f3f46"/>
+    
+    <SolidColorBrush x:Key="BaseFg" Color="#f4f4f5"/>
+    <SolidColorBrush x:Key="BaseSecondaryFg" Color="#a1a1aa"/>
+    <SolidColorBrush x:Key="BaseMutedFg" Color="#71717a"/>
+
+    <SolidColorBrush x:Key="DangerBrush" Color="#ef4444"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="#22c55e"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="#f59e0b"/>
+</ResourceDictionary>

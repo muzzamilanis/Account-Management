@@ -1,80 +1,77 @@
 <!--Class 'Autos_Accounts.PaymentAgentEntry' has IComponentConnector.Connect method, but cannot be parsed.-->
 <Window
-	x:Class="Autos_Accounts.PaymentAgentEntry" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:local="clr-namespace:Autos_Accounts"
-	Title="PaymentAgentEntry"
-	Height="300"
-	Width="300"
-	WindowStartupLocation="CenterScreen"
-	ResizeMode="NoResize"
-	Background="{StaticResource bg2}">
-	<Grid>
-		<DockPanel
-			Name="dockSaleEntry">
-			<WrapPanel
-				DockPanel.Dock="Bottom"
-				HorizontalAlignment="Right"
-				Height="35">
-				<Button
-					Name="OK"
-					Content="OK"
-					Width="67"
-					IsDefault="True" />
-				<Button
-					Name="Cancel"
-					Content="Cancel"
-					Width="67"
-					IsCancel="True" />
-			</WrapPanel>
-			<TextBlock
-				Name="AccInfoText"
-				FontSize="16"
-				FontFamily="Segoe UI"
-				Margin="3"
-				Text="New Agent Payment Entry"
-				HorizontalAlignment="Center"
-				DockPanel.Dock="Top" />
-			<StackPanel
-				Name="UniPaymentAgentDetails"
-				VerticalAlignment="Top">
-				<WrapPanel>
-					<Label>Paying to:</Label>
-					<ComboBox
-						Name="comboPaymentAgent"
-						HorizontalAlignment="Left"
-						VerticalAlignment="Top"
-						ItemsSource="{Binding Agent}" />
-					<Button
-						Name="BtnAddAgentatPay"
-						Content="Add Agent"
-						Margin="5,0" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Date:</Label>
-					<DatePicker
-						Name="PaymentAgentdatePicker"
-						SelectedDateFormat="Short"
-						SelectedDate="{x:Static sys:DateTime.Now}" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Amount:</Label>
-					<TextBox
-						Name="txtPaymentAgentAmount"
-						ContextMenu="{x:Null}" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Detail:</Label>
-					<TextBox
-						Name="txtPaymentAgentDetail" />
-				</WrapPanel>
-				<WrapPanel>
-					<Label>Paying from:</Label>
-					<ComboBox
-						Name="comboPaymentAgentAccounts"
-						HorizontalAlignment="Left"
-						VerticalAlignment="Top"
-						ItemsSource="{Binding Accounts}" />
-				</WrapPanel>
-			</StackPanel>
-		</DockPanel>
-	</Grid>
+    x:Class="Autos_Accounts.PaymentAgentEntry"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:local="clr-namespace:Autos_Accounts"
+    Title="Agent Payment Entry"
+    Height="370" Width="380"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Background="{StaticResource bg1}">
+
+    <DockPanel Name="dockSaleEntry" LastChildFill="True">
+
+        <!-- Title Header -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="18 14">
+            <StackPanel>
+                <TextBlock Name="AccInfoText"
+                           Text="New Agent Payment Entry"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{StaticResource AccentBrush}"
+                           FontFamily="Segoe UI Variable, Segoe UI"/>
+                <Rectangle Height="1.5" Margin="0 8 0 0">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#38BDF8" Offset="0"/>
+                            <GradientStop Color="#0F172A" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer Buttons -->
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="12 10">
+            <WrapPanel HorizontalAlignment="Right">
+                <Button Name="OK" Content="Save Payment" Width="115" IsDefault="True"/>
+                <Button Name="Cancel" Content="Cancel" Width="80" IsCancel="True"
+                        Style="{StaticResource OutlineButton}"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- Form Body -->
+        <Border Background="{StaticResource bg2}" Padding="14 8">
+            <StackPanel Name="UniPaymentAgentDetails" VerticalAlignment="Top">
+                <WrapPanel>
+                    <Label>Paying to:</Label>
+                    <ComboBox Name="comboPaymentAgent" HorizontalAlignment="Left"
+                              VerticalAlignment="Top" ItemsSource="{Binding Agent}"/>
+                    <Button Name="BtnAddAgentatPay" Content="Add Agent" Margin="5 0"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <Label>Date:</Label>
+                    <DatePicker Name="PaymentAgentdatePicker" SelectedDateFormat="Short"
+                                SelectedDate="{x:Static sys:DateTime.Now}"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <Label>Amount:</Label>
+                    <TextBox Name="txtPaymentAgentAmount" ContextMenu="{x:Null}"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <Label>Detail:</Label>
+                    <TextBox Name="txtPaymentAgentDetail"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <Label>Paying from:</Label>
+                    <ComboBox Name="comboPaymentAgentAccounts" HorizontalAlignment="Left"
+                              VerticalAlignment="Top" ItemsSource="{Binding Accounts}"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+    </DockPanel>
 </Window>
