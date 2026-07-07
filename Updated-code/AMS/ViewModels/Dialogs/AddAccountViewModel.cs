@@ -18,6 +18,20 @@ namespace AMS.ViewModels.Dialogs
         public ICommand CancelCommand { get; }
         public Action<bool?> CloseAction { get; set; }
 
+        private string _selectedAccountType;
+        public string SelectedAccountType
+        {
+            get => _selectedAccountType;
+            set
+            {
+                _selectedAccountType = value;
+                Account.AccountType = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsBankVisible));
+            }
+        }
+        public bool IsBankVisible => SelectedAccountType == "Bank";
+
         public AddAccountViewModel(Account existing = null)
         {
             IsEdit = existing != null;
@@ -27,6 +41,7 @@ namespace AMS.ViewModels.Dialogs
                 AccountName = existing.AccountName, AccountNumber = existing.AccountNumber, AccountTitle = existing.AccountTitle,
                 BankName = existing.BankName, BankBranch = existing.BankBranch, OpeningBalance = existing.OpeningBalance
             } : new Account();
+            _selectedAccountType = Account.AccountType;
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }

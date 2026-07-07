@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:AMS.ViewModels"
-        Title="Auto Management System"
+        Title="Autos Accounts"
         WindowState="Maximized"
         MinWidth="900" MinHeight="600"
         Background="{DynamicResource BaseBg}">
@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <!-- ══ TOP HEADER BAR ══ -->
-        <Border Grid.Row="0" Background="{DynamicResource PrimaryBg}" TextElement.Foreground="{DynamicResource PrimaryFg}"
+        <Border Grid.Row="0" Background="{DynamicResource HeaderGradientBrush}" TextElement.Foreground="{DynamicResource PrimaryFg}"
                 BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1">
             <Grid Margin="20,0">
                 <Grid.ColumnDefinitions>
@@ -28,36 +28,20 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Branding -->
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="&#x1F697;" FontSize="22" Margin="0,0,8,0"
-                               VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                </StackPanel>
+                <!-- Big centered title, matching the legacy header banner -->
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="3"
+                           Text="{Binding CompanyName}"
+                           FontSize="34" FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryFg}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <!-- Branding (small, left) -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center">&#x1F697;</TextBlock>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="TxtCompanyName"
-                                   Text="{Binding CompanyName}"
-                                   FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource AccentBrush}"
-                                   />
-                        <TextBlock Text="Auto Dealership Accounts System"
-                                   FontSize="10" Foreground="#A0FFFFFF" />
-                    </StackPanel>
+                    <TextBlock FontSize="22" VerticalAlignment="Center">&#x1F697;</TextBlock>
                 </StackPanel>
 
                 <!-- Right: Actions -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" TextElement.Foreground="{DynamicResource PrimaryFg}">
-                    <TextBlock Text="Theme:" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <ComboBox x:Name="CmbTheme" Width="100" Margin="0,0,12,0" SelectionChanged="CmbTheme_SelectionChanged">
-                        <ComboBoxItem Content="Original" IsSelected="True"/>
-                        <ComboBoxItem Content="ModernBlue"/>
-                        <ComboBoxItem Content="Classic"/>
-                    </ComboBox>
-                    
-                    <CheckBox x:Name="ChkDarkMode" Content="Dark Mode" VerticalAlignment="Center" Margin="0,0,16,0"
-                              Foreground="{DynamicResource PrimaryFg}" Click="ChkDarkMode_Click"/>
-                    
                     <Button Content="&#x2699; Settings" Style="{DynamicResource OutlineButton}"
                             Foreground="{DynamicResource PrimaryFg}" BorderBrush="{DynamicResource PrimaryFg}"
                             Command="{Binding OpenCompanySettingsCommand}" FontSize="12"/>
@@ -102,32 +86,31 @@
                     <TabItem Header="Accounts">
                         <Grid x:Name="PageAccounts">
                         <DockPanel>
-                            <!-- Sub-nav tabs -->
-                            <Border DockPanel.Dock="Top" Background="{DynamicResource PrimaryBg}"
-                                    BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,0,1">
-                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                                    <StackPanel Orientation="Horizontal" Margin="16,0">
-                                        <RadioButton x:Name="TabCashBank" Content="Cash/Bank" GroupName="AccTab"
-                                                     IsChecked="True" Style="{DynamicResource NavItemStyle}"
-                                                     Padding="12,10" Margin="2,0"/>
-                                        <RadioButton x:Name="TabTransfer" Content="A/c Transfer" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
-                                        <RadioButton x:Name="TabMisc" Content="Misc Expense" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                            <!-- Sub-nav tabs (vertical column, matches legacy secondary sidebar) -->
+                            <Border DockPanel.Dock="Left" Width="240" Background="{DynamicResource SubNavBrush}"
+                                    BorderBrush="{DynamicResource BaseBorder}" BorderThickness="0,0,1,0">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Orientation="Vertical">
+                                        <RadioButton x:Name="TabCashBank" Content="Cash / Bank Accounts" GroupName="AccTab"
+                                                     IsChecked="True" Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabTransfer" Content="A/c to A/c Entry" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabMisc" Content="Misc. Auto Expense" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabDuty" Content="Duty Payments" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabOfficeExp" Content="Office Expense" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabReceipts" Content="Receipts" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabYen" Content="Yen Payments" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabParty" Content="Party Payments" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabAgent" Content="Agent Payments" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabProfit" Content="Profit Withdrawal" GroupName="AccTab"
-                                                     Style="{DynamicResource NavItemStyle}" Padding="12,10" Margin="2,0"/>
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
                                     </StackPanel>
                                 </ScrollViewer>
                             </Border>
@@ -916,7 +899,7 @@
                 </StackPanel>
 
                 <TextBlock Grid.Column="6" VerticalAlignment="Center" FontSize="10"
-                           Foreground="#A0FFFFFF" Text="Powered by Soft-Tech Solutions"/>
+                           Foreground="#A0FFFFFF" Text="Developed By: hostineasy.com"/>
             </Grid>
         </Border>
     </Grid>

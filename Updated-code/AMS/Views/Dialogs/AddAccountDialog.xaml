@@ -18,17 +18,19 @@
         <ScrollViewer Padding="24,16">
             <StackPanel>
                 <TextBlock Text="ACCOUNT TYPE" Style="{StaticResource FieldLabel}"/>
-                <ComboBox ItemsSource="{Binding AccountTypes}" SelectedItem="{Binding Account.AccountType}" Margin="0,4,0,14"/>
+                <ComboBox ItemsSource="{Binding AccountTypes}" SelectedItem="{Binding SelectedAccountType}" Margin="0,4,0,14"/>
                 <TextBlock Text="ACCOUNT NAME *" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Account.AccountName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="ACCOUNT NUMBER" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.AccountNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="ACCOUNT TITLE" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.AccountTitle, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="BANK NAME" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.BankName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="BANK BRANCH" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.BankBranch, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <StackPanel Visibility="{Binding IsBankVisible, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="ACCOUNT NUMBER" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Account.AccountNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <TextBlock Text="ACCOUNT TITLE" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Account.AccountTitle, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <TextBlock Text="BANK NAME" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Account.BankName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <TextBlock Text="BANK BRANCH" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Account.BankBranch, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                </StackPanel>
                 <TextBlock Text="OPENING BALANCE" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Account.OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
             </StackPanel>

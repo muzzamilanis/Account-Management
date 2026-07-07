@@ -1,5 +1,4 @@
 using System.Windows;
-using AMS.Services;
 using AMS.Views;
 
 namespace AMS
@@ -9,8 +8,6 @@ namespace AMS
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-            ThemeManager.Instance.ApplyTheme("Original", false);
 
             // Prevent app from shutting down when the login window closes
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;

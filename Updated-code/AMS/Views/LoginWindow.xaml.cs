@@ -17,6 +17,10 @@ namespace AMS.Views
         private void BtnCancel_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }
         private void TxtPass_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Return) TryLogin(); }
 
+        private void BtnRegister_Click(object sender, RoutedEventArgs e)
+            => MessageBox.Show("Please contact the vendor to register this software.", "Register",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+
         private void TryLogin()
         {
             string expected = SettingsService.Instance.Settings.LoginPassword;
