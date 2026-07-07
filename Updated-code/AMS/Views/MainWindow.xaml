@@ -662,10 +662,10 @@
                                             <TextBlock Grid.Row="3" Text="Address:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Address}" TextWrapping="Wrap"/>
                                             <TextBlock Grid.Row="4" Text="Payment Received:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceived, StringFormat='PKR N2'}"
+                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceived, StringFormat='PKR {0:N2}'}"
                                                        FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
                                             <TextBlock Grid.Row="5" Text="Payment Receivable:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR N2'}"
+                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR {0:N2}'}"
                                                        FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
                                         </Grid>
                                     </StackPanel>
@@ -733,8 +733,8 @@
                                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Phone}" FontWeight="SemiBold"/>
                                             <TextBlock Grid.Row="3" Text="Address:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Address}" TextWrapping="Wrap"/>
-                                            <TextBlock Grid.Row="4" Text="Receivable:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR N2'}"
+                                            <TextBlock Grid.Row="4" Text="Payment Payable:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PaymentReceivable, StringFormat='PKR {0:N2}'}"
                                                        FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
                                         </Grid>
                                     </StackPanel>

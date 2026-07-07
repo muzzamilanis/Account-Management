@@ -56,6 +56,7 @@ namespace AMS.ViewModels.Dialogs
                 if (PkrPayment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
                 DatabaseService.Instance.AddPkrPayment(PkrPayment);
                 DatabaseService.Instance.DebitAccount(PkrPayment.PaidFrom, PkrPayment.PaymentAmount);
+                DatabaseService.Instance.RecordCustomerPayment(PkrPayment.PaidTo, PkrPayment.PaymentAmount);
             }
             CloseAction?.Invoke(true);
         }

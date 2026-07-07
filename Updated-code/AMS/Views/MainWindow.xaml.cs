@@ -211,13 +211,13 @@ namespace AMS.Views
         // ─────────────────────────────────── Stocks ────────────────────────────────
         private void BtnAddStock_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); } }
+            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); _agentsVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void BtnEditStock_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); if (LstStocks.SelectedItem is Models.Stock s) { var d = new PurchaseAutoDialog(s); if (d.ShowDialog() == true) _stocksVm.Load(); } }
+            try { GuardDb(); if (LstStocks.SelectedItem is Models.Stock s) { var d = new PurchaseAutoDialog(s); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); _agentsVm.Load(); } } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 

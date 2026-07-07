@@ -21,7 +21,7 @@ namespace AMS.ViewModels.Dialogs
         public AddCustomerViewModel(Customer existing = null)
         {
             IsEdit = existing != null;
-            Customer = existing != null ? new Customer { RowId = existing.RowId, Date = existing.Date, Title = existing.Title, Name = existing.Name, CNIC = existing.CNIC, Phone = existing.Phone, Address = existing.Address } : new Customer();
+            Customer = existing != null ? new Customer { RowId = existing.RowId, Date = existing.Date, Title = existing.Title, Name = existing.Name, CNIC = existing.CNIC, Phone = existing.Phone, Address = existing.Address, PaymentReceived = existing.PaymentReceived, PaymentReceivable = existing.PaymentReceivable, PaymentPaid = existing.PaymentPaid } : new Customer();
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }

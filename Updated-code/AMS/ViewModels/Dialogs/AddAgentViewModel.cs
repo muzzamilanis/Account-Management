@@ -20,7 +20,7 @@ namespace AMS.ViewModels.Dialogs
         public AddAgentViewModel(Agent existing = null)
         {
             IsEdit = existing != null;
-            Agent = existing != null ? new Agent { RowId = existing.RowId, Date = existing.Date, Name = existing.Name, CNIC = existing.CNIC, Phone = existing.Phone, Address = existing.Address } : new Agent();
+            Agent = existing != null ? new Agent { RowId = existing.RowId, Date = existing.Date, Name = existing.Name, CNIC = existing.CNIC, Phone = existing.Phone, Address = existing.Address, PaymentReceivable = existing.PaymentReceivable, PaymentPaid = existing.PaymentPaid } : new Agent();
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }

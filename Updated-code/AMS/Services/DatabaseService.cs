@@ -159,10 +159,40 @@ namespace AMS.Services
                 new Dictionary<string, object> { {"@delta", delta}, {"@name", agentName} });
         }
 
+        public void RecordAgentPayment(string agentName, double amount)
+        {
+            ExecuteNonQuery("UPDATE Agent SET PaymentPaid = PaymentPaid + @amt, PaymentReceivable = PaymentReceivable + @amt WHERE Name = @name",
+                new Dictionary<string, object> { {"@amt", amount}, {"@name", agentName} });
+        }
+
+        public void RecordCustomerPayment(string customerName, double amount)
+        {
+            ExecuteNonQuery("UPDATE Customer SET PaymentPaid = PaymentPaid + @amt, PaymentReceivable = PaymentReceivable + @amt WHERE Name = @name",
+                new Dictionary<string, object> { {"@amt", amount}, {"@name", customerName} });
+        }
+
+        public void RecordCustomerReceipt(string customerName, double amount)
+        {
+            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @amt, PaymentReceivable = PaymentReceivable - @amt WHERE Name = @name",
+                new Dictionary<string, object> { {"@amt", amount}, {"@name", customerName} });
+        }
+
+        public void RecordCustomerSale(string customerName, double amountReceived, double balance)
+        {
+            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @recv, PaymentReceivable = PaymentReceivable + @bal WHERE Name = @name",
+                new Dictionary<string, object> { {"@recv", amountReceived}, {"@bal", balance}, {"@name", customerName} });
+        }
+
         public void AdjustStockDuty(string chassis, double delta)
         {
             ExecuteNonQuery("UPDATE Stock SET Duty = Duty + @delta WHERE Chassis = @chassis",
                 new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void MarkStockSold(string chassis)
+        {
+            ExecuteNonQuery("UPDATE Stock SET Status = 'Sold' WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@chassis", chassis} });
         }
 
         // --- TRANSACTIONS ---

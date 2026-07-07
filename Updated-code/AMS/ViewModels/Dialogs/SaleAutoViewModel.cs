@@ -45,6 +45,8 @@ namespace AMS.ViewModels.Dialogs
             if (Sale.SalePrice <= 0) { MessageBox.Show("Enter sale price.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (Sale.SaleAmountReceived > 0 && string.IsNullOrEmpty(Sale.PaymentReceivedIn)) { MessageBox.Show("Select an account to receive payment in.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             DatabaseService.Instance.AddSale(Sale);
+            DatabaseService.Instance.MarkStockSold(Sale.SaleChassis);
+            DatabaseService.Instance.RecordCustomerSale(Sale.SaleCustomer, Sale.SaleAmountReceived, Sale.SaleBalance);
             if (Sale.SaleAmountReceived > 0 && !string.IsNullOrEmpty(Sale.PaymentReceivedIn))
                 DatabaseService.Instance.CreditAccount(Sale.PaymentReceivedIn, Sale.SaleAmountReceived);
             CloseAction?.Invoke(true);

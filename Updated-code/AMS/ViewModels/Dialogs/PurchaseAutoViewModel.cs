@@ -28,7 +28,7 @@ namespace AMS.ViewModels.Dialogs
         public PurchaseAutoViewModel(Stock existing = null)
         {
             IsEdit = existing != null;
-            Stock = existing != null ? new Stock { RowId = existing.RowId, Date = existing.Date, Chassis = existing.Chassis, Model = existing.Model, Color = existing.Color, PriceYen = existing.PriceYen, Rate = existing.Rate, Duty = existing.Duty, MiscExpense = existing.MiscExpense, Comments = existing.Comments, PaidYen = existing.PaidYen, PaidAmount = existing.PaidAmount } : new Stock();
+            Stock = existing != null ? new Stock { RowId = existing.RowId, Date = existing.Date, Chassis = existing.Chassis, Model = existing.Model, Color = existing.Color, PriceYen = existing.PriceYen, Rate = existing.Rate, Duty = existing.Duty, MiscExpense = existing.MiscExpense, Comments = existing.Comments, PaidYen = existing.PaidYen, PaidAmount = existing.PaidAmount, Status = existing.Status } : new Stock();
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
             foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
             SelectedAccount = Accounts.Count > 0 ? Accounts[0] : null;
@@ -46,13 +46,29 @@ namespace AMS.ViewModels.Dialogs
             Stock.PricePkr = Stock.PriceYen * rate;
             Stock.Cost = Stock.PricePkr + Stock.Duty + Stock.MiscExpense;
             Stock.PaidAmount = Stock.PaidYen * rate;
-            Stock.Status = "InStock";
+            if (!IsEdit) Stock.Status = "InStock";
             if (IsEdit) DatabaseService.Instance.UpdateStock(Stock);
             else
             {
                 DatabaseService.Instance.AddStock(Stock);
-                if (Stock.PaidAmount > 0 && !string.IsNullOrEmpty(SelectedAccount))
-                    DatabaseService.Instance.DebitAccount(SelectedAccount, Stock.PaidAmount);
+                double accountDebit = Stock.PaidAmount + Stock.MiscExpense;
+                if (accountDebit > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.DebitAccount(SelectedAccount, accountDebit);
+                if (Stock.MiscExpense > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.AddMiscExp(new MiscExp
+                    {
+                        Chassis = Stock.Chassis, MiscExpDate = Stock.Date, MiscExpAmount = Stock.MiscExpense,
+                        MiscExpDetail = $"Expense at purchase: {Stock.Chassis}", MiscExpPaidBy = SelectedAccount
+                    });
+                if (Stock.Duty > 0 && !string.IsNullOrEmpty(SelectedAgent))
+                {
+                    DatabaseService.Instance.AddDutyExp(new DutyExp
+                    {
+                        Chassis = Stock.Chassis, DutyExpDate = Stock.Date, DutyExpAmount = Stock.Duty,
+                        DutyExpDetail = $"Expense at purchase: {Stock.Chassis}", DutyExpPaidBy = SelectedAccount, DutyExpAgent = SelectedAgent
+                    });
+                    DatabaseService.Instance.AdjustAgentPayable(SelectedAgent, -Stock.Duty);
+                }
             }
             CloseAction?.Invoke(true);
         }
