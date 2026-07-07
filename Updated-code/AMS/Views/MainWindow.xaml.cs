@@ -337,6 +337,13 @@ namespace AMS.Views
             PnlExcView.Visibility = Visibility.Visible;
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to exit?", "Confirm Exit",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) e.Cancel = true;
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             DatabaseService.Instance.CloseConnection();

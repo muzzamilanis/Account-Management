@@ -93,11 +93,30 @@ namespace AMS.Services
                 var tr = new TableRow { Background = alt ? new SolidColorBrush(Color.FromArgb(30, 56, 189, 248)) : Brushes.White };
                 for (int c = 0; c < colCount; c++)
                 {
-                    string text = row[c]?.ToString() ?? "";
-                    if (double.TryParse(text, out double num))
+                    object raw = row[c];
+                    Type colType = data.Columns[c].DataType;
+                    string text;
+                    if (raw == null || raw == DBNull.Value)
                     {
+                        text = "";
+                    }
+                    else if (colType == typeof(DateTime))
+                    {
+                        text = ((DateTime)raw).ToString("dd MMM yyyy");
+                    }
+                    else if (colType == typeof(double) || colType == typeof(decimal) || colType == typeof(float))
+                    {
+                        double num = Convert.ToDouble(raw);
                         text = num.ToString("N2");
                         if (c == amountCol) total += num;
+                    }
+                    else if (colType == typeof(int) || colType == typeof(long) || colType == typeof(short))
+                    {
+                        text = Convert.ToInt64(raw).ToString("N0");
+                    }
+                    else
+                    {
+                        text = raw.ToString();
                     }
                     var cell = new TableCell(new Paragraph(new Run(text))) { Padding = new Thickness(6, 3, 6, 3) };
                     if (c == amountCol) cell.TextAlignment = TextAlignment.Right;

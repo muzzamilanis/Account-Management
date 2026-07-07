@@ -167,19 +167,19 @@ namespace AMS.Services
 
         public void RecordCustomerPayment(string customerName, double amount)
         {
-            ExecuteNonQuery("UPDATE Customer SET PaymentPaid = PaymentPaid + @amt, PaymentReceivable = PaymentReceivable + @amt WHERE Name = @name",
+            ExecuteNonQuery("UPDATE Customer SET PaymentPaid = PaymentPaid + @amt, PaymentReceivable = PaymentReceivable + @amt WHERE (Title || ' ' || Name) = @name",
                 new Dictionary<string, object> { {"@amt", amount}, {"@name", customerName} });
         }
 
         public void RecordCustomerReceipt(string customerName, double amount)
         {
-            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @amt, PaymentReceivable = PaymentReceivable - @amt WHERE Name = @name",
+            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @amt, PaymentReceivable = PaymentReceivable - @amt WHERE (Title || ' ' || Name) = @name",
                 new Dictionary<string, object> { {"@amt", amount}, {"@name", customerName} });
         }
 
         public void RecordCustomerSale(string customerName, double amountReceived, double balance)
         {
-            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @recv, PaymentReceivable = PaymentReceivable + @bal WHERE Name = @name",
+            ExecuteNonQuery("UPDATE Customer SET PaymentReceived = PaymentReceived + @recv, PaymentReceivable = PaymentReceivable + @bal WHERE (Title || ' ' || Name) = @name",
                 new Dictionary<string, object> { {"@recv", amountReceived}, {"@bal", balance}, {"@name", customerName} });
         }
 

@@ -5,7 +5,8 @@
         Title="Autos Accounts"
         WindowState="Maximized"
         MinWidth="900" MinHeight="600"
-        Background="{DynamicResource BaseBg}">
+        Background="{DynamicResource BaseBg}"
+        Closing="Window_Closing">
 
     <Window.DataContext>
         <vm:MainViewModel/>
