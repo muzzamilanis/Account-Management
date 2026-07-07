@@ -51,7 +51,11 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrWhiteSpace(Account.AccountName))
             { MessageBox.Show("Account name is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (IsEdit) DatabaseService.Instance.UpdateAccount(Account);
-            else DatabaseService.Instance.AddAccount(Account);
+            else
+            {
+                Account.CurrentBalance = Account.OpeningBalance;
+                DatabaseService.Instance.AddAccount(Account);
+            }
             CloseAction?.Invoke(true);
         }
     }

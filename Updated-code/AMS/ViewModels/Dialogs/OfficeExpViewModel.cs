@@ -31,6 +31,7 @@ namespace AMS.ViewModels.Dialogs
         {
             if (Exp.OfficeExpAmount <= 0) { MessageBox.Show("Enter expense amount."); return; }
             DatabaseService.Instance.AddOfficeExp(Exp);
+            DatabaseService.Instance.DebitAccount(Exp.OfficeExpPaidBy, Exp.OfficeExpAmount);
             CloseAction?.Invoke(true);
         }
     }

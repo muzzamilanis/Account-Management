@@ -36,6 +36,7 @@ namespace AMS.ViewModels.Dialogs
         {
             if (Payment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
             DatabaseService.Instance.AddAgentPayment(Payment);
+            DatabaseService.Instance.DebitAccount(Payment.PaidFrom, Payment.PaymentAmount);
             CloseAction?.Invoke(true);
         }
     }

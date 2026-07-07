@@ -34,6 +34,8 @@ namespace AMS.ViewModels.Dialogs
             if (Transfer.Amount <= 0) { MessageBox.Show("Enter transfer amount."); return; }
             if (CreditFrom == DebitTo) { MessageBox.Show("Cannot transfer to same account."); return; }
             DatabaseService.Instance.AddOfficeAccountTransfer(Transfer);
+            DatabaseService.Instance.DebitAccount(CreditFrom, Transfer.Amount);
+            DatabaseService.Instance.CreditAccount(DebitTo, Transfer.Amount);
             CloseAction?.Invoke(true);
         }
     }

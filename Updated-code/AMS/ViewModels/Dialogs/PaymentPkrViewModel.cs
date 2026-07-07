@@ -47,11 +47,13 @@ namespace AMS.ViewModels.Dialogs
                 YenPayment.PaymentAmountPkr = YenPayment.PaymentAmountYen * YenPayment.PaymentExcRate;
                 if (YenPayment.PaymentAmountYen <= 0) { MessageBox.Show("Enter amount in Yen."); return; }
                 DatabaseService.Instance.AddYenPayment(YenPayment);
+                DatabaseService.Instance.DebitAccount(YenPayment.PaidFrom, YenPayment.PaymentAmountPkr);
             }
             else
             {
                 if (PkrPayment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
                 DatabaseService.Instance.AddPkrPayment(PkrPayment);
+                DatabaseService.Instance.DebitAccount(PkrPayment.PaidFrom, PkrPayment.PaymentAmount);
             }
             CloseAction?.Invoke(true);
         }

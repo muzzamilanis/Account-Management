@@ -42,6 +42,7 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Exp.Chassis)) { MessageBox.Show("Select chassis."); return; }
             if (Exp.DutyExpAmount <= 0) { MessageBox.Show("Enter expense amount."); return; }
             DatabaseService.Instance.AddDutyExp(Exp);
+            DatabaseService.Instance.DebitAccount(Exp.DutyExpPaidBy, Exp.DutyExpAmount);
             CloseAction?.Invoke(true);
         }
     }

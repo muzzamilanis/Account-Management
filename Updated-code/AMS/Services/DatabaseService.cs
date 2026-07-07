@@ -143,7 +143,13 @@ namespace AMS.Services
         
         public void DebitAccount(string accName, double amount)
         {
-            ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance - @amount WHERE AccountName = @name", 
+            ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance - @amount WHERE AccountName = @name",
+                new Dictionary<string, object> { {"@amount", amount}, {"@name", accName} });
+        }
+
+        public void CreditAccount(string accName, double amount)
+        {
+            ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance + @amount WHERE AccountName = @name",
                 new Dictionary<string, object> { {"@amount", amount}, {"@name", accName} });
         }
 
