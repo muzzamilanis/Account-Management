@@ -3,6 +3,7 @@ using AMS.Models;
 using AMS.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,7 +14,7 @@ namespace AMS.ViewModels.Dialogs
         private PaymentAgent _payment = new PaymentAgent();
         public PaymentAgent Payment { get => _payment; set => SetField(ref _payment, value); }
         public List<string> Accounts { get; } = new List<string>();
-        public List<string> Agents { get; } = new List<string>();
+        public ObservableCollection<string> Agents { get; } = new ObservableCollection<string>();
         private string _selAccount;
         public string SelectedAccount { get => _selAccount; set { SetField(ref _selAccount, value); Payment.PaidFrom = value; } }
         private string _selAgent;
@@ -25,7 +26,7 @@ namespace AMS.ViewModels.Dialogs
         public PaymentAgentViewModel()
         {
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
-            Agents.AddRange(DatabaseService.Instance.GetAgentNames());
+            foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
             if (Accounts.Count > 0) SelectedAccount = Accounts[0];
             if (Agents.Count > 0) SelectedAgent = Agents[0];
             SaveCommand = new RelayCommand(Save);
@@ -34,6 +35,7 @@ namespace AMS.ViewModels.Dialogs
 
         private void Save()
         {
+            if (string.IsNullOrEmpty(Payment.PaidTo)) { MessageBox.Show("Select an agent."); return; }
             if (Payment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
             DatabaseService.Instance.AddAgentPayment(Payment);
             DatabaseService.Instance.DebitAccount(Payment.PaidFrom, Payment.PaymentAmount);

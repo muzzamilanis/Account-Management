@@ -43,6 +43,7 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Sale.SaleChassis)) { MessageBox.Show("Select a chassis.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (string.IsNullOrEmpty(Sale.SaleCustomer)) { MessageBox.Show("Select a customer.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (Sale.SalePrice <= 0) { MessageBox.Show("Enter sale price.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            if (Sale.SaleAmountReceived > 0 && string.IsNullOrEmpty(Sale.PaymentReceivedIn)) { MessageBox.Show("Select an account to receive payment in.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             DatabaseService.Instance.AddSale(Sale);
             if (Sale.SaleAmountReceived > 0 && !string.IsNullOrEmpty(Sale.PaymentReceivedIn))
                 DatabaseService.Instance.CreditAccount(Sale.PaymentReceivedIn, Sale.SaleAmountReceived);

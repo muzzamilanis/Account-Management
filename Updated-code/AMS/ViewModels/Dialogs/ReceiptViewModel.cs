@@ -34,6 +34,8 @@ namespace AMS.ViewModels.Dialogs
 
         private void Save()
         {
+            if (string.IsNullOrEmpty(Receipt.ReceivedIn)) { MessageBox.Show("Select an account."); return; }
+            if (string.IsNullOrEmpty(Receipt.ReceivedFrom)) { MessageBox.Show("Select a customer."); return; }
             if (Receipt.ReceiptAmount <= 0) { MessageBox.Show("Enter receipt amount."); return; }
             DatabaseService.Instance.AddReceipt(Receipt);
             DatabaseService.Instance.CreditAccount(Receipt.ReceivedIn, Receipt.ReceiptAmount);

@@ -3,6 +3,7 @@ using AMS.Models;
 using AMS.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,7 +16,7 @@ namespace AMS.ViewModels.Dialogs
         public bool IsEdit { get; }
         public string Title => IsEdit ? "Edit Stock" : "Purchase Auto";
         public List<string> Accounts { get; } = new List<string>();
-        public List<string> Agents { get; } = new List<string>();
+        public ObservableCollection<string> Agents { get; } = new ObservableCollection<string>();
         private string _selectedAccount;
         public string SelectedAccount { get => _selectedAccount; set => SetField(ref _selectedAccount, value); }
         private string _selectedAgent;
@@ -29,7 +30,7 @@ namespace AMS.ViewModels.Dialogs
             IsEdit = existing != null;
             Stock = existing != null ? new Stock { RowId = existing.RowId, Date = existing.Date, Chassis = existing.Chassis, Model = existing.Model, Color = existing.Color, PriceYen = existing.PriceYen, Rate = existing.Rate, Duty = existing.Duty, MiscExpense = existing.MiscExpense, Comments = existing.Comments, PaidYen = existing.PaidYen, PaidAmount = existing.PaidAmount } : new Stock();
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
-            Agents.AddRange(DatabaseService.Instance.GetAgentNames());
+            foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
             SelectedAccount = Accounts.Count > 0 ? Accounts[0] : null;
             SelectedAgent = Agents.Count > 0 ? Agents[0] : null;
             SaveCommand = new RelayCommand(Save);
@@ -44,6 +45,7 @@ namespace AMS.ViewModels.Dialogs
             Stock.Rate = rate;
             Stock.PricePkr = Stock.PriceYen * rate;
             Stock.Cost = Stock.PricePkr + Stock.Duty + Stock.MiscExpense;
+            Stock.PaidAmount = Stock.PaidYen * rate;
             Stock.Status = "InStock";
             if (IsEdit) DatabaseService.Instance.UpdateStock(Stock);
             else

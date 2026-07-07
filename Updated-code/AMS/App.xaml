@@ -13,6 +13,7 @@
             <conv:NullToVisibilityConverter x:Key="NullToVis"/>
             <conv:StatusToColorConverter x:Key="StatusColor"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+            <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

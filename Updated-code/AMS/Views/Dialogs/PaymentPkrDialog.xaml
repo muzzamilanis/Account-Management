@@ -32,7 +32,10 @@
                     <TextBlock Text="DATE" Style="{StaticResource FieldLabel}"/>
                     <DatePicker SelectedDate="{Binding PkrPayment.PaymentDate}" Margin="0,4,0,14"/>
                     <TextBlock Text="PAYING TO (CUSTOMER)" Style="{StaticResource FieldLabel}"/>
-                    <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" Margin="0,4,0,14"/>
+                    <DockPanel Margin="0,4,0,14">
+                        <Button DockPanel.Dock="Right" Content="Add New" Click="BtnAddCustomer_Click"/>
+                        <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}"/>
+                    </DockPanel>
                     <TextBlock Text="AMOUNT (PKR)" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding PkrPayment.PaymentAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                     <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>

@@ -3,6 +3,7 @@ using AMS.Models;
 using AMS.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,7 +15,7 @@ namespace AMS.ViewModels.Dialogs
         public DutyExp Exp { get => _exp; set => SetField(ref _exp, value); }
         public List<string> Chassis { get; } = new List<string>();
         public List<string> Accounts { get; } = new List<string>();
-        public List<string> Agents { get; } = new List<string>();
+        public ObservableCollection<string> Agents { get; } = new ObservableCollection<string>();
         private string _selChassis;
         public string SelectedChassis { get => _selChassis; set { SetField(ref _selChassis, value); Exp.Chassis = value; } }
         private string _selAccount;
@@ -29,7 +30,7 @@ namespace AMS.ViewModels.Dialogs
         {
             Chassis.AddRange(DatabaseService.Instance.GetInStockChassisNumbers());
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
-            Agents.AddRange(DatabaseService.Instance.GetAgentNames());
+            foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
             if (Chassis.Count > 0) SelectedChassis = Chassis[0];
             if (Accounts.Count > 0) SelectedAccount = Accounts[0];
             if (Agents.Count > 0) SelectedAgent = Agents[0];
@@ -40,9 +41,11 @@ namespace AMS.ViewModels.Dialogs
         private void Save()
         {
             if (string.IsNullOrEmpty(Exp.Chassis)) { MessageBox.Show("Select chassis."); return; }
+            if (string.IsNullOrEmpty(Exp.DutyExpAgent)) { MessageBox.Show("Select an agent."); return; }
             if (Exp.DutyExpAmount <= 0) { MessageBox.Show("Enter expense amount."); return; }
             DatabaseService.Instance.AddDutyExp(Exp);
-            DatabaseService.Instance.DebitAccount(Exp.DutyExpPaidBy, Exp.DutyExpAmount);
+            DatabaseService.Instance.AdjustAgentPayable(Exp.DutyExpAgent, -Exp.DutyExpAmount);
+            DatabaseService.Instance.AdjustStockDuty(Exp.Chassis, Exp.DutyExpAmount);
             CloseAction?.Invoke(true);
         }
     }

@@ -155,7 +155,7 @@ namespace AMS.Views
 
         private void BtnNewDutyExp_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new DutyExpDialog(); if (d.ShowDialog() == true) _accVm.LoadAll(); }
+            try { GuardDb(); var d = new DutyExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -211,7 +211,7 @@ namespace AMS.Views
         // ─────────────────────────────────── Stocks ────────────────────────────────
         private void BtnAddStock_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) _stocksVm.Load(); }
+            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 

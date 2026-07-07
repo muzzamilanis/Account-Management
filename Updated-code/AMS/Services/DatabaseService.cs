@@ -153,6 +153,18 @@ namespace AMS.Services
                 new Dictionary<string, object> { {"@amount", amount}, {"@name", accName} });
         }
 
+        public void AdjustAgentPayable(string agentName, double delta)
+        {
+            ExecuteNonQuery("UPDATE Agent SET PaymentReceivable = PaymentReceivable + @delta WHERE Name = @name",
+                new Dictionary<string, object> { {"@delta", delta}, {"@name", agentName} });
+        }
+
+        public void AdjustStockDuty(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET Duty = Duty + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
         // --- TRANSACTIONS ---
         public void AddOfficeAccountTransfer(OfficeAccount o)
         {

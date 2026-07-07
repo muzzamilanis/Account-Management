@@ -50,6 +50,17 @@ namespace AMS.ViewModels.Dialogs
         {
             if (string.IsNullOrWhiteSpace(Account.AccountName))
             { MessageBox.Show("Account name is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            if (Account.OpeningBalance <= 0)
+            { MessageBox.Show("Please enter the account balance.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            if (IsBankVisible)
+            {
+                if (string.IsNullOrWhiteSpace(Account.AccountNumber))
+                { MessageBox.Show("Account number is required for a bank account.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                if (string.IsNullOrWhiteSpace(Account.AccountTitle))
+                { MessageBox.Show("Account title is required for a bank account.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                if (string.IsNullOrWhiteSpace(Account.BankName))
+                { MessageBox.Show("Bank name is required for a bank account.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            }
             if (IsEdit) DatabaseService.Instance.UpdateAccount(Account);
             else
             {

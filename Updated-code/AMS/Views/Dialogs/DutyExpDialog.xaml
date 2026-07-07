@@ -25,7 +25,10 @@
                 <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Exp.DutyExpDetail, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="AGENT" Style="{StaticResource FieldLabel}"/>
-                <ComboBox ItemsSource="{Binding Agents}" SelectedItem="{Binding SelectedAgent}" Margin="0,4,0,14"/>
+                <DockPanel Margin="0,4,0,14">
+                    <Button DockPanel.Dock="Right" Content="Add New" Click="BtnAddAgent_Click"/>
+                    <ComboBox ItemsSource="{Binding Agents}" SelectedItem="{Binding SelectedAgent}"/>
+                </DockPanel>
                 <TextBlock Text="PAID FROM ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,0"/>
             </StackPanel>
