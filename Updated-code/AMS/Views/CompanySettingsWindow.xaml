@@ -46,7 +46,12 @@
                 <TextBlock Text="LOGIN PASSWORD" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Settings.LoginPassword, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
                 <TextBlock Text="Changing the password takes effect on next login."
-                           FontSize="10" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                           FontSize="10" Foreground="{StaticResource TextMuted}" Margin="0,4,0,14"/>
+                <Separator Margin="0,8"/>
+                <CheckBox Content="Enable Customer Credit Sale"
+                          IsChecked="{Binding Settings.EnableCreditSales}" Margin="0,8,0,4"/>
+                <TextBlock Text="When off, credit-term fields and payment reminders are hidden throughout the app. Existing credit sale data is kept, just not shown."
+                           FontSize="10" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"/>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

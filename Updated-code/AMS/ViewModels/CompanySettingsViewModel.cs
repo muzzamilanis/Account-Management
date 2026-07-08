@@ -25,7 +25,10 @@ namespace AMS.ViewModels
                 CompanyEmail = orig.CompanyEmail,
                 CompanyTagline = orig.CompanyTagline,
                 DefaultExchangeRate = orig.DefaultExchangeRate,
-                LoginPassword = orig.LoginPassword
+                LoginPassword = orig.LoginPassword,
+                DatabasePassword = orig.DatabasePassword,
+                LastDatabasePath = orig.LastDatabasePath,
+                EnableCreditSales = orig.EnableCreditSales
             };
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(Cancel);

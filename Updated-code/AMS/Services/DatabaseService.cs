@@ -523,6 +523,33 @@ namespace AMS.Services
                 new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@cd", s.CreditDays}, {"@rdb", s.ReminderDaysBefore} });
         }
 
+        // Active credit sales: credit term set, and still an outstanding balance.
+        public DataTable GetActiveCreditSales()
+        {
+            var table = new DataTable();
+            table.Columns.Add("Customer", typeof(string));
+            table.Columns.Add("Chassis", typeof(string));
+            table.Columns.Add("SaleDate", typeof(DateTime));
+            table.Columns.Add("DueDate", typeof(DateTime));
+            table.Columns.Add("DaysRemaining", typeof(string));
+            table.Columns.Add("Balance", typeof(double));
+
+            foreach (var s in GetSales())
+            {
+                if (s.CreditDays <= 0 || s.SaleBalance <= 0 || !s.DueDate.HasValue) continue;
+                var row = table.NewRow();
+                row["Customer"] = s.SaleCustomer;
+                row["Chassis"] = s.SaleChassis;
+                row["SaleDate"] = s.SaleDate;
+                row["DueDate"] = s.DueDate.Value;
+                row["DaysRemaining"] = s.DaysUntilDue.Value < 0
+                    ? $"Overdue {-s.DaysUntilDue.Value}d" : $"{s.DaysUntilDue.Value}d";
+                row["Balance"] = s.SaleBalance;
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
         // --- DASHBOARD/REPORTS ---
         public double GetTotalProfit()
         {
@@ -531,9 +558,14 @@ namespace AMS.Services
                 "FROM Stock st " +
                 "INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis " +
                 "WHERE st.Status = 'Sold'");
-            if (dt.Rows.Count > 0 && dt.Rows[0]["Total"] != DBNull.Value)
-                return Convert.ToDouble(dt.Rows[0]["Total"]);
-            return 0;
+            double grossProfit = (dt.Rows.Count > 0 && dt.Rows[0]["Total"] != DBNull.Value)
+                ? Convert.ToDouble(dt.Rows[0]["Total"]) : 0;
+
+            var wd = ExecuteQuery("SELECT SUM(Amount) as Total FROM OfficeAccount WHERE DebitTo = 'Profit'");
+            double alreadyWithdrawn = (wd.Rows.Count > 0 && wd.Rows[0]["Total"] != DBNull.Value)
+                ? Convert.ToDouble(wd.Rows[0]["Total"]) : 0;
+
+            return grossProfit - alreadyWithdrawn;
         }
         public double GetTotalYenPayable()
         {
@@ -543,7 +575,7 @@ namespace AMS.Services
             return 0;
         }
 
-        public DataTable GetReportData(string reportType, DateTime fromDate, DateTime toDate)
+        public DataTable GetReportData(string reportType, DateTime fromDate, DateTime toDate, string saleTypeFilter = null)
         {
             string query;
             string from = fromDate.ToString("yyyy-MM-dd");
@@ -554,6 +586,8 @@ namespace AMS.Services
                     query = "SELECT sa.SaleDate as Date, st.Chassis, st.Model, st.Color, st.Cost, sa.SalePrice, (sa.SalePrice - st.Cost) as Profit "
                           + "FROM Stock st INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis "
                           + "WHERE st.Status = 'Sold' AND sa.SaleDate >= @from AND sa.SaleDate <= @to";
+                    if (saleTypeFilter == "Credit") query += " AND sa.CreditDays > 0";
+                    else if (saleTypeFilter == "Cash") query += " AND (sa.CreditDays IS NULL OR sa.CreditDays = 0)";
                     break;
                 case "Stocks":
                     query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty, MiscExpense as [Misc Exp], Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";

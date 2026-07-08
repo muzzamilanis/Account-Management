@@ -27,7 +27,11 @@ namespace AMS.Services
             get => Settings.DefaultExchangeRate;
             set { Settings.DefaultExchangeRate = value; Save(); }
         }
-        public string LastDatabasePath { get; set; }
+        public string LastDatabasePath
+        {
+            get => Settings.LastDatabasePath;
+            set { Settings.LastDatabasePath = value; Save(); }
+        }
 
         private SettingsService() { }
 

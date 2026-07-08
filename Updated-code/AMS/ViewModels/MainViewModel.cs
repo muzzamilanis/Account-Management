@@ -27,19 +27,12 @@ namespace AMS.ViewModels
         public bool IsDbOpen => DatabaseService.Instance.IsConnected;
 
         public ICommand NavigateCommand { get; }
-        public ICommand OpenCompanySettingsCommand { get; }
 
         public MainViewModel()
         {
             _exchangeRate = SettingsService.Instance.ExchangeRate;
             _companyName = SettingsService.Instance.CompanyName;
             NavigateCommand = new RelayCommand(page => CurrentPage = page?.ToString() ?? "Welcome");
-            OpenCompanySettingsCommand = new RelayCommand(() =>
-            {
-                var win = new Views.CompanySettingsWindow();
-                win.ShowDialog();
-                CompanyName = SettingsService.Instance.CompanyName;
-            });
         }
 
         public void RefreshDbState() => OnPropertyChanged(nameof(IsDbOpen));

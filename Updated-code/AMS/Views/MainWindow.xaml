@@ -45,7 +45,7 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" TextElement.Foreground="{DynamicResource PrimaryFg}">
                     <Button Content="&#x2699; Settings" Style="{DynamicResource OutlineButton}"
                             Foreground="{DynamicResource PrimaryFg}" BorderBrush="{DynamicResource PrimaryFg}"
-                            Command="{Binding OpenCompanySettingsCommand}" FontSize="12"/>
+                            Click="BtnSettings_Click" FontSize="12"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -811,6 +811,15 @@
                                                Visibility="Collapsed"/>
                                     <ComboBox x:Name="ComboReportAccount" Width="160" Margin="0,0,16,0"
                                               Visibility="Collapsed"/>
+                                    <TextBlock x:Name="TxtSaleTypeLabel" Text="Sale Type:" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"
+                                               Visibility="Collapsed"/>
+                                    <ComboBox x:Name="ComboSaleType" Width="130" Margin="0,0,16,0"
+                                              Visibility="Collapsed">
+                                        <ComboBoxItem Content="All" IsSelected="True"/>
+                                        <ComboBoxItem Content="Credit"/>
+                                        <ComboBoxItem Content="Cash"/>
+                                    </ComboBox>
                                     <TextBlock Text="From:" VerticalAlignment="Center"
                                                Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportFrom" Width="130" Margin="0,0,12,0"

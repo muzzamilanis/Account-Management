@@ -42,9 +42,7 @@ namespace AMS.Views
             GridSales.ItemsSource = _saleVm.Sales;
 
             // Reports
-            var reportTypes = ReportViewModel.ReportTypes;
-            ComboReport.ItemsSource = reportTypes;
-            ComboReport.SelectedIndex = 0;
+            RefreshReportTypesList();
             DpReportTo.SelectedDate = DateTime.Today;
 
             // Auto-load the last opened database, if any
@@ -135,10 +133,34 @@ namespace AMS.Views
             // Profit accounts combo
             ComboProfitAccount.ItemsSource = DatabaseService.Instance.GetAccountNames();
             if (ComboProfitAccount.Items.Count > 0) ComboProfitAccount.SelectedIndex = 0;
-            // Payment reminders (Welcome page)
-            var reminders = _saleVm.Sales.Where(s => s.HasActiveReminder).OrderBy(s => s.DaysUntilDue).ToList();
+            // Payment reminders (Welcome page) — hidden entirely when credit sales are disabled
+            bool creditEnabled = SettingsService.Instance.Settings.EnableCreditSales;
+            var reminders = creditEnabled
+                ? _saleVm.Sales.Where(s => s.HasActiveReminder).OrderBy(s => s.DaysUntilDue).ToList()
+                : new System.Collections.Generic.List<Models.Sale>();
             LstReminders.ItemsSource = reminders;
             PnlReminders.Visibility = reminders.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void RefreshReportTypesList()
+        {
+            string previous = ComboReport.SelectedItem?.ToString();
+            bool creditEnabled = SettingsService.Instance.Settings.EnableCreditSales;
+            var types = creditEnabled
+                ? ReportViewModel.ReportTypes
+                : ReportViewModel.ReportTypes.Where(t => t != "Active Credit Sales").ToArray();
+            ComboReport.ItemsSource = types;
+            int idx = Array.IndexOf(types, previous);
+            ComboReport.SelectedIndex = idx >= 0 ? idx : 0;
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new AMS.Views.CompanySettingsWindow();
+            win.ShowDialog();
+            VM.CompanyName = SettingsService.Instance.CompanyName;
+            RefreshReportTypesList();
+            RefreshAll();
         }
 
         private void GuardDb()
@@ -302,7 +324,8 @@ namespace AMS.Views
         // ─────────────────────────────────── Reports ────────────────────────────────
         private void ComboReport_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bool isAccountStatement = ComboReport.SelectedItem?.ToString() == "Account Statement";
+            string selected = ComboReport.SelectedItem?.ToString();
+            bool isAccountStatement = selected == "Account Statement";
             TxtReportAccountLabel.Visibility = isAccountStatement ? Visibility.Visible : Visibility.Collapsed;
             ComboReportAccount.Visibility = isAccountStatement ? Visibility.Visible : Visibility.Collapsed;
             if (isAccountStatement && DatabaseService.Instance.IsConnected && ComboReportAccount.ItemsSource == null)
@@ -310,6 +333,12 @@ namespace AMS.Views
                 ComboReportAccount.ItemsSource = DatabaseService.Instance.GetAccountNames();
                 ComboReportAccount.SelectedIndex = 0;
             }
+
+            bool isSoldCars = selected == "Sold Cars";
+            bool creditEnabled = SettingsService.Instance.Settings.EnableCreditSales;
+            bool showSaleType = isSoldCars && creditEnabled;
+            TxtSaleTypeLabel.Visibility = showSaleType ? Visibility.Visible : Visibility.Collapsed;
+            ComboSaleType.Visibility = showSaleType ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void BtnGenerateReport_Click(object sender, RoutedEventArgs e)
@@ -327,6 +356,16 @@ namespace AMS.Views
                     if (string.IsNullOrEmpty(account)) { MessageBox.Show("Select an account."); return; }
                     data = DatabaseService.Instance.GetAccountStatement(account, from, to);
                     reportType = $"Account Statement: {account}";
+                }
+                else if (reportType == "Active Credit Sales")
+                {
+                    data = DatabaseService.Instance.GetActiveCreditSales();
+                }
+                else if (reportType == "Sold Cars")
+                {
+                    string saleType = (ComboSaleType.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                    data = DatabaseService.Instance.GetReportData(reportType, from, to, saleType == "All" ? null : saleType);
+                    if (!string.IsNullOrEmpty(saleType) && saleType != "All") reportType = $"Sold Cars ({saleType})";
                 }
                 else
                 {

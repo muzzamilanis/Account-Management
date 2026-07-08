@@ -13,7 +13,7 @@ namespace AMS.ViewModels
         public static string[] ReportTypes { get; } = {
             "Sold Cars", "Stocks", "Accounts", "Account Statement", "Accounts Receivable", "Accounts Payable",
             "Trial Balance", "Office Expenses", "Misc. Auto Expenses", "Duty Expenses",
-            "Receipts", "Yen Payments", "Party Payments", "Agent Payments"
+            "Receipts", "Yen Payments", "Party Payments", "Agent Payments", "Active Credit Sales"
         };
 
         private string _selectedReport = "Sold Cars";

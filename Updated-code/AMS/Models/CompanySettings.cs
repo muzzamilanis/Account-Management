@@ -10,5 +10,7 @@ namespace AMS.Models
         public double DefaultExchangeRate { get; set; } = 1.0;
         public string DatabasePassword { get; set; } = "karachi123";
         public string LoginPassword { get; set; } = "karachi123";
+        public string LastDatabasePath { get; set; }
+        public bool EnableCreditSales { get; set; } = true;
     }
 }

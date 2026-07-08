@@ -28,10 +28,12 @@
                 <TextBox Text="{Binding Sale.SaleAmountReceived, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="RECEIVED IN ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,14"/>
-                <TextBlock Text="CREDIT DAYS (0 = cash sale, no reminder)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Sale.CreditDays, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="NOTIFY ME (DAYS BEFORE DUE)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Sale.ReminderDaysBefore, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                <StackPanel Visibility="{Binding IsCreditSalesEnabled, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="CREDIT DAYS (0 = cash sale, no reminder)" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Sale.CreditDays, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <TextBlock Text="NOTIFY ME (DAYS BEFORE DUE)" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Sale.ReminderDaysBefore, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

@@ -199,6 +199,49 @@ What was added:
 recorded with the new fields present. Existing sales in the database default to `CreditDays = 0`
 (cash sale, no reminder) since that information was never captured before.
 
+## Phase 5 — Credit-sales master toggle, profit-withdrawal bug, settings persistence bugs
+
+- **`CompanySettings.EnableCreditSales`** (bool, default `true`): a Settings checkbox
+  ("Enable Customer Credit Sale") that hides — but never deletes — everything credit-related when
+  off: the Credit Days/Notify Me fields in `SaleAutoDialog`, the Welcome-page reminders panel, the
+  "Active Credit Sales" report type, and the Sold Cars report's Credit/Cash filter. Existing credit
+  sale rows stay in the database untouched; toggling back on makes them visible again.
+- **Two new report additions**: "Active Credit Sales" (new report type — every sale with an
+  outstanding balance and `CreditDays > 0`, showing due date and days remaining/overdue, via
+  `DatabaseService.GetActiveCreditSales()`) and a Sale Type filter (All/Credit/Cash) on the existing
+  "Sold Cars" report (`GetReportData` gained an optional `saleTypeFilter` param). Both only appear
+  in the UI when `EnableCreditSales` is on.
+- **`GetTotalProfit()` bug**: it computed gross lifetime profit from sold cars but never subtracted
+  amounts already taken out via Withdraw Profit — so "Total Profit Available" never went down after
+  a withdrawal, no matter how many times you withdrew. Fixed to subtract
+  `SUM(Amount) FROM OfficeAccount WHERE DebitTo = 'Profit'` (the marker `WithdrawProfit()` already
+  writes) from the gross figure.
+- **`SettingsService.LastDatabasePath` was never actually persisted** — it was a bare in-memory
+  property on `SettingsService`, not part of the `CompanySettings` object that gets XML-serialized
+  to `%AppData%\AMS\settings.xml`. So the "auto-load last database" feature added in Phase 3 only
+  ever worked within a single running session; every real restart lost it, which is why the app
+  kept opening blank. Fixed by moving `LastDatabasePath` onto `CompanySettings` itself and proxying
+  the `SettingsService` property through it (get/set + `Save()`, same pattern as `ExchangeRate`).
+- **Found the same "edit-copy drops fields" bug class a third time**, this time in
+  `CompanySettingsViewModel`'s constructor: it copies `CompanyName`/`CompanyAddress`/etc. into a
+  fresh `CompanySettings` object but was missing `DatabasePassword` and (once added) would have
+  been missing `LastDatabasePath` and `EnableCreditSales` too. Since `Save()` replaces the *entire*
+  settings object, simply opening and saving Company Settings would have silently reset the
+  database password and wiped the just-fixed `LastDatabasePath` back to null. Fixed by copying all
+  fields through. **If you add a new field to `CompanySettings`, always check
+  `CompanySettingsViewModel`'s constructor copies it too** — this is now the third time this exact
+  shape of bug has appeared (see Phase 2 item 10 for the first two).
+- **Multiple `.bndb` files exist side by side** in `Database/` (`accounts.bndb`,
+  `accounts-new.bndb`, `StagingDB.bndb`) from different points in testing — they are *not* the same
+  data. When debugging "why doesn't X show up", check which file is actually open
+  (`SettingsService.Instance.LastDatabasePath` / the status bar text) before assuming a code bug.
+  Direct-query approach that resolved a "wrong number" report in this session: load
+  `System.Data.SQLite.dll` from the build output via
+  `Add-Type -Path bin\Debug\net48\System.Data.SQLite.dll` in PowerShell and query the `.bndb` file
+  directly — faster than guessing from report screenshots, and it's how the "SalePrice became 10x"
+  report turned out to be a data-entry issue, not a code bug (the DB held the value the user
+  actually typed).
+
 ### Understanding the Agent/Customer "Payment Payable/Receivable" ledger
 
 These are **not** simple "who owes whom" numbers — they're advance/settlement running balances:

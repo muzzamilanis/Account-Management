@@ -24,6 +24,7 @@ namespace AMS.ViewModels.Dialogs
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public Action<bool?> CloseAction { get; set; }
+        public bool IsCreditSalesEnabled => SettingsService.Instance.Settings.EnableCreditSales;
 
         public SaleAutoViewModel()
         {
