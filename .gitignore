@@ -57,3 +57,10 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Code signing key material — never commit private keys
+*.pfx
+*.p12
+
+# Installer build output (regenerate via Installer/AMS.iss)
+Updated-code/AMS/Installer/*.exe

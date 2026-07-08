@@ -46,6 +46,25 @@ namespace AMS.Views
             ComboReport.ItemsSource = reportTypes;
             ComboReport.SelectedIndex = 0;
             DpReportTo.SelectedDate = DateTime.Today;
+
+            // Auto-load the last opened database, if any
+            string lastPath = SettingsService.Instance.LastDatabasePath;
+            if (!string.IsNullOrEmpty(lastPath) && File.Exists(lastPath))
+            {
+                try
+                {
+                    DatabaseService.Instance.OpenDatabase(lastPath);
+                    TxtDbStatus.Text = $"✓ Opened: {Path.GetFileName(lastPath)}";
+                    TxtDbStatus.Visibility = Visibility.Visible;
+                    TxtStatus.Text = $"Database opened: {lastPath}";
+                    VM.RefreshDbState();
+                    RefreshAll();
+                }
+                catch
+                {
+                    // Fall back to manual open/create from the Welcome page
+                }
+            }
         }
 
         // ─────────────────────────────────── Database ────────────────────────────────
@@ -366,9 +385,14 @@ namespace AMS.Views
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to exit?", "Confirm Exit",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes) e.Cancel = true;
+            var dlg = new ConfirmDialog("Are you sure you want to exit?", "Confirm Exit") { Owner = this };
+            if (dlg.ShowDialog() != true) e.Cancel = true;
+        }
+
+        private void HypDeveloper_Click(object sender, RoutedEventArgs e)
+        {
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://www.linkedin.com/in/muzzamil-nagda/") { UseShellExecute = true }); }
+            catch { /* ignore — no browser to hand off to */ }
         }
 
         protected override void OnClosed(EventArgs e)

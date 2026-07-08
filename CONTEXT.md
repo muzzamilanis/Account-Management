@@ -235,6 +235,32 @@ Output: `bin/Debug/net48/AMS.exe`. Default login password (unless changed via Se
 **Gotcha**: if the app is already running (e.g. launched from Visual Studio), the build will fail
 with an MSB3027 file-lock error on `AMS.exe`. Close the running instance first.
 
+## Distributable installer
+
+`Updated-code/AMS/Installer/AMS.iss` is an Inno Setup script that packages a Release build into a
+single `JainiAutoAccountsManager_Setup.exe` (Start Menu shortcut, optional desktop icon, bundled
+uninstaller). To rebuild it:
+
+```
+dotnet build AMS.csproj -c Release
+"C:\Users\<you>\AppData\Local\Programs\Inno Setup 6\ISCC.exe" Installer\AMS.iss
+```
+
+The build (`AMS.exe`) and the installer itself are both Authenticode-signed with a **self-signed**
+"Jaini Motors" code-signing certificate (`JainiMotors_CodeSign.pfx`/`.cer`, generated locally,
+**not committed to git** — `*.pfx` is gitignored on purpose since it contains the private key).
+Signing command pattern:
+```powershell
+$cert = Get-ChildItem "Cert:\CurrentUser\My\8BACB5CBD27889842DA29DE0BFE293AEA8589585"
+Set-AuthenticodeSignature -FilePath <path-to-exe> -Certificate $cert -HashAlgorithm SHA256
+```
+**Important limitation**: self-signing does *not* make Windows trust the binary automatically — the
+client will still see an "Unknown Publisher" / SmartScreen warning unless they explicitly import
+`JainiMotors_CodeSign.cer` into their Trusted Root Certification Authorities store first. Signing
+only proves the file hasn't been tampered with after signing and gives a consistent publisher
+identity; it is not a substitute for a CA-issued certificate if you need to fully suppress OS trust
+warnings for the client.
+
 ## General debugging approach that worked well here
 
 When something "isn't syncing" or "shows 0": check three things in order —

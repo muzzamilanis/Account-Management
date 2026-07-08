@@ -920,15 +920,18 @@
                 </WrapPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0" x:Name="PnlExcView">
-                    <Label Content="Exchange Rate : " />
-                    <Label Name="lblExcRate" Content="{Binding ExchangeRate}" />
-                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0">
+                    <TextBlock VerticalAlignment="Center" Foreground="#A0FFFFFF">
                         <Hyperlink Name="hyplnk" Click="hyplnk_Click">Edit Rate</Hyperlink>
+                        <Run Text=" ￥" FontSize="14"/>
+                        <Run Name="RunExcRate" Text="{Binding ExchangeRate}" FontSize="14" FontWeight="SemiBold"/>
                     </TextBlock>
                 </StackPanel>
 
                 <TextBlock Grid.Column="6" VerticalAlignment="Center" FontSize="10"
-                           Foreground="#A0FFFFFF" Text="Developed By: hostineasy.com"/>
+                           Foreground="#A0FFFFFF">
+                    <Run Text="Developed By: "/>
+                    <Hyperlink Name="HypDeveloper" Click="HypDeveloper_Click">MuzzamilNagda</Hyperlink>
+                </TextBlock>
             </Grid>
         </Border>
     </Grid>
