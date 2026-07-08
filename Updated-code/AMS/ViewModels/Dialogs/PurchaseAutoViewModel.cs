@@ -53,7 +53,7 @@ namespace AMS.ViewModels.Dialogs
                 DatabaseService.Instance.AddStock(Stock);
                 double accountDebit = Stock.PaidAmount + Stock.MiscExpense;
                 if (accountDebit > 0 && !string.IsNullOrEmpty(SelectedAccount))
-                    DatabaseService.Instance.DebitAccount(SelectedAccount, accountDebit);
+                    DatabaseService.Instance.DebitAccountWithLedger(SelectedAccount, accountDebit, Stock.Date, $"Purchase: {Stock.Chassis}");
                 if (Stock.MiscExpense > 0 && !string.IsNullOrEmpty(SelectedAccount))
                     DatabaseService.Instance.AddMiscExp(new MiscExp
                     {

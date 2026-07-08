@@ -11,7 +11,7 @@ namespace AMS.ViewModels
     public class ReportViewModel : ViewModelBase
     {
         public static string[] ReportTypes { get; } = {
-            "Sold Cars", "Stocks", "Accounts", "Accounts Receivable", "Accounts Payable",
+            "Sold Cars", "Stocks", "Accounts", "Account Statement", "Accounts Receivable", "Accounts Payable",
             "Trial Balance", "Office Expenses", "Misc. Auto Expenses", "Duty Expenses",
             "Receipts", "Yen Payments", "Party Payments", "Agent Payments"
         };

@@ -38,7 +38,7 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Exp.MiscExpPaidBy)) { MessageBox.Show("Select an account."); return; }
             if (Exp.MiscExpAmount <= 0) { MessageBox.Show("Enter expense amount."); return; }
             DatabaseService.Instance.AddMiscExp(Exp);
-            DatabaseService.Instance.DebitAccount(Exp.MiscExpPaidBy, Exp.MiscExpAmount);
+            DatabaseService.Instance.DebitAccountWithLedger(Exp.MiscExpPaidBy, Exp.MiscExpAmount, Exp.MiscExpDate, $"Misc Expense (Chassis {Exp.Chassis}): {Exp.MiscExpDetail}");
             CloseAction?.Invoke(true);
         }
     }

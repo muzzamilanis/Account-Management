@@ -48,7 +48,7 @@ namespace AMS.ViewModels.Dialogs
             DatabaseService.Instance.MarkStockSold(Sale.SaleChassis);
             DatabaseService.Instance.RecordCustomerSale(Sale.SaleCustomer, Sale.SaleAmountReceived, Sale.SaleBalance);
             if (Sale.SaleAmountReceived > 0 && !string.IsNullOrEmpty(Sale.PaymentReceivedIn))
-                DatabaseService.Instance.CreditAccount(Sale.PaymentReceivedIn, Sale.SaleAmountReceived);
+                DatabaseService.Instance.CreditAccountWithLedger(Sale.PaymentReceivedIn, Sale.SaleAmountReceived, Sale.SaleDate, $"Sale: {Sale.SaleChassis} to {Sale.SaleCustomer}");
             CloseAction?.Invoke(true);
         }
     }

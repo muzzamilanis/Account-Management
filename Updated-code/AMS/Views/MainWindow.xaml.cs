@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -275,7 +276,17 @@ namespace AMS.Views
         private void BtnRefreshSales_Click(object sender, RoutedEventArgs e) => _saleVm.Load();
 
         // ─────────────────────────────────── Reports ────────────────────────────────
-        private void ComboReport_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void ComboReport_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            bool isAccountStatement = ComboReport.SelectedItem?.ToString() == "Account Statement";
+            TxtReportAccountLabel.Visibility = isAccountStatement ? Visibility.Visible : Visibility.Collapsed;
+            ComboReportAccount.Visibility = isAccountStatement ? Visibility.Visible : Visibility.Collapsed;
+            if (isAccountStatement && DatabaseService.Instance.IsConnected && ComboReportAccount.ItemsSource == null)
+            {
+                ComboReportAccount.ItemsSource = DatabaseService.Instance.GetAccountNames();
+                ComboReportAccount.SelectedIndex = 0;
+            }
+        }
 
         private void BtnGenerateReport_Click(object sender, RoutedEventArgs e)
         {
@@ -285,7 +296,18 @@ namespace AMS.Views
                 string reportType = ComboReport.SelectedItem?.ToString();
                 DateTime from = DpReportFrom.SelectedDate ?? new DateTime(2017, 1, 1);
                 DateTime to = DpReportTo.SelectedDate ?? DateTime.Today;
-                var data = DatabaseService.Instance.GetReportData(reportType, from, to);
+                DataTable data;
+                if (reportType == "Account Statement")
+                {
+                    string account = ComboReportAccount.SelectedItem?.ToString();
+                    if (string.IsNullOrEmpty(account)) { MessageBox.Show("Select an account."); return; }
+                    data = DatabaseService.Instance.GetAccountStatement(account, from, to);
+                    reportType = $"Account Statement: {account}";
+                }
+                else
+                {
+                    data = DatabaseService.Instance.GetReportData(reportType, from, to);
+                }
                 string company = SettingsService.Instance.CompanyName;
                 var doc = ReportService.Instance.BuildReport(reportType, company, data);
                 ReportViewer.Document = doc;

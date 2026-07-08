@@ -38,7 +38,7 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Payment.PaidTo)) { MessageBox.Show("Select an agent."); return; }
             if (Payment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
             DatabaseService.Instance.AddAgentPayment(Payment);
-            DatabaseService.Instance.DebitAccount(Payment.PaidFrom, Payment.PaymentAmount);
+            DatabaseService.Instance.DebitAccountWithLedger(Payment.PaidFrom, Payment.PaymentAmount, Payment.PaymentDate, $"Agent Payment to {Payment.PaidTo}: {Payment.PaymentDetail}");
             DatabaseService.Instance.RecordAgentPayment(Payment.PaidTo, Payment.PaymentAmount);
             CloseAction?.Invoke(true);
         }

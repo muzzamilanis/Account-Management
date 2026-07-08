@@ -83,10 +83,12 @@ namespace AMS.Services
             bool alt = false;
             double total = 0;
             int amountCol = -1;
-            for (int c = 0; c < data.Columns.Count; c++)
-                if (data.Columns[c].ColumnName.Contains("Amount") || data.Columns[c].ColumnName == "Price" ||
-                    data.Columns[c].ColumnName == "Current" || data.Columns[c].ColumnName == "Balance")
-                    amountCol = c;
+            bool isRunningStatement = title.StartsWith("Account Statement");
+            if (!isRunningStatement)
+                for (int c = 0; c < data.Columns.Count; c++)
+                    if (data.Columns[c].ColumnName.Contains("Amount") || data.Columns[c].ColumnName == "Price" ||
+                        data.Columns[c].ColumnName == "Current" || data.Columns[c].ColumnName == "Balance")
+                        amountCol = c;
 
             foreach (DataRow row in data.Rows)
             {

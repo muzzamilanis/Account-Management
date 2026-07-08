@@ -783,6 +783,11 @@
                                                Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <ComboBox x:Name="ComboReport" Width="200" Margin="0,0,16,0"
                                               SelectionChanged="ComboReport_SelectionChanged"/>
+                                    <TextBlock x:Name="TxtReportAccountLabel" Text="Account:" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"
+                                               Visibility="Collapsed"/>
+                                    <ComboBox x:Name="ComboReportAccount" Width="160" Margin="0,0,16,0"
+                                              Visibility="Collapsed"/>
                                     <TextBlock Text="From:" VerticalAlignment="Center"
                                                Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportFrom" Width="130" Margin="0,0,12,0"

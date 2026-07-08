@@ -38,7 +38,7 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Receipt.ReceivedFrom)) { MessageBox.Show("Select a customer."); return; }
             if (Receipt.ReceiptAmount <= 0) { MessageBox.Show("Enter receipt amount."); return; }
             DatabaseService.Instance.AddReceipt(Receipt);
-            DatabaseService.Instance.CreditAccount(Receipt.ReceivedIn, Receipt.ReceiptAmount);
+            DatabaseService.Instance.CreditAccountWithLedger(Receipt.ReceivedIn, Receipt.ReceiptAmount, Receipt.ReceiptDate, $"Receipt from {Receipt.ReceivedFrom}: {Receipt.ReceiptDetail}");
             DatabaseService.Instance.RecordCustomerReceipt(Receipt.ReceivedFrom, Receipt.ReceiptAmount);
             CloseAction?.Invoke(true);
         }

@@ -35,6 +35,7 @@ namespace AMS.Services
             };
             _connection = new SQLiteConnection(builder.ConnectionString);
             _connection.Open();
+            CreateTables();
         }
 
         public void CloseConnection()
@@ -63,6 +64,7 @@ namespace AMS.Services
                 CREATE TABLE IF NOT EXISTS DutyExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, DutyExpDate DATETIME, DutyExpAmount REAL, DutyExpDetail TEXT, DutyExpPaidBy TEXT, DutyExpAgent TEXT);
                 CREATE TABLE IF NOT EXISTS OfficeExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, OfficeExpDate DATETIME, OfficeExpAmount REAL, OfficeExpDetail TEXT, OfficeExpPaidBy TEXT);
                 CREATE TABLE IF NOT EXISTS OfficeAccount (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, CreditFrom TEXT, DebitTo TEXT, LedgerRowId INTEGER);
+                CREATE TABLE IF NOT EXISTS Ledger (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, Account TEXT);
             ";
             using (var cmd = new SQLiteCommand(schema, _connection))
             {
@@ -151,6 +153,74 @@ namespace AMS.Services
         {
             ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance + @amount WHERE AccountName = @name",
                 new Dictionary<string, object> { {"@amount", amount}, {"@name", accName} });
+        }
+
+        public void AddLedgerEntry(DateTime date, double amount, string detail, string account)
+        {
+            ExecuteNonQuery("INSERT INTO Ledger (Date, Amount, Detail, Account) VALUES (@d, @a, @det, @acc)",
+                new Dictionary<string, object> { {"@d", date}, {"@a", amount}, {"@det", detail}, {"@acc", account} });
+        }
+
+        // Debit = money leaving the account; logged as a negative ledger amount (shows in the
+        // Credit column of the account statement, matching standard asset-account convention).
+        public void DebitAccountWithLedger(string accName, double amount, DateTime date, string detail)
+        {
+            DebitAccount(accName, amount);
+            AddLedgerEntry(date, -amount, detail, accName);
+        }
+
+        // Credit = money entering the account; logged as a positive ledger amount (shows in the
+        // Debit column of the account statement).
+        public void CreditAccountWithLedger(string accName, double amount, DateTime date, string detail)
+        {
+            CreditAccount(accName, amount);
+            AddLedgerEntry(date, amount, detail, accName);
+        }
+
+        public DataTable GetAccountStatement(string accountName, DateTime fromDate, DateTime toDate)
+        {
+            var table = new DataTable();
+            table.Columns.Add("Date", typeof(DateTime));
+            table.Columns.Add("Detail", typeof(string));
+            table.Columns.Add("Debit", typeof(double));
+            table.Columns.Add("Credit", typeof(double));
+            table.Columns.Add("Balance", typeof(double));
+
+            double openingBalance = 0;
+            var acctRow = ExecuteQuery("SELECT OpeningBalance FROM Account WHERE AccountName = @name",
+                new Dictionary<string, object> { {"@name", accountName} });
+            if (acctRow.Rows.Count > 0) openingBalance = GetValue<double>(acctRow.Rows[0], "OpeningBalance");
+
+            double priorSum = 0;
+            var priorRows = ExecuteQuery("SELECT Amount FROM Ledger WHERE Account = @name AND Date < @from",
+                new Dictionary<string, object> { {"@name", accountName}, {"@from", fromDate.ToString("yyyy-MM-dd")} });
+            foreach (DataRow r in priorRows.Rows) priorSum += GetValue<double>(r, "Amount");
+
+            double runningBalance = openingBalance + priorSum;
+            var openingRow = table.NewRow();
+            openingRow["Date"] = fromDate;
+            openingRow["Detail"] = $"Opening Balance of {accountName}";
+            openingRow["Debit"] = DBNull.Value;
+            openingRow["Credit"] = DBNull.Value;
+            openingRow["Balance"] = runningBalance;
+            table.Rows.Add(openingRow);
+
+            var entries = ExecuteQuery(
+                "SELECT Date, Amount, Detail FROM Ledger WHERE Account = @name AND Date >= @from AND Date <= @to AND Amount <> 0 ORDER BY Date ASC, RowId ASC",
+                new Dictionary<string, object> { {"@name", accountName}, {"@from", fromDate.ToString("yyyy-MM-dd")}, {"@to", toDate.ToString("yyyy-MM-dd")} });
+            foreach (DataRow r in entries.Rows)
+            {
+                double amount = GetValue<double>(r, "Amount");
+                runningBalance += amount;
+                var row = table.NewRow();
+                row["Date"] = GetValue<DateTime>(r, "Date");
+                row["Detail"] = GetValue<string>(r, "Detail");
+                row["Debit"] = amount > 0 ? (object)amount : DBNull.Value;
+                row["Credit"] = amount < 0 ? (object)(-amount) : DBNull.Value;
+                row["Balance"] = runningBalance;
+                table.Rows.Add(row);
+            }
+            return table;
         }
 
         public void AdjustAgentPayable(string agentName, double delta)
@@ -515,8 +585,7 @@ namespace AMS.Services
 
         public void WithdrawProfit(double amount, string accountName, string detail)
         {
-            ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance - @amount WHERE AccountName = @acc",
-                new Dictionary<string, object> { { "@amount", amount }, { "@acc", accountName } });
+            DebitAccountWithLedger(accountName, amount, DateTime.Today, $"Profit Withdrawal: {detail}");
             ExecuteNonQuery("INSERT INTO OfficeAccount (Date, Amount, Detail, CreditFrom, DebitTo) VALUES (@date, @amount, @detail, @acc, 'Profit')",
                 new Dictionary<string, object> { { "@date", DateTime.Today.ToString("yyyy-MM-dd") }, { "@amount", amount }, { "@detail", detail }, { "@acc", accountName } });
         }

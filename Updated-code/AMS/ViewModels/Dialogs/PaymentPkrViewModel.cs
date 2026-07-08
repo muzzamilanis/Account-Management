@@ -48,14 +48,14 @@ namespace AMS.ViewModels.Dialogs
                 YenPayment.PaymentAmountPkr = YenPayment.PaymentAmountYen * YenPayment.PaymentExcRate;
                 if (YenPayment.PaymentAmountYen <= 0) { MessageBox.Show("Enter amount in Yen."); return; }
                 DatabaseService.Instance.AddYenPayment(YenPayment);
-                DatabaseService.Instance.DebitAccount(YenPayment.PaidFrom, YenPayment.PaymentAmountPkr);
+                DatabaseService.Instance.DebitAccountWithLedger(YenPayment.PaidFrom, YenPayment.PaymentAmountPkr, YenPayment.PaymentDate, $"Yen Payment: {YenPayment.PaymentDetail}");
             }
             else
             {
                 if (string.IsNullOrEmpty(PkrPayment.PaidTo)) { MessageBox.Show("Select a customer."); return; }
                 if (PkrPayment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
                 DatabaseService.Instance.AddPkrPayment(PkrPayment);
-                DatabaseService.Instance.DebitAccount(PkrPayment.PaidFrom, PkrPayment.PaymentAmount);
+                DatabaseService.Instance.DebitAccountWithLedger(PkrPayment.PaidFrom, PkrPayment.PaymentAmount, PkrPayment.PaymentDate, $"Party Payment to {PkrPayment.PaidTo}: {PkrPayment.PaymentDetail}");
                 DatabaseService.Instance.RecordCustomerPayment(PkrPayment.PaidTo, PkrPayment.PaymentAmount);
             }
             CloseAction?.Invoke(true);
