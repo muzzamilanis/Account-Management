@@ -1,7 +1,7 @@
 <Window x:Class="AMS.Views.Dialogs.PurchaseAutoDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Purchase Auto" Height="560" Width="420"
+        Title="Purchase Auto" Width="420" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>

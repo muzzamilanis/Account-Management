@@ -57,6 +57,29 @@
                     <!-- WELCOME PAGE -->
                     <TabItem Header="Welcome">
                         <Grid x:Name="PageWelcome">
+                        <Border x:Name="PnlReminders" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                                Background="{DynamicResource BaseAltBg}" BorderBrush="{DynamicResource WarningBrush}"
+                                BorderThickness="0,0,0,2" Padding="20,14" Margin="16" Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="&#x26A0; Payment Reminders" FontWeight="Bold" FontSize="15"
+                                           Foreground="{DynamicResource WarningBrush}" Margin="0,0,0,10"/>
+                                <ItemsControl x:Name="LstReminders">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding ReminderText}" Foreground="{DynamicResource BaseFg}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding SaleBalance, StringFormat='PKR {0:N2}'}"
+                                                           FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" Margin="16,0,0,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="&#x1F697;" FontSize="72" HorizontalAlignment="Center"
                                        Margin="0,0,0,20"/>

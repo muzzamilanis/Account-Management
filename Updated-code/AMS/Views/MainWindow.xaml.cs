@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using AMS.Services;
@@ -115,6 +116,10 @@ namespace AMS.Views
             // Profit accounts combo
             ComboProfitAccount.ItemsSource = DatabaseService.Instance.GetAccountNames();
             if (ComboProfitAccount.Items.Count > 0) ComboProfitAccount.SelectedIndex = 0;
+            // Payment reminders (Welcome page)
+            var reminders = _saleVm.Sales.Where(s => s.HasActiveReminder).OrderBy(s => s.DaysUntilDue).ToList();
+            LstReminders.ItemsSource = reminders;
+            PnlReminders.Visibility = reminders.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void GuardDb()
@@ -212,13 +217,13 @@ namespace AMS.Views
         // ─────────────────────────────────── Stocks ────────────────────────────────
         private void BtnAddStock_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); _agentsVm.Load(); } }
+            try { GuardDb(); var d = new PurchaseAutoDialog(); if (d.ShowDialog() == true) RefreshAll(); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void BtnEditStock_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); if (LstStocks.SelectedItem is Models.Stock s) { var d = new PurchaseAutoDialog(s); if (d.ShowDialog() == true) { _stocksVm.Load(); _accVm.LoadAll(); _agentsVm.Load(); } } }
+            try { GuardDb(); if (LstStocks.SelectedItem is Models.Stock s) { var d = new PurchaseAutoDialog(s); if (d.ShowDialog() == true) RefreshAll(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -269,7 +274,7 @@ namespace AMS.Views
         // ─────────────────────────────────── Sales ────────────────────────────────
         private void BtnNewSale_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new SaleAutoDialog(); if (d.ShowDialog() == true) { _saleVm.Load(); _stocksVm.Load(); _custVm.Load(); _accVm.LoadAll(); } }
+            try { GuardDb(); var d = new SaleAutoDialog(); if (d.ShowDialog() == true) RefreshAll(); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 

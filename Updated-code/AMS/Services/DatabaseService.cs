@@ -70,6 +70,20 @@ namespace AMS.Services
             {
                 cmd.ExecuteNonQuery();
             }
+            EnsureColumn("Sale", "CreditDays", "INTEGER DEFAULT 0");
+            EnsureColumn("Sale", "ReminderDaysBefore", "INTEGER DEFAULT 0");
+        }
+
+        // Lightweight migration helper: adds a column to an existing table if it isn't
+        // already there. CREATE TABLE IF NOT EXISTS only handles brand-new tables, not
+        // new columns on a table that already exists in an older database file.
+        private void EnsureColumn(string table, string column, string typeDef)
+        {
+            var dt = ExecuteQuery($"PRAGMA table_info({table})");
+            foreach (DataRow r in dt.Rows)
+                if (string.Equals(r["name"]?.ToString(), column, StringComparison.OrdinalIgnoreCase))
+                    return;
+            ExecuteNonQuery($"ALTER TABLE {table} ADD COLUMN {column} {typeDef}");
         }
 
         public DataTable ExecuteQuery(string query, Dictionary<string, object> parameters = null)
@@ -498,14 +512,15 @@ namespace AMS.Services
             foreach (DataRow r in dt.Rows) res.Add(new Sale {
                 RowId = GetValue<long>(r, "RowId"), SaleDate = GetValue<DateTime>(r, "SaleDate"), SaleChassis = GetValue<string>(r, "SaleChassis"),
                 SaleCustomer = GetValue<string>(r, "SaleCustomer"), SalePrice = GetValue<double>(r, "SalePrice"),
-                SaleAmountReceived = GetValue<double>(r, "SaleAmountReceived"), PaymentReceivedIn = GetValue<string>(r, "PaymentReceivedIn")
+                SaleAmountReceived = GetValue<double>(r, "SaleAmountReceived"), PaymentReceivedIn = GetValue<string>(r, "PaymentReceivedIn"),
+                CreditDays = GetValue<int>(r, "CreditDays"), ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore")
             });
             return res;
         }
         public void AddSale(Sale s)
         {
-            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn) VALUES (@d, @c, @cust, @p, @a, @pri)",
-                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn} });
+            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn, CreditDays, ReminderDaysBefore) VALUES (@d, @c, @cust, @p, @a, @pri, @cd, @rdb)",
+                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@cd", s.CreditDays}, {"@rdb", s.ReminderDaysBefore} });
         }
 
         // --- DASHBOARD/REPORTS ---

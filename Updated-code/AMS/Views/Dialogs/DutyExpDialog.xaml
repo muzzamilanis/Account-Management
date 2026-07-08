@@ -1,7 +1,7 @@
 <Window x:Class="AMS.Views.Dialogs.DutyExpDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Duty Expense" Height="380" Width="400"
+        Title="Duty Expense" Width="400" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>

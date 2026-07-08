@@ -1,7 +1,7 @@
 <Window x:Class="AMS.Views.Dialogs.ReceiptDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Receipt Entry" Height="340" Width="400"
+        Title="Receipt Entry" Width="400" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
