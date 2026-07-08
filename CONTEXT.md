@@ -159,6 +159,46 @@ What was added:
 an existing database. Historical transactions made before this feature existed will not appear in
 any Account Statement — only transactions recorded going forward will show up.
 
+## Phase 4 — Credit-days payment reminders (new feature, not in legacy)
+
+The user asked for installment-sale tracking: a customer can buy a car on credit terms (e.g. pay
+over 3 months), and the app should surface a dashboard notification when the remaining balance's
+due date is approaching. Checked first — **this does not exist anywhere in the legacy app**
+(confirmed via grep, no "Credit"/"Reminder"/"Due" concept in `Code/Autos_Accounts`), so this was
+designed fresh rather than replicated. Two design decisions were confirmed with the user before
+building:
+- **Credit Days lives on the Sale, not the Customer profile** — one customer can buy multiple cars
+  with different terms, and the reminder is tied to a specific chassis's remaining balance.
+- **Single due date, not an installment schedule** — `DueDate = SaleDate + CreditDays`. One
+  reminder counts down to that one date for whatever balance is still outstanding; it is *not* a
+  month-by-month installment schedule with separate due dates (that was explicitly scoped out as
+  more than needed).
+
+What was added:
+- **`Sale` model** (`Models/Sale.cs`): `CreditDays`, `ReminderDaysBefore` (both default 0 = cash
+  sale, no tracking), plus computed `DueDate`, `DaysUntilDue`, `HasActiveReminder` (true when
+  `CreditDays > 0 && SaleBalance > 0 && DaysUntilDue <= ReminderDaysBefore` — this stays true even
+  after the due date passes, i.e. overdue sales keep showing up), and `ReminderText` for display
+  (e.g. "Umer Nagda — Chassis 0199991 — due in 10 days (18 Jul 2026)" or "OVERDUE by 3 days").
+- **Schema migration pattern established here for the first time**: `DatabaseService.EnsureColumn`
+  checks `PRAGMA table_info(table)` and runs `ALTER TABLE ... ADD COLUMN` only if missing. This was
+  needed because `CREATE TABLE IF NOT EXISTS` (used for the Ledger table in Phase 3) only handles
+  *new tables* — it does nothing for *new columns on a table that already exists* in someone's
+  existing `.bndb` file, which is exactly the case here (`Sale` already existed). **Use
+  `EnsureColumn` for any future column additions to existing tables** — don't just edit the
+  `CREATE TABLE` string and assume it'll apply.
+- **`SaleAutoDialog.xaml`**: two new fields, "Credit Days" and "Notify Me (Days Before Due)",
+  right after the existing sale fields. Both optional/default 0.
+- **UI on the Welcome page** (`MainWindow.xaml`): a "⚠ Payment Reminders" panel, hidden by default,
+  shown at the top of the Welcome tab only when at least one sale has `HasActiveReminder == true`.
+  Lists customer/chassis/due-status/balance for each. Populated in `RefreshAll()` (already called
+  on database open/create and after any sale), so it updates automatically — no separate polling or
+  background timer.
+
+**Forward-only, same as every other feature added this session**: this only applies to sales
+recorded with the new fields present. Existing sales in the database default to `CreditDays = 0`
+(cash sale, no reminder) since that information was never captured before.
+
 ### Understanding the Agent/Customer "Payment Payable/Receivable" ledger
 
 These are **not** simple "who owes whom" numbers — they're advance/settlement running balances:
