@@ -13,3 +13,108 @@ duplicate column name: PaymentPaid
    at System.Data.SQLite.SQLiteCommand.ExecuteNonQuery()
    at Autos_Accounts.MainWindow.openData()
 TimeStamp: 7/2/2026 7:46:48 PM	Message: Registration Attempt: The remote server returned an error: (500) Internal Server Error.
+TimeStamp: 7/7/2026 4:15:36 PM	Message: Account Payable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsPayable_GotFocus()
+TimeStamp: 7/7/2026 4:15:41 PM	Message: Account Payable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsPayable_GotFocus()
+TimeStamp: 7/7/2026 4:15:45 PM	Message: Account Receivable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsReceivable_GotFocus()
+TimeStamp: 7/7/2026 4:15:51 PM	Message: During Stocks Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportStocks.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportStocks.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Stocks_Report()
+TimeStamp: 7/7/2026 4:16:07 PM	Message: During Accounts Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportAccounts.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportAccounts.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Accounts_Report()
+TimeStamp: 7/7/2026 4:16:34 PM	Message: Account Payable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsPayable_GotFocus()
+TimeStamp: 7/7/2026 4:16:39 PM	Message: During Sales Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReport.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReport.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Sales_Report()
+TimeStamp: 7/7/2026 4:17:05 PM	Message: Account Payable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsPayable_GotFocus()
+TimeStamp: 7/7/2026 4:17:11 PM	Message: Account Payable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsPayable_GotFocus()
+TimeStamp: 7/7/2026 4:17:15 PM	Message: Account Receivable: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Templates\SimpleReport 1.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.TabAccountsReceivable_GotFocus()
+TimeStamp: 7/7/2026 4:17:20 PM	Message: During Stocks Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportStocks.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportStocks.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Stocks_Report()
+TimeStamp: 7/7/2026 4:17:25 PM	Message: During Accounts Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportAccounts.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportAccounts.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Accounts_Report()
+TimeStamp: 7/7/2026 4:17:36 PM	Message: During Office Expense Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportExpenses.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportExpenses.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.OfficeExpense_Report()
+TimeStamp: 7/7/2026 4:17:41 PM	Message: During Duty Exp Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportDutyExpenses.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportDutyExpenses.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.DutyExpense_Report()
+TimeStamp: 7/7/2026 4:17:46 PM	Message: During Receipts Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportReceipts.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportReceipts.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.Receipts_Report()
+TimeStamp: 7/7/2026 4:17:55 PM	Message: During Payments Report: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportPaymentsPkr.xaml'.
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'E:\client\AMS\Account-Management\app\Accounts\Resources\SimpleReportPaymentsPkr.xaml'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access)
+   at Autos_Accounts.MainWindow.PartyPayments_Report()
+TimeStamp: 7/8/2026 5:48:03 AM	Message: When Adding Profit Withdrawal: Conversion from string "" to type 'Integer' is not valid.
+System.InvalidCastException: Conversion from string "" to type 'Integer' is not valid. ---> System.FormatException: Input string was not in a correct format.
+   at Microsoft.VisualBasic.CompilerServices.Conversions.ParseDouble(String Value, NumberFormatInfo NumberFormat)
+   at Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   --- End of inner exception stack trace ---
+   at Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   at Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(Object Value)
+   at Autos_Accounts.MainWindow.convertInteger(Object intInteger)
+   at Autos_Accounts.MainWindow.btnProfitWithdrawalEntry_Click(Object sender, RoutedEventArgs e)

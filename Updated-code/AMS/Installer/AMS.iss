@@ -2,7 +2,7 @@
 ; Build with: ISCC.exe AMS.iss
 
 #define MyAppName "Jaini Auto Accounts Manager"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "Jaini Motors"
 #define MyAppExeName "AMS.exe"
 

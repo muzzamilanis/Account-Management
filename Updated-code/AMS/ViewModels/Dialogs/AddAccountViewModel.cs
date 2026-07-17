@@ -40,7 +40,7 @@ namespace AMS.ViewModels.Dialogs
                 RowId = existing.RowId, AccountDate = existing.AccountDate, AccountType = existing.AccountType,
                 AccountName = existing.AccountName, AccountNumber = existing.AccountNumber, AccountTitle = existing.AccountTitle,
                 BankName = existing.BankName, BankBranch = existing.BankBranch, OpeningBalance = existing.OpeningBalance,
-                CurrentBalance = existing.CurrentBalance
+                CurrentBalance = existing.CurrentBalance, IncludeInProfit = existing.IncludeInProfit
             } : new Account();
             _selectedAccountType = Account.AccountType;
             SaveCommand = new RelayCommand(Save);

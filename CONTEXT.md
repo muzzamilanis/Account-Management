@@ -242,6 +242,64 @@ recorded with the new fields present. Existing sales in the database default to 
   report turned out to be a data-entry issue, not a code bug (the DB held the value the user
   actually typed).
 
+## Phase 6 — Real installment schedules (replaces the Phase 4 single-due-date model)
+
+After talking to the actual client, the credit-sale requirement turned out to be a real monthly
+installment plan, not a single lump due date: customer pays an advance, the remaining balance is
+split evenly across N months, each with its own due date, and each gets paid/marked off
+individually as the customer pays month by month. This **replaces** the Phase 4 design (which had
+`Sale.CreditDays` as a single "days until the whole balance is due") — that field is left orphaned
+in the DB schema (harmless, just unused) rather than migrated, since only test data existed.
+
+Two mechanics were confirmed with the user/client before building:
+- Monthly payments are **not** recorded as a new Sale each month — that would mean re-entering a
+  full sale every month, which the client correctly rejected. Instead there's a lightweight
+  **"Pay Installment"** action on the Sale Autos screen that marks the next unpaid installment paid.
+- Editing the plan (change number of remaining months / reminder days) at any time is supported.
+  Already-paid installments are left untouched; only the still-unpaid remainder gets reshaped —
+  **split evenly across the new month count, starting from today** (not from the original sale
+  date), per explicit client confirmation.
+
+What was built:
+- **New `Installment` table** (`RowId, SaleRowId, InstallmentNumber, DueDate, Amount, IsPaid,
+  PaidDate, PaidAmount, PaidInAccount`) and `Models/Installment.cs`. `Sale.CreditDays` (Phase 4) is
+  replaced by `Sale.InstallmentMonths` — 0 means cash sale, same "0 = disabled" convention as
+  before.
+- **`DatabaseService.AddSale` now returns the new row's `RowId`** (via `SELECT last_insert_rowid()`
+  right after the insert) — needed so the caller can attach an installment plan to the sale it just
+  created. This is a breaking signature change from `void` — check for other callers before
+  changing `AddSale` again.
+- **`AddInstallmentPlan(saleRowId, startDate, totalBalance, months, startingInstallmentNumber=1)`**
+  — splits `totalBalance` evenly across `months`, due dates at `startDate.AddMonths(1)`,
+  `AddMonths(2)`, etc. The *last* installment absorbs any rounding remainder so the sum matches
+  exactly (equal division of e.g. 100 across 3 months doesn't divide evenly).
+- **`ReplanInstallments(saleRowId, newMonths, newReminderDaysBefore)`** — the "Edit Plan" logic:
+  deletes unpaid installments for that sale, recomputes remaining balance as
+  `SaleBalance - sum(paid installment PaidAmounts)`, regenerates `newMonths` fresh installments
+  from today, continuing the `InstallmentNumber` sequence after the last paid one.
+- **`PayInstallment(installment, paidDate, paidAmount, account)`** — marks it paid, and per explicit
+  user direction ("single point of payment receiving record instead of consolidating here there")
+  also writes a normal `Receipt` row (`AddReceipt`) and updates the customer's ledger
+  (`RecordCustomerReceipt`), in addition to crediting the account (`CreditAccountWithLedger`) — so
+  Receipts stays the one place that shows every payment ever received from a customer, whether it
+  came in as a one-off receipt or as an installment payment. Takes the full `Installment` object
+  (not just its RowId) because it needs `SaleCustomer`/`SaleChassis`/`InstallmentNumber` from the
+  Sale join to build the Receipt detail text — those aren't columns on `Installment` itself.
+- **UI**: `SaleAutoDialog` gained a "This is an installment / credit sale" checkbox (only shown when
+  `EnableCreditSales` is on) that reveals Number of Months + reminder-days fields. Sale Autos screen
+  gained "Pay Installment" and "Edit Plan" buttons, enabled only when the selected sale has an
+  active plan (`InstallmentMonths > 0`) — `Views/Dialogs/PayInstallmentDialog` and
+  `EditInstallmentPlanDialog` + matching ViewModels.
+- **Welcome-page reminders and the "Active Credit Sales" report are now per-installment**, not
+  per-sale: `DatabaseService.GetUnpaidInstallments()` joins Installment→Sale for customer/chassis/
+  reminder-threshold, and each overdue/upcoming installment shows as its own line (e.g.
+  "Umer Nagda — Chassis 0199991 — Installment 2/5 — due in 8 days").
+
+**Same forward-only caveat as everything else**: existing test Sale rows from before this feature
+have no Installment rows at all (nothing to display/pay against) since the schedule is generated
+once at sale time. Only new installment sales recorded going forward will show up in reminders,
+the Active Credit Sales report, or the Pay Installment/Edit Plan flow.
+
 ### Understanding the Agent/Customer "Payment Payable/Receivable" ledger
 
 These are **not** simple "who owes whom" numbers — they're advance/settlement running balances:
@@ -316,3 +374,52 @@ When something "isn't syncing" or "shows 0": check three things in order —
 When in doubt about what the legacy app is *supposed* to do, grep
 `Code/Autos_Accounts/MainWindow.xaml.cs` for the relevant `btnXxx_Click`/`btnNewXxxEntry_Click`
 handler — it has the exact SQL.
+
+## Phase 7 — Installment shortfall carry-forward + cash-basis profit calculation
+
+Two real bugs found after the client tested the Phase 6 installment feature live:
+
+1. **Underpaying an installment silently "lost" the shortfall.** `PayInstallment` always marked
+   an installment fully paid regardless of `paidAmount` vs. the scheduled `Amount`. Fixed in
+   `DatabaseService.PayInstallment`: any shortfall (or overpayment) is now rolled onto the
+   `Amount` of the *next* unpaid installment for that sale, so the schedule always re-balances to
+   the true remaining balance. The **final** installment can no longer be marked paid for less
+   than its full (carried-forward-inclusive) amount — `PayInstallment` throws
+   `InvalidOperationException`, caught in `PayInstallmentViewModel.Save()` and shown as a
+   validation message. `PayInstallmentViewModel.SummaryText` now also shows "Amount due" and flags
+   when a payment is the final installment.
+
+2. **"Total Profit Available" was accrual-basis, not cash-basis, and didn't distinguish accounts.**
+   The old `GetTotalProfit()` summed `SalePrice - Cost` for every Sold car the moment it was
+   marked sold — regardless of how much cash had actually been *collected* (a problem specifically
+   for installment sales, where most of the price arrives over months). It also had no concept of
+   some accounts (e.g. Petty Cash) not representing real sale proceeds.
+   - Added `Account.IncludeInProfit` (bool, default `true`, migrated via
+     `EnsureColumn("Account", "IncludeInProfit", "INTEGER DEFAULT 1")` — existing accounts stay
+     profit-linked by default, matching prior behavior). Exposed as a checkbox in
+     `AddAccountDialog.xaml` ("Include this account in profit calculation... uncheck for Petty
+     Cash..."). Remember: `AddAccountViewModel`'s edit-copy constructor had to explicitly copy this
+     field too — the same "edit-copy drops fields" bug class documented earlier in this file.
+   - New `DatabaseService.GetProfitBreakdown()` is now the single source of truth: for every Sold
+     car it sums cash actually received (initial `Sale.SaleAmountReceived` + paid
+     `Installment.PaidAmount` rows) **but only when the receiving account has `IncludeInProfit =
+     1`**, subtracts the car's full `Cost` (cost is a real cash outflow that already happened at
+     purchase time, so it's still counted in full, not proportionally), then subtracts profit
+     already withdrawn. `GetTotalProfit()` (used by the dashboard) now just reads the final "NET
+     PROFIT AVAILABLE" row out of this same breakdown, so the dashboard figure and the report
+     below always reconcile exactly.
+   - New report type **"Profit Breakdown"** (`ReportViewModel.ReportTypes`, wired in
+     `MainWindow.xaml.cs` `BtnGenerateReport_Click`): one row per sold car (Chassis, Model, Sale
+     Price, Cash Collected, Cost, Profit Contribution) plus three summary rows (TOTAL, LESS:
+     PROFIT ALREADY WITHDRAWN, NET PROFIT AVAILABLE). No date range applies (it's a lifetime
+     figure) — `ComboReport_SelectionChanged` hides the From/To date pickers when this report is
+     selected (`TxtReportFromLabel`/`DpReportFrom`/`TxtReportToLabel`/`DpReportTo`).
+     `ReportService.BuildReport` skips its usual auto-computed TOTAL row for this report (flag
+     `isProfitBreakdown`, same pattern as `isRunningStatement` for Account Statement) since the
+     summary rows are already baked into the DataTable.
+
+Root-caused via direct SQLite query against `StagingDB.bndb` (see debugging approach above): a test
+sale (chassis `545613213521321`, cost 4,475,000, sold for 450,000) was overwhelmingly responsible
+for the negative profit figure the client saw — almost certainly bad test data, not a calculation
+bug. There is still no UI to edit/delete a `Sale`/`Stock` record to correct data like this — noted
+as a gap, not yet requested/built.

@@ -29,10 +29,13 @@
                 <TextBlock Text="RECEIVED IN ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,14"/>
                 <StackPanel Visibility="{Binding IsCreditSalesEnabled, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="CREDIT DAYS (0 = cash sale, no reminder)" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding Sale.CreditDays, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                    <TextBlock Text="NOTIFY ME (DAYS BEFORE DUE)" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding Sale.ReminderDaysBefore, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                    <CheckBox Content="This is an installment / credit sale" IsChecked="{Binding IsInstallmentSale}" Margin="0,4,0,14"/>
+                    <StackPanel Visibility="{Binding IsInstallmentSale, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="NUMBER OF MONTHS" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding Sale.InstallmentMonths, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                        <TextBlock Text="NOTIFY ME (DAYS BEFORE EACH INSTALLMENT DUE)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding Sale.ReminderDaysBefore, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

@@ -26,6 +26,9 @@ namespace AMS.ViewModels.Dialogs
         public Action<bool?> CloseAction { get; set; }
         public bool IsCreditSalesEnabled => SettingsService.Instance.Settings.EnableCreditSales;
 
+        private bool _isInstallmentSale;
+        public bool IsInstallmentSale { get => _isInstallmentSale; set => SetField(ref _isInstallmentSale, value); }
+
         public SaleAutoViewModel()
         {
             Sale = new Sale { SaleDate = DateTime.Today };
@@ -45,11 +48,16 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Sale.SaleCustomer)) { MessageBox.Show("Select a customer.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (Sale.SalePrice <= 0) { MessageBox.Show("Enter sale price.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
             if (Sale.SaleAmountReceived > 0 && string.IsNullOrEmpty(Sale.PaymentReceivedIn)) { MessageBox.Show("Select an account to receive payment in.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-            DatabaseService.Instance.AddSale(Sale);
+            if (!IsInstallmentSale) Sale.InstallmentMonths = 0;
+            if (IsInstallmentSale && Sale.InstallmentMonths <= 0) { MessageBox.Show("Enter the number of months for the installment plan.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+
+            long saleRowId = DatabaseService.Instance.AddSale(Sale);
             DatabaseService.Instance.MarkStockSold(Sale.SaleChassis);
             DatabaseService.Instance.RecordCustomerSale(Sale.SaleCustomer, Sale.SaleAmountReceived, Sale.SaleBalance);
             if (Sale.SaleAmountReceived > 0 && !string.IsNullOrEmpty(Sale.PaymentReceivedIn))
                 DatabaseService.Instance.CreditAccountWithLedger(Sale.PaymentReceivedIn, Sale.SaleAmountReceived, Sale.SaleDate, $"Sale: {Sale.SaleChassis} to {Sale.SaleCustomer}");
+            if (IsInstallmentSale && Sale.InstallmentMonths > 0 && Sale.SaleBalance > 0)
+                DatabaseService.Instance.AddInstallmentPlan(saleRowId, Sale.SaleDate, Sale.SaleBalance, Sale.InstallmentMonths);
             CloseAction?.Invoke(true);
         }
     }

@@ -136,8 +136,8 @@ namespace AMS.Views
             // Payment reminders (Welcome page) — hidden entirely when credit sales are disabled
             bool creditEnabled = SettingsService.Instance.Settings.EnableCreditSales;
             var reminders = creditEnabled
-                ? _saleVm.Sales.Where(s => s.HasActiveReminder).OrderBy(s => s.DaysUntilDue).ToList()
-                : new System.Collections.Generic.List<Models.Sale>();
+                ? DatabaseService.Instance.GetUnpaidInstallments().Where(i => i.HasActiveReminder).OrderBy(i => i.DaysUntilDue).ToList()
+                : new System.Collections.Generic.List<Models.Installment>();
             LstReminders.ItemsSource = reminders;
             PnlReminders.Visibility = reminders.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -321,6 +321,40 @@ namespace AMS.Views
 
         private void BtnRefreshSales_Click(object sender, RoutedEventArgs e) => _saleVm.Load();
 
+        private void GridSales_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            bool hasPlan = SettingsService.Instance.Settings.EnableCreditSales
+                && GridSales.SelectedItem is Models.Sale s && s.InstallmentMonths > 0;
+            BtnPayInstallment.IsEnabled = hasPlan;
+            BtnEditPlan.IsEnabled = hasPlan;
+        }
+
+        private void BtnPayInstallment_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(GridSales.SelectedItem is Models.Sale sale)) return;
+                var next = DatabaseService.Instance.GetNextUnpaidInstallment(sale.RowId);
+                if (next == null) { MessageBox.Show("This sale has no pending installments.", "Info", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+                var d = new PayInstallmentDialog(next);
+                if (d.ShowDialog() == true) RefreshAll();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnEditPlan_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(GridSales.SelectedItem is Models.Sale sale)) return;
+                var d = new EditInstallmentPlanDialog(sale);
+                if (d.ShowDialog() == true) RefreshAll();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
         // ─────────────────────────────────── Reports ────────────────────────────────
         private void ComboReport_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -339,6 +373,14 @@ namespace AMS.Views
             bool showSaleType = isSoldCars && creditEnabled;
             TxtSaleTypeLabel.Visibility = showSaleType ? Visibility.Visible : Visibility.Collapsed;
             ComboSaleType.Visibility = showSaleType ? Visibility.Visible : Visibility.Collapsed;
+
+            // Profit Breakdown covers the whole database (lifetime cash collected vs. cost),
+            // not a date range, so the From/To pickers don't apply to it.
+            bool needsDateRange = selected != "Profit Breakdown";
+            TxtReportFromLabel.Visibility = needsDateRange ? Visibility.Visible : Visibility.Collapsed;
+            DpReportFrom.Visibility = needsDateRange ? Visibility.Visible : Visibility.Collapsed;
+            TxtReportToLabel.Visibility = needsDateRange ? Visibility.Visible : Visibility.Collapsed;
+            DpReportTo.Visibility = needsDateRange ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void BtnGenerateReport_Click(object sender, RoutedEventArgs e)
@@ -360,6 +402,10 @@ namespace AMS.Views
                 else if (reportType == "Active Credit Sales")
                 {
                     data = DatabaseService.Instance.GetActiveCreditSales();
+                }
+                else if (reportType == "Profit Breakdown")
+                {
+                    data = DatabaseService.Instance.GetProfitBreakdown();
                 }
                 else if (reportType == "Sold Cars")
                 {

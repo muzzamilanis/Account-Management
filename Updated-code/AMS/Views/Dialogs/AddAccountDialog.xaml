@@ -32,7 +32,9 @@
                     <TextBox Text="{Binding Account.BankBranch, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 </StackPanel>
                 <TextBlock Text="OPENING BALANCE" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                <TextBox Text="{Binding Account.OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <CheckBox Content="Include this account in profit calculation" IsChecked="{Binding Account.IncludeInProfit}"/>
+                <TextBlock Text="Uncheck for Petty Cash or other accounts that don't represent real sale proceeds." Style="{StaticResource FieldLabel}" TextWrapping="Wrap" Margin="0,4,0,0"/>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

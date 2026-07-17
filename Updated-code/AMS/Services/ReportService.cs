@@ -84,7 +84,8 @@ namespace AMS.Services
             double total = 0;
             int amountCol = -1;
             bool isRunningStatement = title.StartsWith("Account Statement");
-            if (!isRunningStatement)
+            bool isProfitBreakdown = title == "Profit Breakdown";
+            if (!isRunningStatement && !isProfitBreakdown)
                 for (int c = 0; c < data.Columns.Count; c++)
                     if (data.Columns[c].ColumnName.Contains("Amount") || data.Columns[c].ColumnName == "Price" ||
                         data.Columns[c].ColumnName == "Current" || data.Columns[c].ColumnName == "Balance")

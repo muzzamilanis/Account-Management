@@ -72,7 +72,7 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding ReminderText}" Foreground="{DynamicResource BaseFg}"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding SaleBalance, StringFormat='PKR {0:N2}'}"
+                                                <TextBlock Grid.Column="1" Text="{Binding Amount, StringFormat='PKR {0:N2}'}"
                                                            FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" Margin="16,0,0,0"/>
                                             </Grid>
                                         </DataTemplate>
@@ -774,11 +774,16 @@
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                                 <Button Content="&#x2795; New Sale Entry" Click="BtnNewSale_Click"/>
                                 <Button Content="&#x1F504; Refresh" Style="{DynamicResource OutlineButton}" Click="BtnRefreshSales_Click"/>
+                                <Separator Width="1" Height="24" Margin="8,0" Background="{DynamicResource BaseBorder}"/>
+                                <Button x:Name="BtnPayInstallment" Content="&#x1F4B0; Pay Installment"
+                                        Style="{DynamicResource OutlineButton}" IsEnabled="False" Click="BtnPayInstallment_Click"/>
+                                <Button x:Name="BtnEditPlan" Content="&#x1F4C5; Edit Plan"
+                                        Style="{DynamicResource OutlineButton}" IsEnabled="False" Click="BtnEditPlan_Click"/>
                             </StackPanel>
                             <Border Style="{DynamicResource CardBorder}">
                                 <DockPanel>
                                     <TextBlock DockPanel.Dock="Top" Text="Sales History" Style="{DynamicResource SectionHeader}"/>
-                                    <DataGrid x:Name="GridSales" AutoGenerateColumns="False">
+                                    <DataGrid x:Name="GridSales" AutoGenerateColumns="False" SelectionChanged="GridSales_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat='dd MMM yyyy'}" Width="100"/>
                                             <DataGridTextColumn Header="Chassis" Binding="{Binding SaleChassis}" Width="130"/>
@@ -820,11 +825,11 @@
                                         <ComboBoxItem Content="Credit"/>
                                         <ComboBoxItem Content="Cash"/>
                                     </ComboBox>
-                                    <TextBlock Text="From:" VerticalAlignment="Center"
+                                    <TextBlock x:Name="TxtReportFromLabel" Text="From:" VerticalAlignment="Center"
                                                Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportFrom" Width="130" Margin="0,0,12,0"
                                                 SelectedDate="2017-01-01"/>
-                                    <TextBlock Text="To:" VerticalAlignment="Center"
+                                    <TextBlock x:Name="TxtReportToLabel" Text="To:" VerticalAlignment="Center"
                                                Foreground="{DynamicResource BaseSecondaryFg}" Margin="0,0,8,0"/>
                                     <DatePicker x:Name="DpReportTo" Width="130" Margin="0,0,16,0"/>
                                     <Button Content="&#x25B6; Generate" Margin="0,0,8,0"

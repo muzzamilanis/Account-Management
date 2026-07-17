@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 using AMS.Models;
 
 namespace AMS.Services
@@ -65,6 +66,7 @@ namespace AMS.Services
                 CREATE TABLE IF NOT EXISTS OfficeExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, OfficeExpDate DATETIME, OfficeExpAmount REAL, OfficeExpDetail TEXT, OfficeExpPaidBy TEXT);
                 CREATE TABLE IF NOT EXISTS OfficeAccount (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, CreditFrom TEXT, DebitTo TEXT, LedgerRowId INTEGER);
                 CREATE TABLE IF NOT EXISTS Ledger (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, Account TEXT);
+                CREATE TABLE IF NOT EXISTS Installment (RowId INTEGER PRIMARY KEY AUTOINCREMENT, SaleRowId INTEGER, InstallmentNumber INTEGER, DueDate DATETIME, Amount REAL, IsPaid INTEGER DEFAULT 0, PaidDate DATETIME, PaidAmount REAL, PaidInAccount TEXT);
             ";
             using (var cmd = new SQLiteCommand(schema, _connection))
             {
@@ -72,6 +74,8 @@ namespace AMS.Services
             }
             EnsureColumn("Sale", "CreditDays", "INTEGER DEFAULT 0");
             EnsureColumn("Sale", "ReminderDaysBefore", "INTEGER DEFAULT 0");
+            EnsureColumn("Sale", "InstallmentMonths", "INTEGER DEFAULT 0");
+            EnsureColumn("Account", "IncludeInProfit", "INTEGER DEFAULT 1");
         }
 
         // Lightweight migration helper: adds a column to an existing table if it isn't
@@ -139,7 +143,8 @@ namespace AMS.Services
                     AccountType = GetValue<string>(r, "AccountType"), AccountName = GetValue<string>(r, "AccountName"),
                     AccountNumber = GetValue<string>(r, "AccountNumber"), AccountTitle = GetValue<string>(r, "AccountTitle"),
                     BankName = GetValue<string>(r, "BankName"), BankBranch = GetValue<string>(r, "BankBranch"),
-                    OpeningBalance = GetValue<double>(r, "OpeningBalance"), CurrentBalance = GetValue<double>(r, "CurrentBalance")
+                    OpeningBalance = GetValue<double>(r, "OpeningBalance"), CurrentBalance = GetValue<double>(r, "CurrentBalance"),
+                    IncludeInProfit = GetValue<int>(r, "IncludeInProfit", 1) != 0
                 });
             }
             return res;
@@ -147,14 +152,14 @@ namespace AMS.Services
         
         public void AddAccount(Account a)
         {
-            ExecuteNonQuery("INSERT INTO Account (AccountDate, AccountType, AccountName, AccountNumber, AccountTitle, BankName, BankBranch, OpeningBalance, CurrentBalance) VALUES (@d, @ty, @n, @no, @ti, @bn, @bb, @ob, @cb)",
-                new Dictionary<string, object> { {"@d", a.AccountDate}, {"@ty", a.AccountType}, {"@n", a.AccountName}, {"@no", a.AccountNumber}, {"@ti", a.AccountTitle}, {"@bn", a.BankName}, {"@bb", a.BankBranch}, {"@ob", a.OpeningBalance}, {"@cb", a.CurrentBalance} });
+            ExecuteNonQuery("INSERT INTO Account (AccountDate, AccountType, AccountName, AccountNumber, AccountTitle, BankName, BankBranch, OpeningBalance, CurrentBalance, IncludeInProfit) VALUES (@d, @ty, @n, @no, @ti, @bn, @bb, @ob, @cb, @ip)",
+                new Dictionary<string, object> { {"@d", a.AccountDate}, {"@ty", a.AccountType}, {"@n", a.AccountName}, {"@no", a.AccountNumber}, {"@ti", a.AccountTitle}, {"@bn", a.BankName}, {"@bb", a.BankBranch}, {"@ob", a.OpeningBalance}, {"@cb", a.CurrentBalance}, {"@ip", a.IncludeInProfit ? 1 : 0} });
         }
-        
+
         public void UpdateAccount(Account a)
         {
-            ExecuteNonQuery("UPDATE Account SET AccountDate=@d, AccountType=@ty, AccountName=@n, AccountNumber=@no, AccountTitle=@ti, BankName=@bn, BankBranch=@bb, OpeningBalance=@ob, CurrentBalance=@cb WHERE RowId=@id",
-                new Dictionary<string, object> { {"@id", a.RowId}, {"@d", a.AccountDate}, {"@ty", a.AccountType}, {"@n", a.AccountName}, {"@no", a.AccountNumber}, {"@ti", a.AccountTitle}, {"@bn", a.BankName}, {"@bb", a.BankBranch}, {"@ob", a.OpeningBalance}, {"@cb", a.CurrentBalance} });
+            ExecuteNonQuery("UPDATE Account SET AccountDate=@d, AccountType=@ty, AccountName=@n, AccountNumber=@no, AccountTitle=@ti, BankName=@bn, BankBranch=@bb, OpeningBalance=@ob, CurrentBalance=@cb, IncludeInProfit=@ip WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", a.RowId}, {"@d", a.AccountDate}, {"@ty", a.AccountType}, {"@n", a.AccountName}, {"@no", a.AccountNumber}, {"@ti", a.AccountTitle}, {"@bn", a.BankName}, {"@bb", a.BankBranch}, {"@ob", a.OpeningBalance}, {"@cb", a.CurrentBalance}, {"@ip", a.IncludeInProfit ? 1 : 0} });
         }
         
         public void DebitAccount(string accName, double amount)
@@ -513,59 +518,275 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), SaleDate = GetValue<DateTime>(r, "SaleDate"), SaleChassis = GetValue<string>(r, "SaleChassis"),
                 SaleCustomer = GetValue<string>(r, "SaleCustomer"), SalePrice = GetValue<double>(r, "SalePrice"),
                 SaleAmountReceived = GetValue<double>(r, "SaleAmountReceived"), PaymentReceivedIn = GetValue<string>(r, "PaymentReceivedIn"),
-                CreditDays = GetValue<int>(r, "CreditDays"), ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore")
+                InstallmentMonths = GetValue<int>(r, "InstallmentMonths"), ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore")
             });
             return res;
         }
-        public void AddSale(Sale s)
+
+        // Returns the RowId of the newly inserted Sale, needed to attach an installment plan.
+        public long AddSale(Sale s)
         {
-            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn, CreditDays, ReminderDaysBefore) VALUES (@d, @c, @cust, @p, @a, @pri, @cd, @rdb)",
-                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@cd", s.CreditDays}, {"@rdb", s.ReminderDaysBefore} });
+            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn, InstallmentMonths, ReminderDaysBefore) VALUES (@d, @c, @cust, @p, @a, @pri, @im, @rdb)",
+                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@im", s.InstallmentMonths}, {"@rdb", s.ReminderDaysBefore} });
+            var dt = ExecuteQuery("SELECT last_insert_rowid() as Id");
+            return GetValue<long>(dt.Rows[0], "Id");
         }
 
-        // Active credit sales: credit term set, and still an outstanding balance.
+        // --- INSTALLMENT PLANS ---
+
+        // Splits `totalBalance` evenly across `months` monthly installments starting one
+        // month after `startDate`. Used both for the initial plan at sale time and for
+        // re-planning the remaining unpaid balance later (see ReplanInstallments).
+        public void AddInstallmentPlan(long saleRowId, DateTime startDate, double totalBalance, int months, int startingInstallmentNumber = 1)
+        {
+            if (months <= 0 || totalBalance <= 0) return;
+            double perInstallment = Math.Round(totalBalance / months, 2);
+            double allocated = 0;
+            for (int i = 0; i < months; i++)
+            {
+                // Last installment absorbs any rounding remainder so the total matches exactly.
+                double amount = (i == months - 1) ? Math.Round(totalBalance - allocated, 2) : perInstallment;
+                allocated += amount;
+                ExecuteNonQuery("INSERT INTO Installment (SaleRowId, InstallmentNumber, DueDate, Amount, IsPaid) VALUES (@s, @n, @d, @a, 0)",
+                    new Dictionary<string, object> {
+                        {"@s", saleRowId}, {"@n", startingInstallmentNumber + i},
+                        {"@d", startDate.Date.AddMonths(i + 1)}, {"@a", amount}
+                    });
+            }
+        }
+
+        public List<Installment> GetInstallmentsForSale(long saleRowId)
+        {
+            var dt = ExecuteQuery("SELECT * FROM Installment WHERE SaleRowId = @s ORDER BY InstallmentNumber ASC",
+                new Dictionary<string, object> { {"@s", saleRowId} });
+            var res = new List<Installment>();
+            foreach (DataRow r in dt.Rows) res.Add(MapInstallment(r));
+            return res;
+        }
+
+        // All unpaid installments across every sale, with customer/chassis/reminder info
+        // joined in from the parent Sale for display purposes.
+        public List<Installment> GetUnpaidInstallments()
+        {
+            var dt = ExecuteQuery(
+                "SELECT i.*, s.SaleCustomer, s.SaleChassis, s.ReminderDaysBefore, s.InstallmentMonths " +
+                "FROM Installment i INNER JOIN Sale s ON s.RowId = i.SaleRowId " +
+                "WHERE i.IsPaid = 0 ORDER BY i.DueDate ASC");
+            var res = new List<Installment>();
+            foreach (DataRow r in dt.Rows)
+            {
+                var inst = MapInstallment(r);
+                inst.SaleCustomer = GetValue<string>(r, "SaleCustomer");
+                inst.SaleChassis = GetValue<string>(r, "SaleChassis");
+                inst.ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore");
+                inst.TotalInstallments = GetValue<int>(r, "InstallmentMonths");
+                res.Add(inst);
+            }
+            return res;
+        }
+
+        // The next unpaid installment for a sale (lowest InstallmentNumber not yet paid), if any.
+        public Installment GetNextUnpaidInstallment(long saleRowId)
+        {
+            var dt = ExecuteQuery(
+                "SELECT i.*, s.SaleCustomer, s.SaleChassis, s.ReminderDaysBefore, s.InstallmentMonths " +
+                "FROM Installment i INNER JOIN Sale s ON s.RowId = i.SaleRowId " +
+                "WHERE i.SaleRowId = @s AND i.IsPaid = 0 ORDER BY i.InstallmentNumber ASC LIMIT 1",
+                new Dictionary<string, object> { {"@s", saleRowId} });
+            if (dt.Rows.Count == 0) return null;
+            var r = dt.Rows[0];
+            var inst = MapInstallment(r);
+            inst.SaleCustomer = GetValue<string>(r, "SaleCustomer");
+            inst.SaleChassis = GetValue<string>(r, "SaleChassis");
+            inst.ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore");
+            inst.TotalInstallments = GetValue<int>(r, "InstallmentMonths");
+            return inst;
+        }
+
+        // Records an installment payment as a normal Receipt too, so Receipts stays the single
+        // source of truth for "money received from a customer" — installment payments aren't a
+        // separate parallel record, they just also close out a specific installment.
+        //
+        // A short-paid installment isn't lost — the shortfall is rolled onto the Amount of the
+        // next unpaid installment (and an overpayment reduces it the same way), so the schedule
+        // always re-balances to the true remaining balance. The final installment is the one
+        // place this can't be deferred further, so it's blocked until the full amount (including
+        // anything carried forward into it) is actually received.
+        public void PayInstallment(Installment installment, DateTime paidDate, double paidAmount, string account)
+        {
+            bool isFinalInstallment = installment.InstallmentNumber == installment.TotalInstallments;
+            if (isFinalInstallment && paidAmount < installment.Amount)
+                throw new InvalidOperationException(
+                    $"This is the final installment — the full remaining amount of {installment.Amount:N0} must be received before it can be marked paid.");
+
+            ExecuteNonQuery("UPDATE Installment SET IsPaid = 1, PaidDate = @pd, PaidAmount = @pa, PaidInAccount = @acc WHERE RowId = @id",
+                new Dictionary<string, object> { {"@pd", paidDate}, {"@pa", paidAmount}, {"@acc", account}, {"@id", installment.RowId} });
+
+            double shortfall = installment.Amount - paidAmount;
+            if (!isFinalInstallment && shortfall != 0)
+            {
+                ExecuteNonQuery("UPDATE Installment SET Amount = Amount + @sf WHERE SaleRowId = @s AND InstallmentNumber = @n",
+                    new Dictionary<string, object> { {"@sf", shortfall}, {"@s", installment.SaleRowId}, {"@n", installment.InstallmentNumber + 1} });
+            }
+
+            string detail = $"Installment {installment.InstallmentNumber}/{installment.TotalInstallments} — Chassis {installment.SaleChassis}";
+            AddReceipt(new Receipt
+            {
+                ReceiptDate = paidDate, ReceiptAmount = paidAmount, ReceiptDetail = detail,
+                ReceivedIn = account, ReceivedFrom = installment.SaleCustomer
+            });
+            CreditAccountWithLedger(account, paidAmount, paidDate, detail);
+            RecordCustomerReceipt(installment.SaleCustomer, paidAmount);
+        }
+
+        // Re-plans a sale's remaining schedule: deletes any still-unpaid installments and
+        // recreates `newMonths` fresh ones, splitting whatever balance is still outstanding
+        // (SalePrice - AmountReceived - sum of already-paid installments) evenly across them,
+        // starting from today. Already-paid installments are left untouched.
+        public void ReplanInstallments(long saleRowId, int newMonths, int newReminderDaysBefore)
+        {
+            var sale = GetSales().FirstOrDefault(s => s.RowId == saleRowId);
+            if (sale == null) return;
+            var existing = GetInstallmentsForSale(saleRowId);
+            double paidSoFar = existing.Where(i => i.IsPaid).Sum(i => i.PaidAmount);
+            double remaining = sale.SaleBalance - paidSoFar;
+            int nextNumber = existing.Where(i => i.IsPaid).Select(i => i.InstallmentNumber).DefaultIfEmpty(0).Max() + 1;
+
+            ExecuteNonQuery("DELETE FROM Installment WHERE SaleRowId = @s AND IsPaid = 0",
+                new Dictionary<string, object> { {"@s", saleRowId} });
+            ExecuteNonQuery("UPDATE Sale SET InstallmentMonths = @im, ReminderDaysBefore = @rdb WHERE RowId = @id",
+                new Dictionary<string, object> { {"@im", nextNumber - 1 + newMonths}, {"@rdb", newReminderDaysBefore}, {"@id", saleRowId} });
+
+            if (remaining > 0 && newMonths > 0)
+                AddInstallmentPlan(saleRowId, DateTime.Today, remaining, newMonths, nextNumber);
+        }
+
+        private Installment MapInstallment(DataRow r) => new Installment
+        {
+            RowId = GetValue<long>(r, "RowId"), SaleRowId = GetValue<long>(r, "SaleRowId"),
+            InstallmentNumber = GetValue<int>(r, "InstallmentNumber"), DueDate = GetValue<DateTime>(r, "DueDate"),
+            Amount = GetValue<double>(r, "Amount"), IsPaid = GetValue<int>(r, "IsPaid") != 0,
+            PaidDate = r["PaidDate"] != DBNull.Value ? GetValue<DateTime>(r, "PaidDate") : (DateTime?)null,
+            PaidAmount = GetValue<double>(r, "PaidAmount"), PaidInAccount = GetValue<string>(r, "PaidInAccount")
+        };
+
+        // Active credit sales, per outstanding installment (one row per unpaid installment).
         public DataTable GetActiveCreditSales()
         {
             var table = new DataTable();
             table.Columns.Add("Customer", typeof(string));
             table.Columns.Add("Chassis", typeof(string));
-            table.Columns.Add("SaleDate", typeof(DateTime));
+            table.Columns.Add("Installment", typeof(string));
             table.Columns.Add("DueDate", typeof(DateTime));
             table.Columns.Add("DaysRemaining", typeof(string));
-            table.Columns.Add("Balance", typeof(double));
+            table.Columns.Add("Amount", typeof(double));
 
-            foreach (var s in GetSales())
+            foreach (var i in GetUnpaidInstallments())
             {
-                if (s.CreditDays <= 0 || s.SaleBalance <= 0 || !s.DueDate.HasValue) continue;
                 var row = table.NewRow();
-                row["Customer"] = s.SaleCustomer;
-                row["Chassis"] = s.SaleChassis;
-                row["SaleDate"] = s.SaleDate;
-                row["DueDate"] = s.DueDate.Value;
-                row["DaysRemaining"] = s.DaysUntilDue.Value < 0
-                    ? $"Overdue {-s.DaysUntilDue.Value}d" : $"{s.DaysUntilDue.Value}d";
-                row["Balance"] = s.SaleBalance;
+                row["Customer"] = i.SaleCustomer;
+                row["Chassis"] = i.SaleChassis;
+                row["Installment"] = $"{i.InstallmentNumber}/{i.TotalInstallments}";
+                row["DueDate"] = i.DueDate;
+                row["DaysRemaining"] = i.DaysUntilDue < 0 ? $"Overdue {-i.DaysUntilDue}d" : $"{i.DaysUntilDue}d";
+                row["Amount"] = i.Amount;
                 table.Rows.Add(row);
             }
             return table;
         }
 
         // --- DASHBOARD/REPORTS ---
-        public double GetTotalProfit()
+
+        // Cash-basis profit: only cash that has actually been received counts, and only if it
+        // landed in an account flagged IncludeInProfit (so Petty Cash or similar non-sales
+        // accounts don't inflate the figure). Cost is taken in full for every Sold car, since
+        // that money has already genuinely left the business at purchase time. This is what
+        // drives both "Total Profit Available" (dashboard) and the "Profit Breakdown" report —
+        // both read the same numbers so they always reconcile.
+        public DataTable GetProfitBreakdown()
         {
-            var dt = ExecuteQuery(
-                "SELECT SUM(sa.SalePrice - st.Cost) as Total " +
-                "FROM Stock st " +
-                "INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis " +
-                "WHERE st.Status = 'Sold'");
-            double grossProfit = (dt.Rows.Count > 0 && dt.Rows[0]["Total"] != DBNull.Value)
-                ? Convert.ToDouble(dt.Rows[0]["Total"]) : 0;
+            var table = new DataTable();
+            table.Columns.Add("Chassis", typeof(string));
+            table.Columns.Add("Model", typeof(string));
+            table.Columns.Add("Sale Price", typeof(double));
+            table.Columns.Add("Cash Collected", typeof(double));
+            table.Columns.Add("Cost", typeof(double));
+            table.Columns.Add("Profit Contribution", typeof(double));
+
+            var sales = ExecuteQuery(
+                "SELECT sa.RowId as SaleRowId, sa.SaleChassis, st.Model, sa.SalePrice, st.Cost, " +
+                "sa.SaleAmountReceived, sa.PaymentReceivedIn " +
+                "FROM Stock st INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis WHERE st.Status = 'Sold'");
+
+            double totalSalePrice = 0, totalCashCollected = 0, totalCost = 0, totalProfit = 0;
+
+            foreach (DataRow r in sales.Rows)
+            {
+                long saleRowId = GetValue<long>(r, "SaleRowId");
+                double salePrice = GetValue<double>(r, "SalePrice");
+                double cost = GetValue<double>(r, "Cost");
+
+                double cashCollected = IsAccountProfitLinked(GetValue<string>(r, "PaymentReceivedIn"))
+                    ? GetValue<double>(r, "SaleAmountReceived") : 0;
+
+                var paidInstallments = ExecuteQuery(
+                    "SELECT PaidAmount, PaidInAccount FROM Installment WHERE SaleRowId = @s AND IsPaid = 1",
+                    new Dictionary<string, object> { {"@s", saleRowId} });
+                foreach (DataRow ir in paidInstallments.Rows)
+                    if (IsAccountProfitLinked(GetValue<string>(ir, "PaidInAccount")))
+                        cashCollected += GetValue<double>(ir, "PaidAmount");
+
+                double profit = cashCollected - cost;
+
+                var row = table.NewRow();
+                row["Chassis"] = GetValue<string>(r, "SaleChassis");
+                row["Model"] = GetValue<string>(r, "Model");
+                row["Sale Price"] = salePrice;
+                row["Cash Collected"] = cashCollected;
+                row["Cost"] = cost;
+                row["Profit Contribution"] = profit;
+                table.Rows.Add(row);
+
+                totalSalePrice += salePrice; totalCashCollected += cashCollected; totalCost += cost; totalProfit += profit;
+            }
 
             var wd = ExecuteQuery("SELECT SUM(Amount) as Total FROM OfficeAccount WHERE DebitTo = 'Profit'");
             double alreadyWithdrawn = (wd.Rows.Count > 0 && wd.Rows[0]["Total"] != DBNull.Value)
                 ? Convert.ToDouble(wd.Rows[0]["Total"]) : 0;
 
-            return grossProfit - alreadyWithdrawn;
+            AddProfitSummaryRow(table, "TOTAL", totalSalePrice, totalCashCollected, totalCost, totalProfit);
+            AddProfitSummaryRow(table, "LESS: PROFIT ALREADY WITHDRAWN", null, null, null, -alreadyWithdrawn);
+            AddProfitSummaryRow(table, "NET PROFIT AVAILABLE", null, null, null, totalProfit - alreadyWithdrawn);
+
+            return table;
+        }
+
+        private void AddProfitSummaryRow(DataTable table, string label, double? salePrice, double? cashCollected, double? cost, double profit)
+        {
+            var row = table.NewRow();
+            row["Chassis"] = label;
+            row["Model"] = DBNull.Value;
+            row["Sale Price"] = salePrice.HasValue ? (object)salePrice.Value : DBNull.Value;
+            row["Cash Collected"] = cashCollected.HasValue ? (object)cashCollected.Value : DBNull.Value;
+            row["Cost"] = cost.HasValue ? (object)cost.Value : DBNull.Value;
+            row["Profit Contribution"] = profit;
+            table.Rows.Add(row);
+        }
+
+        private bool IsAccountProfitLinked(string accountName)
+        {
+            if (string.IsNullOrEmpty(accountName)) return false;
+            var dt = ExecuteQuery("SELECT IncludeInProfit FROM Account WHERE AccountName = @n",
+                new Dictionary<string, object> { {"@n", accountName} });
+            if (dt.Rows.Count == 0) return false;
+            return GetValue<int>(dt.Rows[0], "IncludeInProfit", 1) != 0;
+        }
+
+        public double GetTotalProfit()
+        {
+            var breakdown = GetProfitBreakdown();
+            if (breakdown.Rows.Count == 0) return 0;
+            return Convert.ToDouble(breakdown.Rows[breakdown.Rows.Count - 1]["Profit Contribution"]);
         }
         public double GetTotalYenPayable()
         {
@@ -586,8 +807,8 @@ namespace AMS.Services
                     query = "SELECT sa.SaleDate as Date, st.Chassis, st.Model, st.Color, st.Cost, sa.SalePrice, (sa.SalePrice - st.Cost) as Profit "
                           + "FROM Stock st INNER JOIN Sale sa ON sa.SaleChassis = st.Chassis "
                           + "WHERE st.Status = 'Sold' AND sa.SaleDate >= @from AND sa.SaleDate <= @to";
-                    if (saleTypeFilter == "Credit") query += " AND sa.CreditDays > 0";
-                    else if (saleTypeFilter == "Cash") query += " AND (sa.CreditDays IS NULL OR sa.CreditDays = 0)";
+                    if (saleTypeFilter == "Credit") query += " AND sa.InstallmentMonths > 0";
+                    else if (saleTypeFilter == "Cash") query += " AND (sa.InstallmentMonths IS NULL OR sa.InstallmentMonths = 0)";
                     break;
                 case "Stocks":
                     query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty, MiscExpense as [Misc Exp], Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
