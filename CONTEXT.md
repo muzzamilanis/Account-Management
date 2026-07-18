@@ -473,3 +473,15 @@ have.
 - 4 new report types (`Demurrage Expenses`, `No Plate Expenses`, `Commission Expenses`,
   `Tax Expenses`) plus the renamed `Clearance Expenses`; the `Stocks` report also now shows all 6
   expense columns.
+
+## Phase 9 — Pay/Edit Plan buttons on the Welcome-page reminder rows
+
+Client suggestion: the Welcome-page "Payment Reminders" panel (added in Phase 6) was read-only —
+acting on a reminder meant going to Sale Autos, finding the matching sale, then clicking Pay
+Installment/Edit Plan there. Added `Pay`/`Edit Plan` buttons directly on each reminder row
+(`MainWindow.xaml` `LstReminders` item template), wired in `MainWindow.xaml.cs`
+(`BtnPayReminder_Click`/`BtnEditReminderPlan_Click`) to open the exact same
+`PayInstallmentDialog`/`EditInstallmentPlanDialog` the Sale Autos tab buttons use — the Installment
+bound to the row already carries `SaleRowId`, so Edit Plan looks up the parent `Sale` via
+`GetSales().FirstOrDefault(s => s.RowId == installment.SaleRowId)`. No new dialogs or DB logic;
+pure UI convenience reusing Phase 6 plumbing.

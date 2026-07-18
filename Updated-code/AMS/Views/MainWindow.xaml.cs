@@ -383,6 +383,35 @@ namespace AMS.Views
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
+        // Same Pay/Edit Plan actions as the Sale Autos tab, exposed directly on the Welcome-page
+        // reminder row so a user paying a customer at the counter doesn't have to go hunt for the
+        // matching sale first.
+        private void BtnPayReminder_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(((FrameworkElement)sender).DataContext is Models.Installment installment)) return;
+                var d = new PayInstallmentDialog(installment);
+                if (d.ShowDialog() == true) RefreshAll();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnEditReminderPlan_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(((FrameworkElement)sender).DataContext is Models.Installment installment)) return;
+                var sale = DatabaseService.Instance.GetSales().FirstOrDefault(s => s.RowId == installment.SaleRowId);
+                if (sale == null) return;
+                var d = new EditInstallmentPlanDialog(sale);
+                if (d.ShowDialog() == true) RefreshAll();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
         // ─────────────────────────────────── Reports ────────────────────────────────
         private void ComboReport_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
