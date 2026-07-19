@@ -14,6 +14,8 @@
             <conv:StatusToColorConverter x:Key="StatusColor"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
             <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+            <conv:InverseBooleanConverter x:Key="InverseBool"/>
+            <conv:CurrencyAmountConverter x:Key="CurrencyAmount"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

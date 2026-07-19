@@ -1,3 +1,4 @@
+using AMS.Models;
 using AMS.ViewModels.Dialogs;
 using System.Windows;
 
@@ -5,10 +6,10 @@ namespace AMS.Views.Dialogs
 {
     public partial class PaymentAgentDialog : Window
     {
-        public PaymentAgentDialog()
+        public PaymentAgentDialog(PaymentAgent existing = null)
         {
             InitializeComponent();
-            var vm = new PaymentAgentViewModel();
+            var vm = new PaymentAgentViewModel(existing);
             vm.CloseAction = r => { DialogResult = r; Close(); };
             DataContext = vm;
         }

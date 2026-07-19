@@ -19,5 +19,13 @@ namespace AMS.Models
         // live in the Installment table, not here — this just records the plan's shape.
         public int InstallmentMonths { get; set; }
         public int ReminderDaysBefore { get; set; }
+
+        // Multi-currency audit trail: null/empty SaleCurrency means the sale was entered directly
+        // in the base currency (today's behavior). "UGX" means SalePrice above was computed as
+        // SaleForeignAmount * SaleRate at the time of sale — SalePrice remains the figure every
+        // other calculation (profit, receivables, installments) reads, unchanged.
+        public string SaleCurrency { get; set; }
+        public double SaleForeignAmount { get; set; }
+        public double SaleRate { get; set; }
     }
 }

@@ -21,10 +21,31 @@ namespace AMS.Converters
             => value is Visibility v && v == Visibility.Collapsed;
     }
 
+    public class InverseBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            => value is bool b && !b;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => value is bool b && !b;
+    }
+
     public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => value != null ? Visibility.Visible : Visibility.Collapsed;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+
+    // Replaces the old hardcoded "PKR {0:N2}" StringFormat bindings — reads the configured base
+    // currency symbol directly (defaults to "PKR", so nothing changes until the client sets it).
+    public class CurrencyAmountConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double amount = value is double d ? d : 0;
+            return $"{AMS.Services.CurrencyLabel.Symbol} {amount:N2}";
+        }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }

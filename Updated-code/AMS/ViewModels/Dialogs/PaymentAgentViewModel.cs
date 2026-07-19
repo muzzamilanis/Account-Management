@@ -11,8 +11,10 @@ namespace AMS.ViewModels.Dialogs
 {
     public class PaymentAgentViewModel : ViewModelBase
     {
-        private PaymentAgent _payment = new PaymentAgent();
+        private PaymentAgent _payment;
         public PaymentAgent Payment { get => _payment; set => SetField(ref _payment, value); }
+        public bool IsEdit { get; }
+        public string Title => IsEdit ? "Edit Agent Payment" : "Agent Payment";
         public List<string> Accounts { get; } = new List<string>();
         public ObservableCollection<string> Agents { get; } = new ObservableCollection<string>();
         private string _selAccount;
@@ -22,13 +24,29 @@ namespace AMS.ViewModels.Dialogs
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public Action<bool?> CloseAction { get; set; }
+        public string AmountLabel => $"AMOUNT ({SettingsService.Instance.Settings.BaseCurrencySymbol})";
 
-        public PaymentAgentViewModel()
+        private readonly PaymentAgent _original;
+
+        public PaymentAgentViewModel(PaymentAgent existing = null)
         {
+            IsEdit = existing != null;
+            _original = existing;
+            Payment = existing != null ? new PaymentAgent
+            {
+                RowId = existing.RowId, PaymentDate = existing.PaymentDate, PaymentAmount = existing.PaymentAmount,
+                PaymentDetail = existing.PaymentDetail, PaidFrom = existing.PaidFrom, PaidTo = existing.PaidTo
+            } : new PaymentAgent();
+
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
             foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
-            if (Accounts.Count > 0) SelectedAccount = Accounts[0];
-            if (Agents.Count > 0) SelectedAgent = Agents[0];
+            if (existing != null && !string.IsNullOrEmpty(existing.PaidTo) && !Agents.Contains(existing.PaidTo))
+                Agents.Insert(0, existing.PaidTo);
+
+            _selAccount = Payment.PaidFrom;
+            _selAgent = Payment.PaidTo;
+            if (string.IsNullOrEmpty(_selAccount) && Accounts.Count > 0) SelectedAccount = Accounts[0];
+            if (string.IsNullOrEmpty(_selAgent) && Agents.Count > 0) SelectedAgent = Agents[0];
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }
@@ -37,7 +55,17 @@ namespace AMS.ViewModels.Dialogs
         {
             if (string.IsNullOrEmpty(Payment.PaidTo)) { MessageBox.Show("Select an agent."); return; }
             if (Payment.PaymentAmount <= 0) { MessageBox.Show("Enter payment amount."); return; }
-            DatabaseService.Instance.AddAgentPayment(Payment);
+
+            if (IsEdit)
+            {
+                DatabaseService.Instance.CreditAccountWithLedger(_original.PaidFrom, _original.PaymentAmount, _original.PaymentDate, $"Reversal (edit): Agent Payment to {_original.PaidTo}");
+                DatabaseService.Instance.RecordAgentPayment(_original.PaidTo, -_original.PaymentAmount);
+                DatabaseService.Instance.UpdateAgentPayment(Payment);
+            }
+            else
+            {
+                DatabaseService.Instance.AddAgentPayment(Payment);
+            }
             DatabaseService.Instance.DebitAccountWithLedger(Payment.PaidFrom, Payment.PaymentAmount, Payment.PaymentDate, $"Agent Payment to {Payment.PaidTo}: {Payment.PaymentDetail}");
             DatabaseService.Instance.RecordAgentPayment(Payment.PaidTo, Payment.PaymentAmount);
             CloseAction?.Invoke(true);

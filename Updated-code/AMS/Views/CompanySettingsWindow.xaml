@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:AMS.ViewModels"
         Title="Company Settings"
-        Height="500" Width="480"
+        Height="640" Width="480"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="{StaticResource bg2}">
@@ -41,7 +41,7 @@
                 <TextBlock Text="EMAIL" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Settings.CompanyEmail, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <Separator Margin="0,8"/>
-                <TextBlock Text="DEFAULT EXCHANGE RATE (YEN to PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Text="{Binding YenRateLabel}" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Settings.DefaultExchangeRate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="LOGIN PASSWORD" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Settings.LoginPassword, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
@@ -52,6 +52,21 @@
                           IsChecked="{Binding Settings.EnableCreditSales}" Margin="0,8,0,4"/>
                 <TextBlock Text="When off, credit-term fields and payment reminders are hidden throughout the app. Existing credit sale data is kept, just not shown."
                            FontSize="10" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"/>
+                <Separator Margin="0,8"/>
+                <TextBlock Text="BASE / REPORTING CURRENCY CODE" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Settings.BaseCurrencyCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="BASE / REPORTING CURRENCY SYMBOL" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Settings.BaseCurrencySymbol, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <CheckBox Content="Enable Multi-Currency Sales (USD / UGX)"
+                          IsChecked="{Binding Settings.EnableMultiCurrency}" Margin="0,8,0,4"/>
+                <TextBlock Text="When on, a sale can be entered in the base currency above or in Ugandan Shillings (converted at the rate below). When off, sales are entered directly in the base currency only, exactly as today. Existing historical data is never converted or reinterpreted."
+                           FontSize="10" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+                <StackPanel Visibility="{Binding Settings.EnableMultiCurrency, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding UgxRateLabel}" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Settings.UgxExchangeRate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4"/>
+                    <TextBlock Text="Enter it the way you'd look it up online — e.g. search &quot;USD to UGX&quot; and type in that number directly, not the tiny inverse fraction."
+                               FontSize="10" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"/>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

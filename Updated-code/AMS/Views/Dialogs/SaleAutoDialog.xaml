@@ -1,12 +1,13 @@
 <Window x:Class="AMS.Views.Dialogs.SaleAutoDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sale Auto" Width="400" SizeToContent="Height" MaxHeight="750"
+        xmlns:controls="clr-namespace:AMS.Views.Controls"
+        Title="Sale Auto" Width="440" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
         <Border DockPanel.Dock="Top" Background="{StaticResource bg1}" Padding="20,14">
-            <TextBlock Text="Auto Sale Entry" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+            <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
         </Border>
         <Border DockPanel.Dock="Bottom" Background="{StaticResource bg1}" Padding="16,12">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -19,13 +20,36 @@
                 <TextBlock Text="DATE" Style="{StaticResource FieldLabel}"/>
                 <DatePicker SelectedDate="{Binding Sale.SaleDate}" Margin="0,4,0,14"/>
                 <TextBlock Text="CHASSIS (IN STOCK)" Style="{StaticResource FieldLabel}"/>
-                <ComboBox ItemsSource="{Binding Chassis}" SelectedItem="{Binding SelectedChassis}" Margin="0,4,0,14"/>
+                <ComboBox ItemsSource="{Binding Chassis}" SelectedItem="{Binding SelectedChassis}"
+                          IsEnabled="{Binding IsChassisLocked, Converter={StaticResource InverseBool}}" Margin="0,4,0,14"/>
                 <TextBlock Text="CUSTOMER" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" Margin="0,4,0,14"/>
-                <TextBlock Text="SALE PRICE (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Sale.SalePrice, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="ADVANCE RECEIVED" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Sale.SaleAmountReceived, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <StackPanel Visibility="{Binding IsMultiCurrencyEnabled, Converter={StaticResource BoolToVis}}" Margin="0,0,0,14">
+                    <TextBlock Text="SALE CURRENCY" Style="{StaticResource FieldLabel}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <RadioButton Content="{Binding BaseCurrencyLabel}" GroupName="SaleCurrency"
+                                     IsChecked="{Binding IsForeignCurrencySale, Converter={StaticResource InverseBool}}" Margin="0,0,20,0"/>
+                        <RadioButton Content="UGX" GroupName="SaleCurrency" IsChecked="{Binding IsForeignCurrencySale}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Visibility="{Binding IsForeignCurrencySale, Converter={StaticResource BoolToVis}}" Margin="0,0,0,14">
+                    <TextBlock Text="SALE PRICE (UGX)" Style="{StaticResource FieldLabel}"/>
+                    <controls:AmountUnitEntry Value="{Binding ForeignAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4"/>
+                    <TextBlock Text="{Binding ConvertedAmountText}" FontSize="11" Foreground="{StaticResource TextMuted}"/>
+                </StackPanel>
+                <StackPanel Visibility="{Binding IsForeignCurrencySale, Converter={StaticResource InvBoolToVis}}">
+                    <TextBlock Text="{Binding SalePriceLabel}" Style="{StaticResource FieldLabel}"/>
+                    <controls:AmountUnitEntry Value="{Binding Sale.SalePrice, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                </StackPanel>
+                <StackPanel Visibility="{Binding IsForeignCurrencySale, Converter={StaticResource BoolToVis}}" Margin="0,0,0,14">
+                    <TextBlock Text="ADVANCE RECEIVED (UGX)" Style="{StaticResource FieldLabel}"/>
+                    <controls:AmountUnitEntry Value="{Binding ForeignAmountReceived, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4"/>
+                    <TextBlock Text="{Binding ConvertedReceivedText}" FontSize="11" Foreground="{StaticResource TextMuted}"/>
+                </StackPanel>
+                <StackPanel Visibility="{Binding IsForeignCurrencySale, Converter={StaticResource InvBoolToVis}}">
+                    <TextBlock Text="ADVANCE RECEIVED" Style="{StaticResource FieldLabel}"/>
+                    <controls:AmountUnitEntry Value="{Binding Sale.SaleAmountReceived, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                </StackPanel>
                 <TextBlock Text="RECEIVED IN ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,14"/>
                 <StackPanel Visibility="{Binding IsCreditSalesEnabled, Converter={StaticResource BoolToVis}}">

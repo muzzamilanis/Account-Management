@@ -25,6 +25,14 @@ namespace AMS.ViewModels.Dialogs
         public ICommand CancelCommand { get; }
         public Action<bool?> CloseAction { get; set; }
 
+        private string CurrencySymbol => SettingsService.Instance.Settings.BaseCurrencySymbol;
+        public string ClearanceLabel => $"CLEARANCE ({CurrencySymbol})";
+        public string MiscExpenseLabel => $"MISC EXPENSE ({CurrencySymbol})";
+        public string DemurrageLabel => $"DEMURRAGE ({CurrencySymbol})";
+        public string NoPlateLabel => $"NO PLATE ({CurrencySymbol})";
+        public string CommissionLabel => $"COMMISSION ({CurrencySymbol})";
+        public string TaxLabel => $"TAX ({CurrencySymbol})";
+
         public PurchaseAutoViewModel(Stock existing = null)
         {
             IsEdit = existing != null;

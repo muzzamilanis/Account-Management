@@ -1,3 +1,4 @@
+using AMS.Models;
 using AMS.ViewModels.Dialogs;
 using System.Windows;
 
@@ -9,6 +10,24 @@ namespace AMS.Views.Dialogs
         {
             InitializeComponent();
             var vm = new PaymentPkrViewModel(isYen);
+            vm.CloseAction = r => { DialogResult = r; Close(); };
+            DataContext = vm;
+        }
+
+        // Edit mode — Yen payment
+        public PaymentPkrDialog(Payment existing)
+        {
+            InitializeComponent();
+            var vm = new PaymentPkrViewModel(existing);
+            vm.CloseAction = r => { DialogResult = r; Close(); };
+            DataContext = vm;
+        }
+
+        // Edit mode — Party (PKR) payment
+        public PaymentPkrDialog(PaymentPkr existing)
+        {
+            InitializeComponent();
+            var vm = new PaymentPkrViewModel(existing);
             vm.CloseAction = r => { DialogResult = r; Close(); };
             DataContext = vm;
         }

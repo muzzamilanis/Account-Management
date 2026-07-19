@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:AMS.ViewModels.Dialogs"
-        Title="Account" Width="400" SizeToContent="Height" MaxHeight="750"
+        xmlns:controls="clr-namespace:AMS.Views.Controls"
+        Title="Account" Width="440" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
@@ -32,7 +33,7 @@
                     <TextBox Text="{Binding Account.BankBranch, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 </StackPanel>
                 <TextBlock Text="OPENING BALANCE" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Account.OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <controls:AmountUnitEntry Value="{Binding Account.OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <CheckBox Content="Include this account in profit calculation" IsChecked="{Binding Account.IncludeInProfit}"/>
                 <TextBlock Text="Uncheck for Petty Cash or other accounts that don't represent real sale proceeds." Style="{StaticResource FieldLabel}" TextWrapping="Wrap" Margin="0,4,0,0"/>
             </StackPanel>

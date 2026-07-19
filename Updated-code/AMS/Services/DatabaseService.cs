@@ -80,6 +80,9 @@ namespace AMS.Services
             EnsureColumn("Sale", "ReminderDaysBefore", "INTEGER DEFAULT 0");
             EnsureColumn("Sale", "InstallmentMonths", "INTEGER DEFAULT 0");
             EnsureColumn("Account", "IncludeInProfit", "INTEGER DEFAULT 1");
+            EnsureColumn("Sale", "SaleCurrency", "TEXT");
+            EnsureColumn("Sale", "SaleForeignAmount", "REAL DEFAULT 0");
+            EnsureColumn("Sale", "SaleRate", "REAL DEFAULT 0");
             EnsureColumn("Stock", "Demurrage", "REAL DEFAULT 0");
             EnsureColumn("Stock", "NoPlate", "REAL DEFAULT 0");
             EnsureColumn("Stock", "Commission", "REAL DEFAULT 0");
@@ -169,7 +172,12 @@ namespace AMS.Services
             ExecuteNonQuery("UPDATE Account SET AccountDate=@d, AccountType=@ty, AccountName=@n, AccountNumber=@no, AccountTitle=@ti, BankName=@bn, BankBranch=@bb, OpeningBalance=@ob, CurrentBalance=@cb, IncludeInProfit=@ip WHERE RowId=@id",
                 new Dictionary<string, object> { {"@id", a.RowId}, {"@d", a.AccountDate}, {"@ty", a.AccountType}, {"@n", a.AccountName}, {"@no", a.AccountNumber}, {"@ti", a.AccountTitle}, {"@bn", a.BankName}, {"@bb", a.BankBranch}, {"@ob", a.OpeningBalance}, {"@cb", a.CurrentBalance}, {"@ip", a.IncludeInProfit ? 1 : 0} });
         }
-        
+
+        public void DeleteAccount(long rowId)
+        {
+            ExecuteNonQuery("DELETE FROM Account WHERE RowId=@id", new Dictionary<string, object> { {"@id", rowId} });
+        }
+
         public void DebitAccount(string accName, double amount)
         {
             ExecuteNonQuery("UPDATE Account SET CurrentBalance = CurrentBalance - @amount WHERE AccountName = @name",
@@ -327,6 +335,12 @@ namespace AMS.Services
         }
 
         // --- TRANSACTIONS ---
+        public void UpdateOfficeAccountTransfer(OfficeAccount o)
+        {
+            ExecuteNonQuery("UPDATE OfficeAccount SET Date=@d, Amount=@a, Detail=@det, CreditFrom=@c, DebitTo=@deb WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", o.RowId}, {"@d", o.Date}, {"@a", o.Amount}, {"@det", o.Detail}, {"@c", o.CreditFrom}, {"@deb", o.DebitTo} });
+        }
+
         public void AddOfficeAccountTransfer(OfficeAccount o)
         {
             ExecuteNonQuery("INSERT INTO OfficeAccount (Date, Amount, Detail, CreditFrom, DebitTo) VALUES (@d, @a, @det, @c, @deb)",
@@ -340,6 +354,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), Date = GetValue<DateTime>(r, "Date"), Amount = GetValue<double>(r, "Amount"),
                 Detail = GetValue<string>(r, "Detail"), CreditFrom = GetValue<string>(r, "CreditFrom"), DebitTo = GetValue<string>(r, "DebitTo") });
             return res;
+        }
+
+        public void UpdateMiscExp(MiscExp m)
+        {
+            ExecuteNonQuery("UPDATE MiscExp SET Chassis=@c, MiscExpDate=@d, MiscExpAmount=@a, MiscExpDetail=@det, MiscExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", m.RowId}, {"@c", m.Chassis}, {"@d", m.MiscExpDate}, {"@a", m.MiscExpAmount}, {"@det", m.MiscExpDetail}, {"@p", m.MiscExpPaidBy} });
         }
 
         public void AddMiscExp(MiscExp m)
@@ -357,6 +377,12 @@ namespace AMS.Services
             return res;
         }
 
+        public void UpdateDutyExp(DutyExp d)
+        {
+            ExecuteNonQuery("UPDATE DutyExp SET Chassis=@c, DutyExpDate=@d, DutyExpAmount=@a, DutyExpDetail=@det, DutyExpPaidBy=@p, DutyExpAgent=@ag WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", d.RowId}, {"@c", d.Chassis}, {"@d", d.DutyExpDate}, {"@a", d.DutyExpAmount}, {"@det", d.DutyExpDetail}, {"@p", d.DutyExpPaidBy}, {"@ag", d.DutyExpAgent} });
+        }
+
         public void AddDutyExp(DutyExp d)
         {
             ExecuteNonQuery("INSERT INTO DutyExp (Chassis, DutyExpDate, DutyExpAmount, DutyExpDetail, DutyExpPaidBy, DutyExpAgent) VALUES (@c, @d, @a, @det, @p, @ag)",
@@ -370,6 +396,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), DutyExpDate = GetValue<DateTime>(r, "DutyExpDate"),
                 DutyExpAmount = GetValue<double>(r, "DutyExpAmount"), DutyExpDetail = GetValue<string>(r, "DutyExpDetail"), DutyExpPaidBy = GetValue<string>(r, "DutyExpPaidBy"), DutyExpAgent = GetValue<string>(r, "DutyExpAgent") });
             return res;
+        }
+
+        public void UpdateDemurrageExp(DemurrageExp d)
+        {
+            ExecuteNonQuery("UPDATE DemurrageExp SET Chassis=@c, DemurrageExpDate=@d, DemurrageExpAmount=@a, DemurrageExpDetail=@det, DemurrageExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", d.RowId}, {"@c", d.Chassis}, {"@d", d.DemurrageExpDate}, {"@a", d.DemurrageExpAmount}, {"@det", d.DemurrageExpDetail}, {"@p", d.DemurrageExpPaidBy} });
         }
 
         public void AddDemurrageExp(DemurrageExp d)
@@ -387,6 +419,12 @@ namespace AMS.Services
             return res;
         }
 
+        public void UpdateNoPlateExp(NoPlateExp d)
+        {
+            ExecuteNonQuery("UPDATE NoPlateExp SET Chassis=@c, NoPlateExpDate=@d, NoPlateExpAmount=@a, NoPlateExpDetail=@det, NoPlateExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", d.RowId}, {"@c", d.Chassis}, {"@d", d.NoPlateExpDate}, {"@a", d.NoPlateExpAmount}, {"@det", d.NoPlateExpDetail}, {"@p", d.NoPlateExpPaidBy} });
+        }
+
         public void AddNoPlateExp(NoPlateExp d)
         {
             ExecuteNonQuery("INSERT INTO NoPlateExp (Chassis, NoPlateExpDate, NoPlateExpAmount, NoPlateExpDetail, NoPlateExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
@@ -400,6 +438,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), NoPlateExpDate = GetValue<DateTime>(r, "NoPlateExpDate"),
                 NoPlateExpAmount = GetValue<double>(r, "NoPlateExpAmount"), NoPlateExpDetail = GetValue<string>(r, "NoPlateExpDetail"), NoPlateExpPaidBy = GetValue<string>(r, "NoPlateExpPaidBy") });
             return res;
+        }
+
+        public void UpdateCommissionExp(CommissionExp d)
+        {
+            ExecuteNonQuery("UPDATE CommissionExp SET Chassis=@c, CommissionExpDate=@d, CommissionExpAmount=@a, CommissionExpDetail=@det, CommissionExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", d.RowId}, {"@c", d.Chassis}, {"@d", d.CommissionExpDate}, {"@a", d.CommissionExpAmount}, {"@det", d.CommissionExpDetail}, {"@p", d.CommissionExpPaidBy} });
         }
 
         public void AddCommissionExp(CommissionExp d)
@@ -417,6 +461,12 @@ namespace AMS.Services
             return res;
         }
 
+        public void UpdateTaxExp(TaxExp d)
+        {
+            ExecuteNonQuery("UPDATE TaxExp SET Chassis=@c, TaxExpDate=@d, TaxExpAmount=@a, TaxExpDetail=@det, TaxExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", d.RowId}, {"@c", d.Chassis}, {"@d", d.TaxExpDate}, {"@a", d.TaxExpAmount}, {"@det", d.TaxExpDetail}, {"@p", d.TaxExpPaidBy} });
+        }
+
         public void AddTaxExp(TaxExp d)
         {
             ExecuteNonQuery("INSERT INTO TaxExp (Chassis, TaxExpDate, TaxExpAmount, TaxExpDetail, TaxExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
@@ -430,6 +480,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), TaxExpDate = GetValue<DateTime>(r, "TaxExpDate"),
                 TaxExpAmount = GetValue<double>(r, "TaxExpAmount"), TaxExpDetail = GetValue<string>(r, "TaxExpDetail"), TaxExpPaidBy = GetValue<string>(r, "TaxExpPaidBy") });
             return res;
+        }
+
+        public void UpdateOfficeExp(OfficeExp o)
+        {
+            ExecuteNonQuery("UPDATE OfficeExp SET OfficeExpDate=@d, OfficeExpAmount=@a, OfficeExpDetail=@det, OfficeExpPaidBy=@p WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", o.RowId}, {"@d", o.OfficeExpDate}, {"@a", o.OfficeExpAmount}, {"@det", o.OfficeExpDetail}, {"@p", o.OfficeExpPaidBy} });
         }
 
         public void AddOfficeExp(OfficeExp o)
@@ -447,6 +503,12 @@ namespace AMS.Services
             return res;
         }
 
+        public void UpdateReceipt(Receipt r)
+        {
+            ExecuteNonQuery("UPDATE Receipt SET ReceiptDate=@d, ReceiptAmount=@a, ReceiptDetail=@det, ReceivedIn=@ri, ReceivedFrom=@rf WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", r.RowId}, {"@d", r.ReceiptDate}, {"@a", r.ReceiptAmount}, {"@det", r.ReceiptDetail}, {"@ri", r.ReceivedIn}, {"@rf", r.ReceivedFrom} });
+        }
+
         public void AddReceipt(Receipt r)
         {
             ExecuteNonQuery("INSERT INTO Receipt (ReceiptDate, ReceiptAmount, ReceiptDetail, ReceivedIn, ReceivedFrom) VALUES (@d, @a, @det, @ri, @rf)",
@@ -460,6 +522,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), ReceiptDate = GetValue<DateTime>(r, "ReceiptDate"), ReceiptAmount = GetValue<double>(r, "ReceiptAmount"),
                 ReceiptDetail = GetValue<string>(r, "ReceiptDetail"), ReceivedIn = GetValue<string>(r, "ReceivedIn"), ReceivedFrom = GetValue<string>(r, "ReceivedFrom") });
             return res;
+        }
+
+        public void UpdateYenPayment(Payment p)
+        {
+            ExecuteNonQuery("UPDATE Payment SET PaymentDate=@d, PaymentAmountYen=@ay, PaymentExcRate=@r, PaymentAmountPkr=@ap, PaymentDetail=@det, PaidFrom=@pf WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", p.RowId}, {"@d", p.PaymentDate}, {"@ay", p.PaymentAmountYen}, {"@r", p.PaymentExcRate}, {"@ap", p.PaymentAmountPkr}, {"@det", p.PaymentDetail}, {"@pf", p.PaidFrom} });
         }
 
         public void AddYenPayment(Payment p)
@@ -478,6 +546,12 @@ namespace AMS.Services
             return res;
         }
 
+        public void UpdatePkrPayment(PaymentPkr p)
+        {
+            ExecuteNonQuery("UPDATE PaymentPkr SET PaymentDate=@d, PaymentAmount=@a, PaymentDetail=@det, PaidFrom=@pf, PaidTo=@pt WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", p.RowId}, {"@d", p.PaymentDate}, {"@a", p.PaymentAmount}, {"@det", p.PaymentDetail}, {"@pf", p.PaidFrom}, {"@pt", p.PaidTo} });
+        }
+
         public void AddPkrPayment(PaymentPkr p)
         {
             ExecuteNonQuery("INSERT INTO PaymentPkr (PaymentDate, PaymentAmount, PaymentDetail, PaidFrom, PaidTo) VALUES (@d, @a, @det, @pf, @pt)",
@@ -491,6 +565,12 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), PaymentDate = GetValue<DateTime>(r, "PaymentDate"), PaymentAmount = GetValue<double>(r, "PaymentAmount"),
                 PaymentDetail = GetValue<string>(r, "PaymentDetail"), PaidFrom = GetValue<string>(r, "PaidFrom"), PaidTo = GetValue<string>(r, "PaidTo") });
             return res;
+        }
+
+        public void UpdateAgentPayment(PaymentAgent p)
+        {
+            ExecuteNonQuery("UPDATE PaymentAgent SET PaymentDate=@d, PaymentAmount=@a, PaymentDetail=@det, PaidFrom=@pf, PaidTo=@pt WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", p.RowId}, {"@d", p.PaymentDate}, {"@a", p.PaymentAmount}, {"@det", p.PaymentDetail}, {"@pf", p.PaidFrom}, {"@pt", p.PaidTo} });
         }
 
         public void AddAgentPayment(PaymentAgent p)
@@ -621,7 +701,9 @@ namespace AMS.Services
                 RowId = GetValue<long>(r, "RowId"), SaleDate = GetValue<DateTime>(r, "SaleDate"), SaleChassis = GetValue<string>(r, "SaleChassis"),
                 SaleCustomer = GetValue<string>(r, "SaleCustomer"), SalePrice = GetValue<double>(r, "SalePrice"),
                 SaleAmountReceived = GetValue<double>(r, "SaleAmountReceived"), PaymentReceivedIn = GetValue<string>(r, "PaymentReceivedIn"),
-                InstallmentMonths = GetValue<int>(r, "InstallmentMonths"), ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore")
+                InstallmentMonths = GetValue<int>(r, "InstallmentMonths"), ReminderDaysBefore = GetValue<int>(r, "ReminderDaysBefore"),
+                SaleCurrency = GetValue<string>(r, "SaleCurrency"), SaleForeignAmount = GetValue<double>(r, "SaleForeignAmount"),
+                SaleRate = GetValue<double>(r, "SaleRate")
             });
             return res;
         }
@@ -629,10 +711,19 @@ namespace AMS.Services
         // Returns the RowId of the newly inserted Sale, needed to attach an installment plan.
         public long AddSale(Sale s)
         {
-            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn, InstallmentMonths, ReminderDaysBefore) VALUES (@d, @c, @cust, @p, @a, @pri, @im, @rdb)",
-                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@im", s.InstallmentMonths}, {"@rdb", s.ReminderDaysBefore} });
+            ExecuteNonQuery("INSERT INTO Sale (SaleDate, SaleChassis, SaleCustomer, SalePrice, SaleAmountReceived, PaymentReceivedIn, InstallmentMonths, ReminderDaysBefore, SaleCurrency, SaleForeignAmount, SaleRate) VALUES (@d, @c, @cust, @p, @a, @pri, @im, @rdb, @sc, @sfa, @sr)",
+                new Dictionary<string, object> { {"@d", s.SaleDate}, {"@c", s.SaleChassis}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@im", s.InstallmentMonths}, {"@rdb", s.ReminderDaysBefore}, {"@sc", s.SaleCurrency}, {"@sfa", s.SaleForeignAmount}, {"@sr", s.SaleRate} });
             var dt = ExecuteQuery("SELECT last_insert_rowid() as Id");
             return GetValue<long>(dt.Rows[0], "Id");
+        }
+
+        // Edit is only offered for non-installment sales (see SaleAutoViewModel) — Chassis and the
+        // installment fields are deliberately excluded here since they're locked/inapplicable in
+        // that flow, matching the legacy app locking the chassis field during Sale edit too.
+        public void UpdateSale(Sale s)
+        {
+            ExecuteNonQuery("UPDATE Sale SET SaleDate=@d, SaleCustomer=@cust, SalePrice=@p, SaleAmountReceived=@a, PaymentReceivedIn=@pri, SaleCurrency=@sc, SaleForeignAmount=@sfa, SaleRate=@sr WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", s.RowId}, {"@d", s.SaleDate}, {"@cust", s.SaleCustomer}, {"@p", s.SalePrice}, {"@a", s.SaleAmountReceived}, {"@pri", s.PaymentReceivedIn}, {"@sc", s.SaleCurrency}, {"@sfa", s.SaleForeignAmount}, {"@sr", s.SaleRate} });
         }
 
         // --- INSTALLMENT PLANS ---
@@ -914,7 +1005,7 @@ namespace AMS.Services
                     else if (saleTypeFilter == "Cash") query += " AND (sa.InstallmentMonths IS NULL OR sa.InstallmentMonths = 0)";
                     break;
                 case "Stocks":
-                    query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty as Clearance, MiscExpense as [Misc Exp], Demurrage, NoPlate as [No Plate], Commission, Tax, Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
+                    query = $"SELECT Date, Chassis, Model, Color, PricePkr as [Price {CurrencyLabel.Symbol}], Duty as Clearance, MiscExpense as [Misc Exp], Demurrage, NoPlate as [No Plate], Commission, Tax, Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
                     break;
                 case "Accounts":
                     query = "SELECT AccountType as Type, AccountName as Name, AccountNumber as [Acc No], BankName as Bank, OpeningBalance as [Opening Bal], CurrentBalance as [Current Bal] FROM Account";
@@ -953,7 +1044,7 @@ namespace AMS.Services
                     query = "SELECT ReceiptDate as Date, ReceiptAmount as Amount, ReceiptDetail as Detail, ReceivedIn as [Received In], ReceivedFrom as [Received From] FROM Receipt WHERE ReceiptDate >= @from AND ReceiptDate <= @to";
                     break;
                 case "Yen Payments":
-                    query = "SELECT PaymentDate as Date, PaymentAmountYen as [Amount (Yen)], PaymentExcRate as Rate, PaymentAmountPkr as [Amount (PKR)], PaymentDetail as Detail, PaidFrom as Account FROM Payment WHERE PaymentDate >= @from AND PaymentDate <= @to";
+                    query = $"SELECT PaymentDate as Date, PaymentAmountYen as [Amount (Yen)], PaymentExcRate as Rate, PaymentAmountPkr as [Amount ({CurrencyLabel.Symbol})], PaymentDetail as Detail, PaidFrom as Account FROM Payment WHERE PaymentDate >= @from AND PaymentDate <= @to";
                     break;
                 case "Party Payments":
                     query = "SELECT PaymentDate as Date, PaymentAmount as Amount, PaymentDetail as Detail, PaidFrom as [From Account], PaidTo as Customer FROM PaymentPkr WHERE PaymentDate >= @from AND PaymentDate <= @to";

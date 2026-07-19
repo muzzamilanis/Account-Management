@@ -1,7 +1,8 @@
 <Window x:Class="AMS.Views.Dialogs.PaymentPkrDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Payment" Width="400" SizeToContent="Height" MaxHeight="750"
+        xmlns:controls="clr-namespace:AMS.Views.Controls"
+        Title="Payment" Width="440" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
@@ -21,7 +22,7 @@
                     <TextBlock Text="DATE" Style="{StaticResource FieldLabel}"/>
                     <DatePicker SelectedDate="{Binding YenPayment.PaymentDate}" Margin="0,4,0,14"/>
                     <TextBlock Text="AMOUNT (YEN)" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding YenPayment.PaymentAmountYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <controls:AmountUnitEntry Value="{Binding YenPayment.PaymentAmountYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                     <TextBlock Text="EXCHANGE RATE" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding YenPayment.PaymentExcRate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                     <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>
@@ -36,8 +37,8 @@
                         <Button DockPanel.Dock="Right" Content="Add New" Click="BtnAddCustomer_Click"/>
                         <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}"/>
                     </DockPanel>
-                    <TextBlock Text="AMOUNT (PKR)" Style="{StaticResource FieldLabel}"/>
-                    <TextBox Text="{Binding PkrPayment.PaymentAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                    <TextBlock Text="{Binding AmountLabel}" Style="{StaticResource FieldLabel}"/>
+                    <controls:AmountUnitEntry Value="{Binding PkrPayment.PaymentAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                     <TextBlock Text="DETAIL" Style="{StaticResource FieldLabel}"/>
                     <TextBox Text="{Binding PkrPayment.PaymentDetail, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 </StackPanel>

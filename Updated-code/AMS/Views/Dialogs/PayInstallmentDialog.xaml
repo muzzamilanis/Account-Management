@@ -1,7 +1,8 @@
 <Window x:Class="AMS.Views.Dialogs.PayInstallmentDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Pay Installment" Width="400" SizeToContent="Height" MaxHeight="750"
+        xmlns:controls="clr-namespace:AMS.Views.Controls"
+        Title="Pay Installment" Width="440" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
@@ -20,7 +21,7 @@
                 <TextBlock Text="DATE PAID" Style="{StaticResource FieldLabel}"/>
                 <DatePicker SelectedDate="{Binding PaidDate}" Margin="0,4,0,14"/>
                 <TextBlock Text="AMOUNT PAID" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding AmountPaid, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <controls:AmountUnitEntry Value="{Binding AmountPaid, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="RECEIVED IN ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,0"/>
             </StackPanel>

@@ -485,3 +485,251 @@ Installment/Edit Plan there. Added `Pay`/`Edit Plan` buttons directly on each re
 bound to the row already carries `SaleRowId`, so Edit Plan looks up the parent `Sale` via
 `GetSales().FirstOrDefault(s => s.RowId == installment.SaleRowId)`. No new dialogs or DB logic;
 pure UI convenience reusing Phase 6 plumbing.
+
+## Phase 10 — Multi-currency: base currency (USD) + Sale in UGX
+
+Client relocated the business from Pakistan to Uganda. Full design discussion happened in plan
+mode first (see `AskUserQuestion` rounds in session history) before any code was touched, because
+this affects financial calculations — key confirmed facts: (1) same database going forward, not a
+fresh one — historical PKR data is left completely untouched; (2) Yen purchase pricing already
+works correctly as "just a quoted reference" (no change needed); (3) sales are priced in exactly
+two currencies, base (USD) or UGX, converted to base immediately at sale time — no real UGX
+account ever held; (4) every other money field (Accounts, Receipts, Payments, all 6 expense
+categories) stays base-currency only, no per-transaction currency picker; (5) the whole feature
+is gated behind a master toggle, same pattern as `EnableCreditSales`.
+
+- `CompanySettings.cs`: added `EnableMultiCurrency` (bool, default `false`), `BaseCurrencyCode`/
+  `BaseCurrencySymbol` (default `"PKR"` — so nothing visually changes until the client explicitly
+  sets these to `"USD"`/`"$"` in Settings), `UgxExchangeRate` (double, independent of the existing
+  Yen `DefaultExchangeRate`). **Fixed the recurring "edit-copy drops fields" bug in
+  `CompanySettingsViewModel`'s copy-constructor yet again** — all 4 new fields added there;
+  skipping this would silently reset them to defaults on every Settings save.
+- New `Services/CurrencyLabel.cs` — tiny static helper (`CurrencyLabel.Symbol`/`.Code`) wrapping
+  `SettingsService.Instance.Settings.BaseCurrencySymbol/Code`. Single source of truth for every
+  place that can't be a XAML binding (code-behind strings, SQL column aliases in
+  `DatabaseService.GetReportData`). New `Converters/CurrencyAmountConverter` replaces every
+  `StringFormat='PKR {0:N2}'` binding (`Text="{Binding Amount, Converter={StaticResource
+  CurrencyAmount}}"`), registered as `x:Key="CurrencyAmount"` in `App.xaml`. A couple of labels
+  that bind directly to a plain POCO with no ViewModel of its own (a DataGrid column header, one
+  Stock-detail `TextBlock`) are set from code-behind in `MainWindow`'s constructor instead, since
+  they have nothing to bind to. Every dialog VM that had a hardcoded "(PKR)" field label
+  (`SaleAutoViewModel`, `PurchaseAutoViewModel`, `PaymentAgentViewModel`, `PaymentPkrViewModel`,
+  `CompanySettingsViewModel`) got a computed label property instead
+  (e.g. `SalePriceLabel => $"SALE PRICE ({BaseCurrencyLabel})"`) — this whole relabeling mechanism
+  is *unconditional*, not gated by the toggle, since it's a no-op when `BaseCurrencySymbol` is
+  still `"PKR"`.
+- **Purchase (Stock) needed zero structural changes** — `PurchaseAutoViewModel.Save()` already
+  computed `Stock.PricePkr = Stock.PriceYen * rate`, i.e. Yen → base currency; only the label was
+  hardcoded. `Stock.PricePkr`/`Rate`/`PriceYen` property and column names were deliberately left
+  as-is (same reasoning as the earlier Duty→"Clearance" display-only rename — avoid a schema
+  change for a label change).
+- **Sale got the one real new feature**: `Sale.cs` gained `SaleCurrency`/`SaleForeignAmount`/
+  `SaleRate` (migrated via `EnsureColumn`, same pattern as every prior schema change this
+  session). `SalePrice` keeps its existing meaning — the base-currency-equivalent amount — so
+  `GetProfitBreakdown`, installment plans, customer receivables, and `GetReportData("Sold Cars")`
+  needed zero changes. `SaleAutoDialog` shows a USD/UGX `RadioButton` pair (only when
+  `EnableMultiCurrency` is on) using a new `InverseBooleanConverter` (`x:Key="InverseBool"`,
+  plain `bool -> !bool`, in `Converters/ValueConverters.cs`) to bind both radios to one
+  `IsForeignCurrencySale` bool. When UGX is selected, `SalePrice` becomes a computed, read-only
+  figure (see Phase 10.1 below for the exact formula and why it's division, not multiplication)
+  shown alongside the entered UGX amount — the user can't create a mismatch by hand-editing it.
+- Added a second "Edit Rate" footer control (`WrapUgxEdit`/`PnlUgxView`/`hyplnkUgx_Click`/
+  `btnUgxEdit_Click` in `MainWindow`) mirroring the existing Yen one exactly, bound to a new
+  `MainViewModel.UgxExchangeRate`, visible only when `EnableMultiCurrency` is on. Both rate panels
+  now live inside one shared `Grid.Column="1"` `StackPanel` (was two separate hardcoded grid
+  columns) to avoid renumbering every column after it.
+- **Deliberately out of scope**, per explicit client confirmation: zero new currency fields on
+  `Account`, `Receipt`, `Payment`/`PaymentPkr`/`PaymentAgent`, or any of the 6 expense models
+  (Clearance/Misc/Demurrage/No Plate/Commission/Tax) — those only got the cosmetic label fix.
+- **Known limitation, flagged to the client, not solved by this change**: once the toggle is on
+  and base currency is `"USD"`, old PKR rows and new USD rows live in the same columns with
+  nothing distinguishing them except date — any report/total spanning the cutover will silently
+  sum PKR and USD figures together. Client explicitly accepted this tradeoff in exchange for
+  leaving historical data untouched; recommend they don't run aggregate reports crossing the
+  cutover date.
+- Full plan (with exact rationale for every decision, written and approved via plan mode before
+  any code was touched) is preserved at
+  `C:\Users\HP\.claude\plans\yes-please-analyze-the-sprightly-kernighan.md` on the dev machine —
+  copy its content into this repo if it needs to survive independently of that machine.
+
+### Phase 10.1 — Three corrections after first hands-on test
+
+Client tested the feature (Settings screenshot, Sale dialog screenshot) and caught three real
+issues before this went anywhere near production data:
+
+1. **Rate direction was backwards.** Originally `UgxExchangeRate` meant "1 UGX = X base currency"
+   (a tiny fraction like `0.00027`), and `SalePrice = ForeignAmount * rate`. Nobody thinks in that
+   direction — a client checking the rate online (Google "USD to UGX") sees "1 USD = 3,690 UGX,"
+   the opposite convention. Flipped the meaning to match: `UgxExchangeRate` is now "how many UGX
+   equal 1 base-currency unit," and conversion is `SalePrice = ForeignAmount / rate`
+   (`SaleAutoViewModel.Save()` and `.ConvertedAmountText`). All the rate labels were updated to
+   say so explicitly (`CompanySettingsViewModel.UgxRateLabel`, `MainViewModel.UgxRateEditLabel`/
+   `.UgxRatePrefix`) — the footer now reads "Edit UGX Rate — 1 USD = 3,690.40 UGX." **Any rate
+   value already saved under the old convention needs to be re-entered** — the field's meaning
+   changed, not just its display.
+2. **Rate display was silently rounded.** `ConvertedAmountText` formatted the rate with `:N4`,
+   which turned `0.00027` into a visually-wrong `"0.0003"` (the actual stored/used value was still
+   full precision — this was a display-only bug, but a dangerous one on a field the client relies
+   on to sanity-check the conversion). Now uses `"0.########"` (up to 8 decimals, no padding) so
+   it always echoes back exactly what was typed.
+3. **Added a denomination-style UGX amount builder**, replacing the single flat "Sale Price (UGX)"
+   textbox. UGX car prices are routinely 8 figures, so a single text field invites zero-counting
+   mistakes. New `ViewModels/Dialogs/UgxAmountRow.cs` defines `UgxUnitOption` (a label + multiplier
+   — Units/Thousand/Lac(100,000)/Million/Billion) and `UgxAmountRow` (Amount × SelectedUnit =
+   Value). `SaleAutoViewModel.UgxRows` is an `ObservableCollection<UgxAmountRow>` the user can add
+   to/remove from (`AddUgxRowCommand`/`RemoveUgxRowCommand`); `ForeignAmount` is now a *computed*
+   property (`UgxRows.Sum(r => r.Value)`), not a directly-typed field. Client's own example: enter
+   "10 Million" + "15 Lac" + "150 Thousand" as three rows instead of typing "11,650,000." Note
+   "Lac" (100,000) is South Asian numbering terminology, not standard in Uganda — kept per the
+   client's own example wording, but each option's numeric value is spelled out in the dropdown
+   label itself (e.g. "Lac (100,000)") specifically so it's unambiguous to Uganda-based staff
+   unfamiliar with the term, without needing to change the label.
+   **Superseded — see Phase 11.2**: this multi-row builder (`UgxRows`/`UgxAmountRow`/
+   `AddUgxRowCommand`) was replaced by the reusable `AmountUnitEntry` control after client
+   feedback that decimals already solve the same problem more simply ("2.5 Billion" in one field
+   beats splitting it across rows). `UgxAmountRow.cs` no longer exists.
+
+## Phase 11 — Post-testing fixes: runtime crash, currency bugs, and view/edit/delete everywhere
+
+### 11.1 — Runtime crash on login (binding-mode bug), found because I hadn't actually tested
+
+Client hit an unhandled `InvalidOperationException` on login: *"A TwoWay or OneWayToSource binding
+cannot work on the read-only property 'UgxRatePrefix'."* Root cause: `Run.Text` defaults to
+**TwoWay** binding in WPF (unlike `TextBlock.Text`, which defaults OneWay) — the new footer
+`<Run Text="{Binding UgxRatePrefix}"/>` (Phase 10.1) pointed at a computed, get-only string
+property, so WPF tried to write back to it on load and threw. `dotnet build` cannot catch this
+class of bug — it's a runtime-only failure that only surfaces the instant that specific XAML line
+gets evaluated, i.e. when `MainWindow` is actually constructed (which only happens *after* a
+successful login, per `App.xaml.cs` — hence the client's confusion that it "crashes when I enter
+credentials," not "at startup"). Fixed with `Mode=OneWay` on that one binding, then audited every
+other `Run`/`TextBox`/`CheckBox` binding introduced this session for the same shape (control
+defaults to two-way, points at a get-only property) — found and fixed nowhere else.
+
+**Process change going forward**: a clean `dotnet build` is not sufficient proof the app works.
+Verify by actually launching the exe and driving it through the real flow (login → the specific
+screen touched) — see the `Start-Process` + `SendKeys`/UI Automation pattern used in this session's
+tool calls if this needs to be repeated.
+
+### 11.2 — Three currency bugs found in first hands-on UGX test
+
+1. **Rate direction was backwards.** `UgxExchangeRate` originally meant "1 UGX = X base currency"
+   (a tiny fraction like `0.00027`) with `SalePrice = ForeignAmount * rate`. Nobody checks a rate
+   that way — Google/XE show "1 USD = 3,690 UGX," the opposite convention. Flipped: the field now
+   means "how many UGX equal 1 base-currency unit," and conversion is `SalePrice = ForeignAmount /
+   rate`. **Any rate value saved under the old convention must be re-entered** — the field's
+   meaning changed, not just its display. All rate labels (`CompanySettingsViewModel.UgxRateLabel`,
+   `MainViewModel.UgxRateEditLabel`/`.UgxRatePrefix`) now say "1 USD = ? UGX" explicitly.
+2. **Rate display was silently rounded** (`{rate:N4}` turned `0.00027` into a visually-wrong
+   `"0.0003"` — display-only, the stored/used value was always full precision). Now formatted with
+   `"0.########"` (up to 8 decimals, no padding) so it always echoes back exactly what was typed.
+3. **"Advance Received" wasn't currency-aware on a UGX sale** — real bug hit during testing:
+   `SalePrice` ~19,000 USD (correctly converted from 70,000,000 UGX), but "Advance Received" was
+   typed as "50 Million" *meaning UGX* and silently read as 50,000,000 USD, producing a
+   `~-49,981,032` balance. Fixed by giving `SaleAutoViewModel` a second UGX-denominated field
+   (`ForeignAmountReceived`, its own `ConvertedReceivedText`) that only appears when the sale
+   itself is in UGX — `Sale.SaleAmountReceived = ForeignAmountReceived / rate` at save time,
+   mirroring how `ForeignAmount` already worked for the sale price itself.
+
+### 11.3 — Replaced the UGX row-builder with a reusable `AmountUnitEntry` control, applied app-wide
+
+Client feedback: decimals in a single amount field ("2.5" + "Billion") already solve the
+zero-counting problem the Phase 10.1 multi-row builder was built for — no need to force users to
+split a figure across rows. Also asked for the same amount+unit pattern **everywhere** money is
+entered in the app, defaulting to "Units (1)" so not touching the dropdown never changes what was
+typed.
+
+- New `Helpers/AmountUnitOption.cs` — `AmountUnitOption` (label + multiplier) and the shared
+  `AmountUnits.Options` list: Units (1) / Thousand / Lac (100,000) / Million / Billion.
+- New `Views/Controls/AmountUnitEntry.xaml(.cs)` — a `UserControl` with one bindable `Value`
+  dependency property (`BindsTwoWayByDefault`), internally holding `RawAmount` + `SelectedUnit`
+  (both DPs, so WPF's own change notification handles the two-way sync — no `INotifyPropertyChanged`
+  needed on the control itself). `Value = RawAmount * SelectedUnit.Multiplier`, recomputed via a
+  guarded (`_syncing` flag) `PropertyChangedCallback` pair to avoid feedback loops. When `Value` is
+  set from *outside* (e.g. loading an existing record for edit), it resets to `RawAmount = Value`,
+  `SelectedUnit = Units(1)` — an existing number is always shown as its raw self, never reinterpreted
+  through a multiplier. Drop-in replacement for a plain amount `TextBox`: swap
+  `Text="{Binding X.Amount}"` for `Value="{Binding X.Amount}"` with no ViewModel changes needed.
+- Applied to every monetary field in the app: Sale (price + advance, both currency variants),
+  Purchase Auto (all 8: Price/Paid Yen, Clearance, Misc, Demurrage, No Plate, Commission, Tax), all
+  7 expense dialogs, Account opening balance, Receipt, Payment PKR/Yen/Agent, Account Transfer, Pay
+  Installment, and the inline Profit Withdrawal field in `MainWindow` (that last one required
+  switching its code-behind from `TxtWithdrawAmount.Text`/`.Clear()` to `.Value`/`.Value = 0`, since
+  `AmountUnitEntry` exposes `Value`, not `Text`).
+
+### 11.4 — View/edit/delete, scoped to match the legacy app exactly
+
+Client asked for a way to review/correct what was entered, "or in the forms where it exists in the
+legacy application" — so the legacy source (`Code/Autos_Accounts/MainWindow.xaml.cs`) was checked
+directly rather than guessed at. Finding: legacy has edit (select row → Edit button, enabled via
+`SelectionChanged`, plus double-click → same Add-style dialog pre-filled) on **every** entity —
+Accounts, Stock, Customers, Agents, Sale, Receipts, Payment PKR/Yen, Payment Agent, Misc/Duty/
+Office Expense, Account Transfer. Delete only ever *worked* for Accounts (Stock/Customer had
+delete buttons in legacy too, but their handlers were empty — dead code, not a real feature to
+replicate). The rewrite already had working edit for Account/Stock/Customer/Agent; this phase
+closes the rest of the gap: Sale, Receipts, Payment PKR/Yen, Payment Agent, Misc/Duty/Office/
+Demurrage/No Plate/Commission/Tax Expense, Account Transfer — plus adds Account delete (which the
+rewrite didn't have either, despite legacy's working implementation).
+
+**Critical design point, confirmed against legacy's own `btnEditSaleEntry_Click` before building**:
+almost every entity here has side effects beyond the raw row (account debit/credit, customer/agent
+balance, stock cost) — a naive `UPDATE` on edit would leave those stale or double-counted. Legacy
+itself does reverse-then-reapply (traced its hand-rolled SQL deltas directly). The rewrite does the
+same but through existing reusable methods: reverse the *original* record's effects first (e.g.
+`CreditAccountWithLedger(original.Account, original.Amount, ...)` to undo a debit,
+`AdjustStockXxx(original.Chassis, -original.Amount)` to undo a stock-cost bump,
+`RecordCustomerSale(original.Customer, -original.AmountReceived, -original.Balance)` to undo a
+sale's customer-balance contribution), call the new `UpdateXxx` DB method, then apply the new
+values' effects exactly the same way `Save()` already does for a brand-new entry. Every
+`XxxViewModel` edit constructor keeps a `_original` copy of the untouched incoming record
+specifically so `Save()` has the old figures to reverse, even after the bound `Exp`/`Sale`/
+`Payment` object has been edited by the user.
+
+- **Sale edit is deliberately narrower than the rest**: chassis is locked (`IsChassisLocked`,
+  disables the chassis `ComboBox`) and editing is blocked outright for any sale with an
+  installment plan (`InstallmentMonths > 0` — `MainWindow.BtnEditSale_Click` checks this *before*
+  opening the dialog and points the user at "Edit Plan"/"Pay Installment" instead). Matches legacy,
+  which also locks the chassis field during Sale edit (`comboChassis.Visibility = Collapsed`) —
+  and sidesteps the much bigger problem of correctly reversing/rebuilding an installment schedule
+  that may already have paid installments.
+- New `DatabaseService` methods: `DeleteAccount`, and `UpdateXxx` for Sale, Receipt, Payment (Yen),
+  PaymentPkr, PaymentAgent, OfficeAccount (Transfer), and all 7 expense types.
+- Every edit-mode ViewModel also defensively re-adds the existing record's chassis/agent/customer
+  to its dropdown list if missing (e.g. `GetInStockChassisNumbers()` only returns cars still
+  `InStock` — editing an old expense entry against a chassis that's since sold would otherwise make
+  that chassis un-selectable and silently corrupt the record on save).
+- `PaymentPkrViewModel` needed two separate edit constructors (`PaymentPkrViewModel(Payment
+  existingYen)` / `PaymentPkrViewModel(PaymentPkr existingPkr)`) since one ViewModel already
+  serves two different entity types (Yen vs. Party/PKR payment) via the existing `IsYen` flag.
+- Account delete is guarded: blocked (with a message) if `CurrentBalance != 0`, so an account
+  holding real money can't be silently deleted. Legacy had no such guard — a deliberate
+  improvement, not a strict copy, flagged here in case the client wants it removed to match legacy
+  exactly.
+- MainWindow gained an "Edit Selected" button + grid `SelectionChanged` (enable/disable) + grid
+  `MouseDoubleClick` (open the same edit path) for every grid/list above, following the exact
+  pattern already established for Accounts.
+
+**Verification note**: build succeeded clean (including a full `dotnet clean` + rebuild to rule
+out stale XAML markup-compiler cache, the exact class of issue that caused 11.1). Re-verified via
+actual launch + automated login (not just process-alive) that the app reaches `MainWindow`
+without the 11.1 crash. Used UI Automation to select a real Account row and invoke its Edit
+button — the dialog opened correctly, pre-filled, no crash. Attempts to automate the same for
+`DataGrid`-based entities (Sale, expenses, payments — as opposed to Accounts' `ListBox`) were
+unreliable in this session (row selection via `SelectionItemPattern` didn't reliably stick) and
+inconclusive, not because of a discovered bug — worth the client clicking through those Edit
+buttons by hand at least once each before this reaches production, same as any other new surface
+this large.
+
+### 11.5 — Sale edit-block was checking the wrong thing
+
+Client hit the "installment sales can't be edited" guard (11.4) on a sale that had **no actual
+installment plan** — `MainWindow.BtnEditSale_Click` was checking `sale.InstallmentMonths > 0` (a
+flag on the `Sale` row) rather than whether `Installment` rows actually exist for it. Root cause,
+found by querying the client's database directly: `SaleAutoViewModel.Save()` only calls
+`AddInstallmentPlan` when `Sale.InstallmentMonths > 0 && Sale.SaleBalance > 0` — if the balance
+comes out ≤ 0 (as it did here, from the same pre-fix Advance-Received bug in 11.2.3 producing a
+huge negative balance), `InstallmentMonths` still gets saved onto the `Sale` row, but the plan
+silently never gets created. Result: a sale permanently flagged "installment" with zero real
+installments, and no way to ever fix it, since the edit guard only looked at the flag. Fixed by
+checking `DatabaseService.Instance.GetInstallmentsForSale(sale.RowId).Count > 0` instead — the
+flag can still be stale after this fix (edit doesn't currently clear it), but that's harmless now
+since the guard no longer trusts it.

@@ -10,8 +10,10 @@ namespace AMS.ViewModels.Dialogs
 {
     public class TaxExpViewModel : ViewModelBase
     {
-        private TaxExp _exp = new TaxExp();
+        private TaxExp _exp;
         public TaxExp Exp { get => _exp; set => SetField(ref _exp, value); }
+        public bool IsEdit { get; }
+        public string Title => IsEdit ? "Edit Tax Expense" : "Tax Expense";
         public List<string> Chassis { get; } = new List<string>();
         public List<string> Accounts { get; } = new List<string>();
         private string _selChassis;
@@ -22,12 +24,26 @@ namespace AMS.ViewModels.Dialogs
         public ICommand CancelCommand { get; }
         public Action<bool?> CloseAction { get; set; }
 
-        public TaxExpViewModel()
+        private readonly TaxExp _original;
+
+        public TaxExpViewModel(TaxExp existing = null)
         {
+            IsEdit = existing != null;
+            _original = existing;
+            Exp = existing != null ? new TaxExp
+            {
+                RowId = existing.RowId, Chassis = existing.Chassis, TaxExpDate = existing.TaxExpDate,
+                TaxExpAmount = existing.TaxExpAmount, TaxExpDetail = existing.TaxExpDetail, TaxExpPaidBy = existing.TaxExpPaidBy
+            } : new TaxExp();
+
             Chassis.AddRange(DatabaseService.Instance.GetInStockChassisNumbers());
+            if (existing != null && !string.IsNullOrEmpty(existing.Chassis) && !Chassis.Contains(existing.Chassis))
+                Chassis.Insert(0, existing.Chassis);
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
-            if (Chassis.Count > 0) SelectedChassis = Chassis[0];
-            if (Accounts.Count > 0) SelectedAccount = Accounts[0];
+            _selChassis = Exp.Chassis;
+            _selAccount = Exp.TaxExpPaidBy;
+            if (string.IsNullOrEmpty(_selChassis) && Chassis.Count > 0) SelectedChassis = Chassis[0];
+            if (string.IsNullOrEmpty(_selAccount) && Accounts.Count > 0) SelectedAccount = Accounts[0];
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }
@@ -37,7 +53,17 @@ namespace AMS.ViewModels.Dialogs
             if (string.IsNullOrEmpty(Exp.Chassis)) { MessageBox.Show("Select chassis."); return; }
             if (string.IsNullOrEmpty(Exp.TaxExpPaidBy)) { MessageBox.Show("Select an account."); return; }
             if (Exp.TaxExpAmount <= 0) { MessageBox.Show("Enter expense amount."); return; }
-            DatabaseService.Instance.AddTaxExp(Exp);
+
+            if (IsEdit)
+            {
+                DatabaseService.Instance.CreditAccountWithLedger(_original.TaxExpPaidBy, _original.TaxExpAmount, _original.TaxExpDate, $"Reversal (edit): Tax Expense (Chassis {_original.Chassis})");
+                DatabaseService.Instance.AdjustStockTax(_original.Chassis, -_original.TaxExpAmount);
+                DatabaseService.Instance.UpdateTaxExp(Exp);
+            }
+            else
+            {
+                DatabaseService.Instance.AddTaxExp(Exp);
+            }
             DatabaseService.Instance.DebitAccountWithLedger(Exp.TaxExpPaidBy, Exp.TaxExpAmount, Exp.TaxExpDate, $"Tax Expense (Chassis {Exp.Chassis}): {Exp.TaxExpDetail}");
             DatabaseService.Instance.AdjustStockTax(Exp.Chassis, Exp.TaxExpAmount);
             CloseAction?.Invoke(true);

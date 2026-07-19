@@ -1,7 +1,8 @@
 <Window x:Class="AMS.Views.Dialogs.PurchaseAutoDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Purchase Auto" Width="420" SizeToContent="Height" MaxHeight="750"
+        xmlns:controls="clr-namespace:AMS.Views.Controls"
+        Title="Purchase Auto" Width="460" SizeToContent="Height" MaxHeight="750"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{StaticResource bg2}">
     <DockPanel>
@@ -25,21 +26,21 @@
                 <TextBlock Text="COLOR" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Stock.Color, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="PRICE (YEN)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.PriceYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.PriceYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="AMOUNT PAID (YEN)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.PaidYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="CLEARANCE (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.Duty, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="MISC EXPENSE (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.MiscExpense, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="DEMURRAGE (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.Demurrage, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="NO PLATE (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.NoPlate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="COMMISSION (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.Commission, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="TAX (PKR)" Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding Stock.Tax, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.PaidYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding ClearanceLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.Duty, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding MiscExpenseLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.MiscExpense, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding DemurrageLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.Demurrage, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding NoPlateLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.NoPlate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding CommissionLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.Commission, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="{Binding TaxLabel}" Style="{StaticResource FieldLabel}"/>
+                <controls:AmountUnitEntry Value="{Binding Stock.Tax, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="PAID FROM ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,14"/>
                 <TextBlock Text="AGENT" Style="{StaticResource FieldLabel}"/>

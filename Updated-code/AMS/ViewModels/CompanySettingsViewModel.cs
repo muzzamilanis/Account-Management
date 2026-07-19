@@ -14,6 +14,9 @@ namespace AMS.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
+        public string YenRateLabel => $"DEFAULT EXCHANGE RATE (YEN to {Settings.BaseCurrencyCode})";
+        public string UgxRateLabel => $"UGX EXCHANGE RATE (1 {Settings.BaseCurrencyCode} = ? UGX)";
+
         public CompanySettingsViewModel()
         {
             var orig = SettingsService.Instance.Settings;
@@ -28,7 +31,11 @@ namespace AMS.ViewModels
                 LoginPassword = orig.LoginPassword,
                 DatabasePassword = orig.DatabasePassword,
                 LastDatabasePath = orig.LastDatabasePath,
-                EnableCreditSales = orig.EnableCreditSales
+                EnableCreditSales = orig.EnableCreditSales,
+                EnableMultiCurrency = orig.EnableMultiCurrency,
+                BaseCurrencyCode = orig.BaseCurrencyCode,
+                BaseCurrencySymbol = orig.BaseCurrencySymbol,
+                UgxExchangeRate = orig.UgxExchangeRate
             };
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(Cancel);

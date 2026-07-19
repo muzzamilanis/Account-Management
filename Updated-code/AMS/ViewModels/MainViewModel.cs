@@ -21,6 +21,21 @@ namespace AMS.ViewModels
             }
         }
 
+        private double _ugxExchangeRate;
+        public double UgxExchangeRate
+        {
+            get => _ugxExchangeRate;
+            set
+            {
+                SetField(ref _ugxExchangeRate, value);
+                SettingsService.Instance.UgxExchangeRate = value;
+            }
+        }
+
+        public bool IsMultiCurrencyEnabled => SettingsService.Instance.Settings.EnableMultiCurrency;
+        public string UgxRateEditLabel => $"1 {SettingsService.Instance.Settings.BaseCurrencyCode} = ? UGX:";
+        public string UgxRatePrefix => $" 1 {SettingsService.Instance.Settings.BaseCurrencyCode} = ";
+
         private string _companyName;
         public string CompanyName { get => _companyName; set => SetField(ref _companyName, value); }
 
@@ -31,6 +46,7 @@ namespace AMS.ViewModels
         public MainViewModel()
         {
             _exchangeRate = SettingsService.Instance.ExchangeRate;
+            _ugxExchangeRate = SettingsService.Instance.UgxExchangeRate;
             _companyName = SettingsService.Instance.CompanyName;
             NavigateCommand = new RelayCommand(page => CurrentPage = page?.ToString() ?? "Welcome");
         }

@@ -1,3 +1,4 @@
+using AMS.Models;
 using AMS.ViewModels.Dialogs;
 using System.Windows;
 
@@ -5,10 +6,10 @@ namespace AMS.Views.Dialogs
 {
     public partial class DutyExpDialog : Window
     {
-        public DutyExpDialog()
+        public DutyExpDialog(DutyExp existing = null)
         {
             InitializeComponent();
-            var vm = new DutyExpViewModel();
+            var vm = new DutyExpViewModel(existing);
             vm.CloseAction = r => { DialogResult = r; Close(); };
             DataContext = vm;
         }

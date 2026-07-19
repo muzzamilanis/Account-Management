@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using AMS.Services;
 using AMS.ViewModels;
 using AMS.Views.Dialogs;
@@ -44,6 +45,11 @@ namespace AMS.Views
             LstCust.ItemsSource = _custVm.Customers;
             LstAgent.ItemsSource = _agentsVm.Agents;
             GridSales.ItemsSource = _saleVm.Sales;
+
+            // Currency-dependent labels that can't be data-bound (static DataGrid column headers,
+            // a label bound to a plain POCO with no ViewModel of its own)
+            ColYenPaymentAmountPkr.Header = $"Amount ({CurrencyLabel.Symbol})";
+            TxtStockPricePkrLabel.Text = $"Price ({CurrencyLabel.Symbol}):";
 
             // Reports
             RefreshReportTypesList();
@@ -133,7 +139,7 @@ namespace AMS.Views
             _agentsVm.Load();
             _saleVm.Load();
             // Profit
-            TxtTotalProfit.Text = _accVm.TotalProfit.ToString("N2") + " PKR";
+            TxtTotalProfit.Text = _accVm.TotalProfit.ToString("N2") + " " + CurrencyLabel.Symbol;
             // Profit accounts combo
             ComboProfitAccount.ItemsSource = DatabaseService.Instance.GetAccountNames();
             if (ComboProfitAccount.Items.Count > 0) ComboProfitAccount.SelectedIndex = 0;
@@ -187,7 +193,35 @@ namespace AMS.Views
         }
 
         private void LstAccounts_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => BtnEditAccount.IsEnabled = LstAccounts.SelectedItem != null;
+        {
+            bool hasSelection = LstAccounts.SelectedItem != null;
+            BtnEditAccount.IsEnabled = hasSelection;
+            BtnDeleteAccount.IsEnabled = hasSelection;
+        }
+
+        private void LstAccounts_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (LstAccounts.SelectedItem is Models.Account) BtnEditAccount_Click(sender, new RoutedEventArgs());
+        }
+
+        private void BtnDeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(LstAccounts.SelectedItem is Models.Account a)) return;
+                if (a.CurrentBalance != 0)
+                {
+                    MessageBox.Show($"This account has a non-zero balance ({a.CurrentBalance:N2}). Transfer or clear the balance before deleting it.", "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                var dlg = new ConfirmDialog($"Delete account \"{a.AccountName}\"? This cannot be undone.", "Delete Account") { Owner = this };
+                if (dlg.ShowDialog() != true) return;
+                DatabaseService.Instance.DeleteAccount(a.RowId);
+                _accVm.LoadAccounts();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void TxtAccFilter_TextChanged(object sender, TextChangedEventArgs e)
             => _accVm.FilterText = TxtAccFilter.Text;
@@ -197,10 +231,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new AccountTransferDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); RefreshAll(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridTransfers_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditTransfer.IsEnabled = GridTransfers.SelectedItem != null;
+        private void GridTransfers_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridTransfers.SelectedItem != null) BtnEditTransfer_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditTransfer_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridTransfers.SelectedItem is Models.OfficeAccount t)) return; var d = new AccountTransferDialog(t); if (d.ShowDialog() == true) { _accVm.LoadAll(); RefreshAll(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewMiscExp_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new MiscExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridMiscExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditMiscExp.IsEnabled = GridMiscExp.SelectedItem != null;
+        private void GridMiscExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridMiscExp.SelectedItem != null) BtnEditMiscExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditMiscExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridMiscExp.SelectedItem is Models.MiscExp m)) return; var d = new MiscExpDialog(m); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -209,10 +257,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new DutyExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridDutyExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditDutyExp.IsEnabled = GridDutyExp.SelectedItem != null;
+        private void GridDutyExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridDutyExp.SelectedItem != null) BtnEditDutyExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditDutyExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridDutyExp.SelectedItem is Models.DutyExp d0)) return; var d = new DutyExpDialog(d0); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewDemurrageExp_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new DemurrageExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridDemurrageExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditDemurrageExp.IsEnabled = GridDemurrageExp.SelectedItem != null;
+        private void GridDemurrageExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridDemurrageExp.SelectedItem != null) BtnEditDemurrageExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditDemurrageExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridDemurrageExp.SelectedItem is Models.DemurrageExp m)) return; var d = new DemurrageExpDialog(m); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -221,10 +283,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new NoPlateExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridNoPlateExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditNoPlateExp.IsEnabled = GridNoPlateExp.SelectedItem != null;
+        private void GridNoPlateExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridNoPlateExp.SelectedItem != null) BtnEditNoPlateExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditNoPlateExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridNoPlateExp.SelectedItem is Models.NoPlateExp m)) return; var d = new NoPlateExpDialog(m); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewCommissionExp_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new CommissionExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridCommissionExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditCommissionExp.IsEnabled = GridCommissionExp.SelectedItem != null;
+        private void GridCommissionExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridCommissionExp.SelectedItem != null) BtnEditCommissionExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditCommissionExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridCommissionExp.SelectedItem is Models.CommissionExp m)) return; var d = new CommissionExpDialog(m); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -233,10 +309,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new TaxExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridTaxExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditTaxExp.IsEnabled = GridTaxExp.SelectedItem != null;
+        private void GridTaxExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridTaxExp.SelectedItem != null) BtnEditTaxExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditTaxExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridTaxExp.SelectedItem is Models.TaxExp m)) return; var d = new TaxExpDialog(m); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewOfficeExp_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new OfficeExpDialog(); if (d.ShowDialog() == true) _accVm.LoadAll(); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridOfficeExp_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditOfficeExp.IsEnabled = GridOfficeExp.SelectedItem != null;
+        private void GridOfficeExp_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridOfficeExp.SelectedItem != null) BtnEditOfficeExp_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditOfficeExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridOfficeExp.SelectedItem is Models.OfficeExp m)) return; var d = new OfficeExpDialog(m); if (d.ShowDialog() == true) _accVm.LoadAll(); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -245,10 +335,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new ReceiptDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _custVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridReceipts_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditReceipt.IsEnabled = GridReceipts.SelectedItem != null;
+        private void GridReceipts_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridReceipts.SelectedItem != null) BtnEditReceipt_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditReceipt_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridReceipts.SelectedItem is Models.Receipt r)) return; var d = new ReceiptDialog(r); if (d.ShowDialog() == true) { _accVm.LoadAll(); _custVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewYenPayment_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new PaymentPkrDialog(isYen: true); if (d.ShowDialog() == true) _accVm.LoadAll(); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridYenPayments_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditYenPayment.IsEnabled = GridYenPayments.SelectedItem != null;
+        private void GridYenPayments_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridYenPayments.SelectedItem != null) BtnEditYenPayment_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditYenPayment_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridYenPayments.SelectedItem is Models.Payment p)) return; var d = new PaymentPkrDialog(p); if (d.ShowDialog() == true) _accVm.LoadAll(); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -257,10 +361,24 @@ namespace AMS.Views
             try { GuardDb(); var d = new PaymentPkrDialog(isYen: false); if (d.ShowDialog() == true) { _accVm.LoadAll(); _custVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private void GridPkrPayments_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditPkrPayment.IsEnabled = GridPkrPayments.SelectedItem != null;
+        private void GridPkrPayments_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridPkrPayments.SelectedItem != null) BtnEditPkrPayment_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditPkrPayment_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridPkrPayments.SelectedItem is Models.PaymentPkr p)) return; var d = new PaymentPkrDialog(p); if (d.ShowDialog() == true) { _accVm.LoadAll(); _custVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
 
         private void BtnNewAgentPayment_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new PaymentAgentDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void GridAgentPayments_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnEditAgentPayment.IsEnabled = GridAgentPayments.SelectedItem != null;
+        private void GridAgentPayments_MouseDoubleClick(object sender, MouseButtonEventArgs e) { if (GridAgentPayments.SelectedItem != null) BtnEditAgentPayment_Click(sender, new RoutedEventArgs()); }
+        private void BtnEditAgentPayment_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); if (!(GridAgentPayments.SelectedItem is Models.PaymentAgent p)) return; var d = new PaymentAgentDialog(p); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -269,15 +387,16 @@ namespace AMS.Views
             try
             {
                 GuardDb();
-                if (!double.TryParse(TxtWithdrawAmount.Text, out double amount) || amount <= 0)
+                double amount = TxtWithdrawAmount.Value;
+                if (amount <= 0)
                 { MessageBox.Show("Enter a valid withdrawal amount."); return; }
                 string account = ComboProfitAccount.SelectedItem?.ToString();
                 if (string.IsNullOrEmpty(account)) { MessageBox.Show("Select an account."); return; }
                 DatabaseService.Instance.WithdrawProfit(amount, account, "Profit withdrawal");
-                TxtWithdrawAmount.Clear();
+                TxtWithdrawAmount.Value = 0;
                 _accVm.LoadAll();
-                TxtTotalProfit.Text = _accVm.TotalProfit.ToString("N2") + " PKR";
-                MessageBox.Show($"PKR {amount:N2} withdrawn from profit.", "Success",
+                TxtTotalProfit.Text = _accVm.TotalProfit.ToString("N2") + " " + CurrencyLabel.Symbol;
+                MessageBox.Show($"{CurrencyLabel.Symbol} {amount:N2} withdrawn from profit.", "Success",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
@@ -355,6 +474,34 @@ namespace AMS.Views
                 && GridSales.SelectedItem is Models.Sale s && s.InstallmentMonths > 0;
             BtnPayInstallment.IsEnabled = hasPlan;
             BtnEditPlan.IsEnabled = hasPlan;
+            BtnEditSale.IsEnabled = GridSales.SelectedItem != null;
+        }
+
+        private void GridSales_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (GridSales.SelectedItem != null) BtnEditSale_Click(sender, new RoutedEventArgs());
+        }
+
+        private void BtnEditSale_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GuardDb();
+                if (!(GridSales.SelectedItem is Models.Sale sale)) return;
+                // Check for a real installment plan, not just the InstallmentMonths flag — a sale
+                // can end up flagged as installment with zero actual Installment rows if the
+                // balance came out <= 0 at save time (AddInstallmentPlan silently no-ops then),
+                // and blocking edit on the flag alone would leave a sale like that permanently
+                // stuck with no way to fix it.
+                if (DatabaseService.Instance.GetInstallmentsForSale(sale.RowId).Count > 0)
+                {
+                    MessageBox.Show("Installment sales can't be edited directly — use \"Edit Plan\" to change the remaining schedule, or \"Pay Installment\" to record a payment.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                var d = new SaleAutoDialog(sale);
+                if (d.ShowDialog() == true) RefreshAll();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void BtnPayInstallment_Click(object sender, RoutedEventArgs e)
@@ -523,6 +670,22 @@ namespace AMS.Views
 
             WrapExcEdit.Visibility = Visibility.Collapsed;
             PnlExcView.Visibility = Visibility.Visible;
+        }
+
+        private void hyplnkUgx_Click(object sender, RoutedEventArgs e)
+        {
+            WrapUgxEdit.Visibility = Visibility.Visible;
+            PnlUgxView.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnUgxEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var bindingObj = txtEditUgxRate.GetBindingExpression(TextBox.TextProperty);
+            if (bindingObj != null)
+                bindingObj.UpdateSource();
+
+            WrapUgxEdit.Visibility = Visibility.Collapsed;
+            PnlUgxView.Visibility = Visibility.Visible;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

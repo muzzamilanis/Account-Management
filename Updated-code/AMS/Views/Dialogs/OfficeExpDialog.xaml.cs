@@ -1,3 +1,4 @@
+using AMS.Models;
 using AMS.ViewModels.Dialogs;
 using System.Windows;
 
@@ -5,10 +6,10 @@ namespace AMS.Views.Dialogs
 {
     public partial class OfficeExpDialog : Window
     {
-        public OfficeExpDialog()
+        public OfficeExpDialog(OfficeExp existing = null)
         {
             InitializeComponent();
-            var vm = new OfficeExpViewModel();
+            var vm = new OfficeExpViewModel(existing);
             vm.CloseAction = r => { DialogResult = r; Close(); };
             DataContext = vm;
         }

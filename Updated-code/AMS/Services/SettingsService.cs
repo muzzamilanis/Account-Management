@@ -32,6 +32,11 @@ namespace AMS.Services
             get => Settings.LastDatabasePath;
             set { Settings.LastDatabasePath = value; Save(); }
         }
+        public double UgxExchangeRate
+        {
+            get => Settings.UgxExchangeRate;
+            set { Settings.UgxExchangeRate = value; Save(); }
+        }
 
         private SettingsService() { }
 

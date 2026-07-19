@@ -30,7 +30,7 @@ namespace AMS.ViewModels.Dialogs
             double paidSoFar = installments.Where(i => i.IsPaid).Sum(i => i.PaidAmount);
             double remaining = sale.SaleBalance - paidSoFar;
             int unpaidCount = installments.Count(i => !i.IsPaid);
-            SummaryText = $"{sale.SaleCustomer} — Chassis {sale.SaleChassis}\nRemaining balance: {remaining:N2} PKR across {unpaidCount} unpaid installment(s)";
+            SummaryText = $"{sale.SaleCustomer} — Chassis {sale.SaleChassis}\nRemaining balance: {remaining:N2} {CurrencyLabel.Symbol} across {unpaidCount} unpaid installment(s)";
             Months = unpaidCount > 0 ? unpaidCount : sale.InstallmentMonths;
             ReminderDaysBefore = sale.ReminderDaysBefore;
             SaveCommand = new RelayCommand(Save);
