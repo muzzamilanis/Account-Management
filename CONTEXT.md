@@ -423,3 +423,53 @@ sale (chassis `545613213521321`, cost 4,475,000, sold for 450,000) was overwhelm
 for the negative profit figure the client saw — almost certainly bad test data, not a calculation
 bug. There is still no UI to edit/delete a `Sale`/`Stock` record to correct data like this — noted
 as a gap, not yet requested/built.
+
+## Phase 8 — Purchase form expense categories: Clearance (renamed Duty), Demurrage, No Plate, Commission, Tax
+
+Client-requested, after accepting v1: the Purchase form only tracked "Duty" and "Misc Expense" as
+per-car expense categories. Client wanted four more (Demurrage, No Plate, Commission, Tax), renamed
+"Duty" to "Clearance" for display, and wanted every one of these to have full parity with the
+existing Duty/Misc Expense features: its own field on the Purchase form, its own dedicated
+entry dialog + Accounts sub-nav tab (for expenses recorded after purchase, not just at purchase
+time), and its own report.
+
+Two decisions confirmed with the client before building (see the two `AskUserQuestion` calls in
+this session): (1) none of the 4 new fields are agent-linked like Duty — all four behave like Misc
+Expense (a plain debit from a company Account, no agent involved); (2) all four, plus the renamed
+Clearance, roll into `Stock.Cost` and therefore reduce profit, same as Duty/Misc Expense always
+have.
+
+- **"Duty" → "Clearance" is a display-only rename.** The underlying `DutyExp` table, `Stock.Duty`
+  column, and all C# identifiers (`AddDutyExp`, `AdjustStockDuty`, etc.) are unchanged — only
+  user-facing text changed (dialog titles, tab label, report name `"Clearance Expenses"`, Purchase
+  form field label, Stock Details panel label). This avoids a schema migration and keeps the change
+  low-risk; a client-visible "Duty" no longer appears anywhere in the app.
+- New tables `DemurrageExp`, `NoPlateExp`, `CommissionExp`, `TaxExp` — identical shape to `MiscExp`
+  (`Chassis, XDate, XAmount, XDetail, XPaidBy`, no agent column). New `Stock` columns `Demurrage`,
+  `NoPlate`, `Commission`, `Tax` (migrated via `EnsureColumn`, default 0).
+- **Found and fixed a pre-existing staleness bug while building this**: `AdjustStockDuty` (called
+  when a *post-purchase* Duty entry is recorded via the dedicated dialog) only updated
+  `Stock.Duty`, never `Stock.Cost` — so `Cost` (and therefore profit) silently went stale until the
+  Stock record was next edited/saved. `MiscExp` had the same gap but worse: it never touched Stock
+  at all when entered via the dedicated Misc Expense dialog, only when entered directly on the
+  Purchase form. Fixed by having every `AdjustStockXxx` method (`AdjustStockDuty`,
+  `AdjustStockMiscExpense` [new], `AdjustStockDemurrage`, `AdjustStockNoPlate`,
+  `AdjustStockCommission`, `AdjustStockTax`) update both the category column and `Cost` in the same
+  `UPDATE` statement (`Cost = Cost + @delta`), and wired `MiscExpViewModel.Save()` to call
+  `AdjustStockMiscExpense` (it never did before). This matters more now than it used to: cash-basis
+  profit (`GetProfitBreakdown`/`GetTotalProfit`, Phase 7) reads `Stock.Cost` directly, so a stale
+  Cost silently corrupts "Total Profit Available."
+- Purchase form (`PurchaseAutoDialog.xaml`/`PurchaseAutoViewModel.cs`): added Demurrage/No
+  Plate/Commission/Tax fields; `Cost` formula now sums all 6 categories
+  (`PricePkr + Duty + MiscExpense + Demurrage + NoPlate + Commission + Tax`); at purchase time each
+  new field, if > 0, both adds into the combined account debit (same pattern Misc Expense already
+  used) and creates its own `XxxExp` row tagged `"Expense at purchase: {chassis}"`. Also fixed
+  another instance of the "edit-copy drops fields" bug class (documented earlier in this file) —
+  `PurchaseAutoViewModel`'s edit-mode copy-constructor was missing the new fields.
+- MainWindow: 4 new Accounts sub-nav tabs (Demurrage, No Plate, Commission, Tax) alongside the
+  renamed "Clearance Payments" tab, each with its own Add-button + DataGrid, mirroring the
+  Misc/Duty pattern exactly (`AccountsViewModel` gained matching `ObservableCollection`s,
+  `LoadXxx`/`OpenXxx` methods). Stock Details panel extended with rows for all 4 new fields.
+- 4 new report types (`Demurrage Expenses`, `No Plate Expenses`, `Commission Expenses`,
+  `Tax Expenses`) plus the renamed `Clearance Expenses`; the `Stocks` report also now shows all 6
+  expense columns.

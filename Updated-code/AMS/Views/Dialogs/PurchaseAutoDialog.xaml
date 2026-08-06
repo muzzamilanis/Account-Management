@@ -28,10 +28,18 @@
                 <TextBox Text="{Binding Stock.PriceYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="AMOUNT PAID (YEN)" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Stock.PaidYen, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
-                <TextBlock Text="DUTY (PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Text="CLEARANCE (PKR)" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Stock.Duty, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="MISC EXPENSE (PKR)" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding Stock.MiscExpense, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="DEMURRAGE (PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Stock.Demurrage, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="NO PLATE (PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Stock.NoPlate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="COMMISSION (PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Stock.Commission, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
+                <TextBlock Text="TAX (PKR)" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Stock.Tax, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,14"/>
                 <TextBlock Text="PAID FROM ACCOUNT" Style="{StaticResource FieldLabel}"/>
                 <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="0,4,0,14"/>
                 <TextBlock Text="AGENT" Style="{StaticResource FieldLabel}"/>

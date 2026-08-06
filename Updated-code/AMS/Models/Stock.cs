@@ -12,8 +12,13 @@ namespace AMS.Models
         public double PriceYen { get; set; }
         public double Rate { get; set; }
         public double PricePkr { get; set; }
+        // Displayed as "Clearance" in the UI — kept as Duty internally to avoid a schema rename.
         public double Duty { get; set; }
         public double MiscExpense { get; set; }
+        public double Demurrage { get; set; }
+        public double NoPlate { get; set; }
+        public double Commission { get; set; }
+        public double Tax { get; set; }
         public double Cost { get; set; }
         public string Status { get; set; } = "InStock";
         public double PaidYen { get; set; }

@@ -28,7 +28,12 @@ namespace AMS.ViewModels.Dialogs
         public PurchaseAutoViewModel(Stock existing = null)
         {
             IsEdit = existing != null;
-            Stock = existing != null ? new Stock { RowId = existing.RowId, Date = existing.Date, Chassis = existing.Chassis, Model = existing.Model, Color = existing.Color, PriceYen = existing.PriceYen, Rate = existing.Rate, Duty = existing.Duty, MiscExpense = existing.MiscExpense, Comments = existing.Comments, PaidYen = existing.PaidYen, PaidAmount = existing.PaidAmount, Status = existing.Status } : new Stock();
+            Stock = existing != null ? new Stock {
+                RowId = existing.RowId, Date = existing.Date, Chassis = existing.Chassis, Model = existing.Model, Color = existing.Color,
+                PriceYen = existing.PriceYen, Rate = existing.Rate, Duty = existing.Duty, MiscExpense = existing.MiscExpense,
+                Demurrage = existing.Demurrage, NoPlate = existing.NoPlate, Commission = existing.Commission, Tax = existing.Tax,
+                Comments = existing.Comments, PaidYen = existing.PaidYen, PaidAmount = existing.PaidAmount, Status = existing.Status
+            } : new Stock();
             Accounts.AddRange(DatabaseService.Instance.GetAccountNames());
             foreach (var a in DatabaseService.Instance.GetAgentNames()) Agents.Add(a);
             SelectedAccount = Accounts.Count > 0 ? Accounts[0] : null;
@@ -44,14 +49,14 @@ namespace AMS.ViewModels.Dialogs
             if (rate <= 0) rate = Stock.Rate > 0 ? Stock.Rate : 1;
             Stock.Rate = rate;
             Stock.PricePkr = Stock.PriceYen * rate;
-            Stock.Cost = Stock.PricePkr + Stock.Duty + Stock.MiscExpense;
+            Stock.Cost = Stock.PricePkr + Stock.Duty + Stock.MiscExpense + Stock.Demurrage + Stock.NoPlate + Stock.Commission + Stock.Tax;
             Stock.PaidAmount = Stock.PaidYen * rate;
             if (!IsEdit) Stock.Status = "InStock";
             if (IsEdit) DatabaseService.Instance.UpdateStock(Stock);
             else
             {
                 DatabaseService.Instance.AddStock(Stock);
-                double accountDebit = Stock.PaidAmount + Stock.MiscExpense;
+                double accountDebit = Stock.PaidAmount + Stock.MiscExpense + Stock.Demurrage + Stock.NoPlate + Stock.Commission + Stock.Tax;
                 if (accountDebit > 0 && !string.IsNullOrEmpty(SelectedAccount))
                     DatabaseService.Instance.DebitAccountWithLedger(SelectedAccount, accountDebit, Stock.Date, $"Purchase: {Stock.Chassis}");
                 if (Stock.MiscExpense > 0 && !string.IsNullOrEmpty(SelectedAccount))
@@ -59,6 +64,30 @@ namespace AMS.ViewModels.Dialogs
                     {
                         Chassis = Stock.Chassis, MiscExpDate = Stock.Date, MiscExpAmount = Stock.MiscExpense,
                         MiscExpDetail = $"Expense at purchase: {Stock.Chassis}", MiscExpPaidBy = SelectedAccount
+                    });
+                if (Stock.Demurrage > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.AddDemurrageExp(new DemurrageExp
+                    {
+                        Chassis = Stock.Chassis, DemurrageExpDate = Stock.Date, DemurrageExpAmount = Stock.Demurrage,
+                        DemurrageExpDetail = $"Expense at purchase: {Stock.Chassis}", DemurrageExpPaidBy = SelectedAccount
+                    });
+                if (Stock.NoPlate > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.AddNoPlateExp(new NoPlateExp
+                    {
+                        Chassis = Stock.Chassis, NoPlateExpDate = Stock.Date, NoPlateExpAmount = Stock.NoPlate,
+                        NoPlateExpDetail = $"Expense at purchase: {Stock.Chassis}", NoPlateExpPaidBy = SelectedAccount
+                    });
+                if (Stock.Commission > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.AddCommissionExp(new CommissionExp
+                    {
+                        Chassis = Stock.Chassis, CommissionExpDate = Stock.Date, CommissionExpAmount = Stock.Commission,
+                        CommissionExpDetail = $"Expense at purchase: {Stock.Chassis}", CommissionExpPaidBy = SelectedAccount
+                    });
+                if (Stock.Tax > 0 && !string.IsNullOrEmpty(SelectedAccount))
+                    DatabaseService.Instance.AddTaxExp(new TaxExp
+                    {
+                        Chassis = Stock.Chassis, TaxExpDate = Stock.Date, TaxExpAmount = Stock.Tax,
+                        TaxExpDetail = $"Expense at purchase: {Stock.Chassis}", TaxExpPaidBy = SelectedAccount
                     });
                 if (Stock.Duty > 0 && !string.IsNullOrEmpty(SelectedAgent))
                 {

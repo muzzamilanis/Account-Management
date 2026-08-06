@@ -121,7 +121,15 @@
                                                      Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabMisc" Content="Misc. Auto Expense" GroupName="AccTab"
                                                      Style="{DynamicResource SecondaryNavItemStyle}"/>
-                                        <RadioButton x:Name="TabDuty" Content="Duty Payments" GroupName="AccTab"
+                                        <RadioButton x:Name="TabDuty" Content="Clearance Payments" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabDemurrage" Content="Demurrage" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabNoPlate" Content="No Plate" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabCommission" Content="Commission" GroupName="AccTab"
+                                                     Style="{DynamicResource SecondaryNavItemStyle}"/>
+                                        <RadioButton x:Name="TabTax" Content="Tax" GroupName="AccTab"
                                                      Style="{DynamicResource SecondaryNavItemStyle}"/>
                                         <RadioButton x:Name="TabOfficeExp" Content="Office Expense" GroupName="AccTab"
                                                      Style="{DynamicResource SecondaryNavItemStyle}"/>
@@ -317,11 +325,11 @@
                                     </Grid.Style>
                                     <DockPanel Margin="16">
                                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
-                                            <Button Content="&#x2795; New Duty Expense" Click="BtnNewDutyExp_Click"/>
+                                            <Button Content="&#x2795; New Clearance Expense" Click="BtnNewDutyExp_Click"/>
                                         </StackPanel>
                                         <Border Style="{DynamicResource CardBorder}">
                                             <DockPanel>
-                                                <TextBlock DockPanel.Dock="Top" Text="Duty Expenses" Style="{DynamicResource SectionHeader}"/>
+                                                <TextBlock DockPanel.Dock="Top" Text="Clearance Expenses" Style="{DynamicResource SectionHeader}"/>
                                                 <DataGrid x:Name="GridDutyExp" AutoGenerateColumns="False">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
@@ -330,6 +338,138 @@
                                                         <DataGridTextColumn Header="Detail" Binding="{Binding DutyExpDetail}" Width="*"/>
                                                         <DataGridTextColumn Header="Agent" Binding="{Binding DutyExpAgent}" Width="120"/>
                                                         <DataGridTextColumn Header="Account" Binding="{Binding DutyExpPaidBy}" Width="120"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </DockPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </Grid>
+
+                                <!-- Demurrage Expense -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=TabDemurrage}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <DockPanel Margin="16">
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                                            <Button Content="&#x2795; New Demurrage Expense" Click="BtnNewDemurrageExp_Click"/>
+                                        </StackPanel>
+                                        <Border Style="{DynamicResource CardBorder}">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Top" Text="Demurrage Expenses" Style="{DynamicResource SectionHeader}"/>
+                                                <DataGrid x:Name="GridDemurrageExp" AutoGenerateColumns="False">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
+                                                        <DataGridTextColumn Header="Date" Binding="{Binding DemurrageExpDate, StringFormat='dd MMM yyyy'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Amount" Binding="{Binding DemurrageExpAmount, StringFormat='N2'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Detail" Binding="{Binding DemurrageExpDetail}" Width="*"/>
+                                                        <DataGridTextColumn Header="Account" Binding="{Binding DemurrageExpPaidBy}" Width="130"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </DockPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </Grid>
+
+                                <!-- No Plate Expense -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=TabNoPlate}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <DockPanel Margin="16">
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                                            <Button Content="&#x2795; New No Plate Expense" Click="BtnNewNoPlateExp_Click"/>
+                                        </StackPanel>
+                                        <Border Style="{DynamicResource CardBorder}">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Top" Text="No Plate Expenses" Style="{DynamicResource SectionHeader}"/>
+                                                <DataGrid x:Name="GridNoPlateExp" AutoGenerateColumns="False">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
+                                                        <DataGridTextColumn Header="Date" Binding="{Binding NoPlateExpDate, StringFormat='dd MMM yyyy'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Amount" Binding="{Binding NoPlateExpAmount, StringFormat='N2'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Detail" Binding="{Binding NoPlateExpDetail}" Width="*"/>
+                                                        <DataGridTextColumn Header="Account" Binding="{Binding NoPlateExpPaidBy}" Width="130"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </DockPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </Grid>
+
+                                <!-- Commission Expense -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=TabCommission}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <DockPanel Margin="16">
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                                            <Button Content="&#x2795; New Commission Expense" Click="BtnNewCommissionExp_Click"/>
+                                        </StackPanel>
+                                        <Border Style="{DynamicResource CardBorder}">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Top" Text="Commission Expenses" Style="{DynamicResource SectionHeader}"/>
+                                                <DataGrid x:Name="GridCommissionExp" AutoGenerateColumns="False">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
+                                                        <DataGridTextColumn Header="Date" Binding="{Binding CommissionExpDate, StringFormat='dd MMM yyyy'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Amount" Binding="{Binding CommissionExpAmount, StringFormat='N2'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Detail" Binding="{Binding CommissionExpDetail}" Width="*"/>
+                                                        <DataGridTextColumn Header="Account" Binding="{Binding CommissionExpPaidBy}" Width="130"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </DockPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </Grid>
+
+                                <!-- Tax Expense -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=TabTax}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <DockPanel Margin="16">
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                                            <Button Content="&#x2795; New Tax Expense" Click="BtnNewTaxExp_Click"/>
+                                        </StackPanel>
+                                        <Border Style="{DynamicResource CardBorder}">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Top" Text="Tax Expenses" Style="{DynamicResource SectionHeader}"/>
+                                                <DataGrid x:Name="GridTaxExp" AutoGenerateColumns="False">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Chassis" Binding="{Binding Chassis}" Width="120"/>
+                                                        <DataGridTextColumn Header="Date" Binding="{Binding TaxExpDate, StringFormat='dd MMM yyyy'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Amount" Binding="{Binding TaxExpAmount, StringFormat='N2'}" Width="100"/>
+                                                        <DataGridTextColumn Header="Detail" Binding="{Binding TaxExpDetail}" Width="*"/>
+                                                        <DataGridTextColumn Header="Account" Binding="{Binding TaxExpPaidBy}" Width="130"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </DockPanel>
@@ -588,6 +728,8 @@
                                                 <RowDefinition Height="30"/>
                                                 <RowDefinition Height="30"/>
                                                 <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
                                             </Grid.RowDefinitions>
                                             <TextBlock Text="Chassis No:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Column="1" Text="{Binding Chassis}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
@@ -604,20 +746,28 @@
                                             <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Rate, StringFormat='N2'}" FontWeight="SemiBold"/>
                                             <TextBlock Grid.Row="3" Text="Price (PKR):" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PricePkr, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Duty:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Clearance:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Duty, StringFormat='N2'}" FontWeight="SemiBold"/>
                                             <TextBlock Grid.Row="4" Text="Misc Expense:" Foreground="{DynamicResource BaseSecondaryFg}"/>
                                             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MiscExpense, StringFormat='N2'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="2" Text="Total Cost:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding Cost, StringFormat='N2'}"
+                                            <TextBlock Grid.Row="4" Grid.Column="2" Text="Demurrage:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding Demurrage, StringFormat='N2'}" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Row="5" Text="No Plate:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding NoPlate, StringFormat='N2'}" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="2" Text="Commission:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding Commission, StringFormat='N2'}" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Row="6" Text="Tax:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Tax, StringFormat='N2'}" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Row="6" Grid.Column="2" Text="Total Cost:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding Cost, StringFormat='N2'}"
                                                        FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
-                                            <TextBlock Grid.Row="5" Text="Paid (Yen):" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PaidYen, StringFormat='N0'}" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="2" Text="Bal. Yen:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding BalanceYen, StringFormat='N0'}"
+                                            <TextBlock Grid.Row="7" Text="Paid (Yen):" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding PaidYen, StringFormat='N0'}" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Row="7" Grid.Column="2" Text="Bal. Yen:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding BalanceYen, StringFormat='N0'}"
                                                        FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
-                                            <TextBlock Grid.Row="6" Text="Comments:" Foreground="{DynamicResource BaseSecondaryFg}"/>
-                                            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comments}" TextWrapping="Wrap"/>
+                                            <TextBlock Grid.Row="8" Text="Comments:" Foreground="{DynamicResource BaseSecondaryFg}"/>
+                                            <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comments}" TextWrapping="Wrap"/>
                                         </Grid>
                                     </StackPanel>
                                 </Border>

@@ -63,6 +63,10 @@ namespace AMS.Services
                 CREATE TABLE IF NOT EXISTS Receipt (RowId INTEGER PRIMARY KEY AUTOINCREMENT, ReceiptDate DATETIME, ReceiptAmount REAL, ReceiptDetail TEXT, ReceivedIn TEXT, ReceivedFrom TEXT);
                 CREATE TABLE IF NOT EXISTS MiscExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, MiscExpDate DATETIME, MiscExpAmount REAL, MiscExpDetail TEXT, MiscExpPaidBy TEXT);
                 CREATE TABLE IF NOT EXISTS DutyExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, DutyExpDate DATETIME, DutyExpAmount REAL, DutyExpDetail TEXT, DutyExpPaidBy TEXT, DutyExpAgent TEXT);
+                CREATE TABLE IF NOT EXISTS DemurrageExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, DemurrageExpDate DATETIME, DemurrageExpAmount REAL, DemurrageExpDetail TEXT, DemurrageExpPaidBy TEXT);
+                CREATE TABLE IF NOT EXISTS NoPlateExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, NoPlateExpDate DATETIME, NoPlateExpAmount REAL, NoPlateExpDetail TEXT, NoPlateExpPaidBy TEXT);
+                CREATE TABLE IF NOT EXISTS CommissionExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, CommissionExpDate DATETIME, CommissionExpAmount REAL, CommissionExpDetail TEXT, CommissionExpPaidBy TEXT);
+                CREATE TABLE IF NOT EXISTS TaxExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Chassis TEXT, TaxExpDate DATETIME, TaxExpAmount REAL, TaxExpDetail TEXT, TaxExpPaidBy TEXT);
                 CREATE TABLE IF NOT EXISTS OfficeExp (RowId INTEGER PRIMARY KEY AUTOINCREMENT, OfficeExpDate DATETIME, OfficeExpAmount REAL, OfficeExpDetail TEXT, OfficeExpPaidBy TEXT);
                 CREATE TABLE IF NOT EXISTS OfficeAccount (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, CreditFrom TEXT, DebitTo TEXT, LedgerRowId INTEGER);
                 CREATE TABLE IF NOT EXISTS Ledger (RowId INTEGER PRIMARY KEY AUTOINCREMENT, Date DATETIME, Amount REAL, Detail TEXT, Account TEXT);
@@ -76,6 +80,10 @@ namespace AMS.Services
             EnsureColumn("Sale", "ReminderDaysBefore", "INTEGER DEFAULT 0");
             EnsureColumn("Sale", "InstallmentMonths", "INTEGER DEFAULT 0");
             EnsureColumn("Account", "IncludeInProfit", "INTEGER DEFAULT 1");
+            EnsureColumn("Stock", "Demurrage", "REAL DEFAULT 0");
+            EnsureColumn("Stock", "NoPlate", "REAL DEFAULT 0");
+            EnsureColumn("Stock", "Commission", "REAL DEFAULT 0");
+            EnsureColumn("Stock", "Tax", "REAL DEFAULT 0");
         }
 
         // Lightweight migration helper: adds a column to an existing table if it isn't
@@ -272,9 +280,43 @@ namespace AMS.Services
                 new Dictionary<string, object> { {"@recv", amountReceived}, {"@bal", balance}, {"@name", customerName} });
         }
 
+        // Every Adjust* method below keeps Stock.Cost (the figure profit calculations read) in sync
+        // with the underlying expense column in the same statement — a post-purchase expense entry
+        // (e.g. from the Clearance/Demurrage/etc. tabs) must move Cost immediately, not just at the
+        // next Purchase-form edit, otherwise "Total Profit Available" silently goes stale.
         public void AdjustStockDuty(string chassis, double delta)
         {
-            ExecuteNonQuery("UPDATE Stock SET Duty = Duty + @delta WHERE Chassis = @chassis",
+            ExecuteNonQuery("UPDATE Stock SET Duty = Duty + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void AdjustStockMiscExpense(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET MiscExpense = MiscExpense + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void AdjustStockDemurrage(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET Demurrage = Demurrage + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void AdjustStockNoPlate(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET NoPlate = NoPlate + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void AdjustStockCommission(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET Commission = Commission + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
+                new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
+        }
+
+        public void AdjustStockTax(string chassis, double delta)
+        {
+            ExecuteNonQuery("UPDATE Stock SET Tax = Tax + @delta, Cost = Cost + @delta WHERE Chassis = @chassis",
                 new Dictionary<string, object> { {"@delta", delta}, {"@chassis", chassis} });
         }
 
@@ -327,6 +369,66 @@ namespace AMS.Services
             foreach (DataRow r in dt.Rows) res.Add(new DutyExp {
                 RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), DutyExpDate = GetValue<DateTime>(r, "DutyExpDate"),
                 DutyExpAmount = GetValue<double>(r, "DutyExpAmount"), DutyExpDetail = GetValue<string>(r, "DutyExpDetail"), DutyExpPaidBy = GetValue<string>(r, "DutyExpPaidBy"), DutyExpAgent = GetValue<string>(r, "DutyExpAgent") });
+            return res;
+        }
+
+        public void AddDemurrageExp(DemurrageExp d)
+        {
+            ExecuteNonQuery("INSERT INTO DemurrageExp (Chassis, DemurrageExpDate, DemurrageExpAmount, DemurrageExpDetail, DemurrageExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
+                new Dictionary<string, object> { {"@c", d.Chassis}, {"@d", d.DemurrageExpDate}, {"@a", d.DemurrageExpAmount}, {"@det", d.DemurrageExpDetail}, {"@p", d.DemurrageExpPaidBy} });
+        }
+        public IEnumerable<DemurrageExp> GetDemurrageExps()
+        {
+            var dt = ExecuteQuery("SELECT * FROM DemurrageExp ORDER BY DemurrageExpDate DESC");
+            var res = new List<DemurrageExp>();
+            foreach (DataRow r in dt.Rows) res.Add(new DemurrageExp {
+                RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), DemurrageExpDate = GetValue<DateTime>(r, "DemurrageExpDate"),
+                DemurrageExpAmount = GetValue<double>(r, "DemurrageExpAmount"), DemurrageExpDetail = GetValue<string>(r, "DemurrageExpDetail"), DemurrageExpPaidBy = GetValue<string>(r, "DemurrageExpPaidBy") });
+            return res;
+        }
+
+        public void AddNoPlateExp(NoPlateExp d)
+        {
+            ExecuteNonQuery("INSERT INTO NoPlateExp (Chassis, NoPlateExpDate, NoPlateExpAmount, NoPlateExpDetail, NoPlateExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
+                new Dictionary<string, object> { {"@c", d.Chassis}, {"@d", d.NoPlateExpDate}, {"@a", d.NoPlateExpAmount}, {"@det", d.NoPlateExpDetail}, {"@p", d.NoPlateExpPaidBy} });
+        }
+        public IEnumerable<NoPlateExp> GetNoPlateExps()
+        {
+            var dt = ExecuteQuery("SELECT * FROM NoPlateExp ORDER BY NoPlateExpDate DESC");
+            var res = new List<NoPlateExp>();
+            foreach (DataRow r in dt.Rows) res.Add(new NoPlateExp {
+                RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), NoPlateExpDate = GetValue<DateTime>(r, "NoPlateExpDate"),
+                NoPlateExpAmount = GetValue<double>(r, "NoPlateExpAmount"), NoPlateExpDetail = GetValue<string>(r, "NoPlateExpDetail"), NoPlateExpPaidBy = GetValue<string>(r, "NoPlateExpPaidBy") });
+            return res;
+        }
+
+        public void AddCommissionExp(CommissionExp d)
+        {
+            ExecuteNonQuery("INSERT INTO CommissionExp (Chassis, CommissionExpDate, CommissionExpAmount, CommissionExpDetail, CommissionExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
+                new Dictionary<string, object> { {"@c", d.Chassis}, {"@d", d.CommissionExpDate}, {"@a", d.CommissionExpAmount}, {"@det", d.CommissionExpDetail}, {"@p", d.CommissionExpPaidBy} });
+        }
+        public IEnumerable<CommissionExp> GetCommissionExps()
+        {
+            var dt = ExecuteQuery("SELECT * FROM CommissionExp ORDER BY CommissionExpDate DESC");
+            var res = new List<CommissionExp>();
+            foreach (DataRow r in dt.Rows) res.Add(new CommissionExp {
+                RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), CommissionExpDate = GetValue<DateTime>(r, "CommissionExpDate"),
+                CommissionExpAmount = GetValue<double>(r, "CommissionExpAmount"), CommissionExpDetail = GetValue<string>(r, "CommissionExpDetail"), CommissionExpPaidBy = GetValue<string>(r, "CommissionExpPaidBy") });
+            return res;
+        }
+
+        public void AddTaxExp(TaxExp d)
+        {
+            ExecuteNonQuery("INSERT INTO TaxExp (Chassis, TaxExpDate, TaxExpAmount, TaxExpDetail, TaxExpPaidBy) VALUES (@c, @d, @a, @det, @p)",
+                new Dictionary<string, object> { {"@c", d.Chassis}, {"@d", d.TaxExpDate}, {"@a", d.TaxExpAmount}, {"@det", d.TaxExpDetail}, {"@p", d.TaxExpPaidBy} });
+        }
+        public IEnumerable<TaxExp> GetTaxExps()
+        {
+            var dt = ExecuteQuery("SELECT * FROM TaxExp ORDER BY TaxExpDate DESC");
+            var res = new List<TaxExp>();
+            foreach (DataRow r in dt.Rows) res.Add(new TaxExp {
+                RowId = GetValue<long>(r, "RowId"), Chassis = GetValue<string>(r, "Chassis"), TaxExpDate = GetValue<DateTime>(r, "TaxExpDate"),
+                TaxExpAmount = GetValue<double>(r, "TaxExpAmount"), TaxExpDetail = GetValue<string>(r, "TaxExpDetail"), TaxExpPaidBy = GetValue<string>(r, "TaxExpPaidBy") });
             return res;
         }
 
@@ -418,6 +520,7 @@ namespace AMS.Services
                     RowId = GetValue<long>(r, "RowId"), Date = GetValue<DateTime>(r, "Date"), Chassis = GetValue<string>(r, "Chassis"), Model = GetValue<string>(r, "Model"), Color = GetValue<string>(r, "Color"),
                     PriceYen = GetValue<double>(r, "PriceYen"), Rate = GetValue<double>(r, "Rate"), PricePkr = GetValue<double>(r, "PricePkr"),
                     Duty = GetValue<double>(r, "Duty"), MiscExpense = GetValue<double>(r, "MiscExpense"), Cost = GetValue<double>(r, "Cost"),
+                    Demurrage = GetValue<double>(r, "Demurrage"), NoPlate = GetValue<double>(r, "NoPlate"), Commission = GetValue<double>(r, "Commission"), Tax = GetValue<double>(r, "Tax"),
                     Status = GetValue<string>(r, "Status"), PaidYen = GetValue<double>(r, "PaidYen"), PaidAmount = GetValue<double>(r, "PaidAmount"), Comments = GetValue<string>(r, "Comments")
                 });
             }
@@ -425,13 +528,13 @@ namespace AMS.Services
         }
         public void AddStock(Stock s)
         {
-            ExecuteNonQuery("INSERT INTO Stock (Date, Chassis, Model, Color, PriceYen, Rate, PricePkr, Duty, MiscExpense, Cost, Status, PaidYen, PaidAmount, Comments) VALUES (@d, @c, @m, @co, @py, @r, @pp, @du, @me, @cost, @st, @pdy, @pda, @comm)",
-                new Dictionary<string, object> { {"@d", s.Date}, {"@c", s.Chassis}, {"@m", s.Model}, {"@co", s.Color}, {"@py", s.PriceYen}, {"@r", s.Rate}, {"@pp", s.PricePkr}, {"@du", s.Duty}, {"@me", s.MiscExpense}, {"@cost", s.Cost}, {"@st", s.Status}, {"@pdy", s.PaidYen}, {"@pda", s.PaidAmount}, {"@comm", s.Comments} });
+            ExecuteNonQuery("INSERT INTO Stock (Date, Chassis, Model, Color, PriceYen, Rate, PricePkr, Duty, MiscExpense, Demurrage, NoPlate, Commission, Tax, Cost, Status, PaidYen, PaidAmount, Comments) VALUES (@d, @c, @m, @co, @py, @r, @pp, @du, @me, @dm, @np, @cm, @tx, @cost, @st, @pdy, @pda, @comm)",
+                new Dictionary<string, object> { {"@d", s.Date}, {"@c", s.Chassis}, {"@m", s.Model}, {"@co", s.Color}, {"@py", s.PriceYen}, {"@r", s.Rate}, {"@pp", s.PricePkr}, {"@du", s.Duty}, {"@me", s.MiscExpense}, {"@dm", s.Demurrage}, {"@np", s.NoPlate}, {"@cm", s.Commission}, {"@tx", s.Tax}, {"@cost", s.Cost}, {"@st", s.Status}, {"@pdy", s.PaidYen}, {"@pda", s.PaidAmount}, {"@comm", s.Comments} });
         }
         public void UpdateStock(Stock s)
         {
-            ExecuteNonQuery("UPDATE Stock SET Date=@d, Chassis=@c, Model=@m, Color=@co, PriceYen=@py, Rate=@r, PricePkr=@pp, Duty=@du, MiscExpense=@me, Cost=@cost, Status=@st, PaidYen=@pdy, PaidAmount=@pda, Comments=@comm WHERE RowId=@id",
-                new Dictionary<string, object> { {"@id", s.RowId}, {"@d", s.Date}, {"@c", s.Chassis}, {"@m", s.Model}, {"@co", s.Color}, {"@py", s.PriceYen}, {"@r", s.Rate}, {"@pp", s.PricePkr}, {"@du", s.Duty}, {"@me", s.MiscExpense}, {"@cost", s.Cost}, {"@st", s.Status}, {"@pdy", s.PaidYen}, {"@pda", s.PaidAmount}, {"@comm", s.Comments} });
+            ExecuteNonQuery("UPDATE Stock SET Date=@d, Chassis=@c, Model=@m, Color=@co, PriceYen=@py, Rate=@r, PricePkr=@pp, Duty=@du, MiscExpense=@me, Demurrage=@dm, NoPlate=@np, Commission=@cm, Tax=@tx, Cost=@cost, Status=@st, PaidYen=@pdy, PaidAmount=@pda, Comments=@comm WHERE RowId=@id",
+                new Dictionary<string, object> { {"@id", s.RowId}, {"@d", s.Date}, {"@c", s.Chassis}, {"@m", s.Model}, {"@co", s.Color}, {"@py", s.PriceYen}, {"@r", s.Rate}, {"@pp", s.PricePkr}, {"@du", s.Duty}, {"@me", s.MiscExpense}, {"@dm", s.Demurrage}, {"@np", s.NoPlate}, {"@cm", s.Commission}, {"@tx", s.Tax}, {"@cost", s.Cost}, {"@st", s.Status}, {"@pdy", s.PaidYen}, {"@pda", s.PaidAmount}, {"@comm", s.Comments} });
         }
         public IEnumerable<string> GetInStockChassisNumbers()
         {
@@ -811,7 +914,7 @@ namespace AMS.Services
                     else if (saleTypeFilter == "Cash") query += " AND (sa.InstallmentMonths IS NULL OR sa.InstallmentMonths = 0)";
                     break;
                 case "Stocks":
-                    query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty, MiscExpense as [Misc Exp], Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
+                    query = "SELECT Date, Chassis, Model, Color, PricePkr as [Price PKR], Duty as Clearance, MiscExpense as [Misc Exp], Demurrage, NoPlate as [No Plate], Commission, Tax, Cost, Status FROM Stock WHERE Date >= @from AND Date <= @to";
                     break;
                 case "Accounts":
                     query = "SELECT AccountType as Type, AccountName as Name, AccountNumber as [Acc No], BankName as Bank, OpeningBalance as [Opening Bal], CurrentBalance as [Current Bal] FROM Account";
@@ -831,8 +934,20 @@ namespace AMS.Services
                 case "Misc. Auto Expenses":
                     query = "SELECT Chassis, MiscExpDate as Date, MiscExpAmount as Amount, MiscExpDetail as Detail, MiscExpPaidBy as [Paid By] FROM MiscExp WHERE MiscExpDate >= @from AND MiscExpDate <= @to";
                     break;
-                case "Duty Expenses":
+                case "Clearance Expenses":
                     query = "SELECT Chassis, DutyExpDate as Date, DutyExpAmount as Amount, DutyExpDetail as Detail, DutyExpAgent as Agent, DutyExpPaidBy as [Paid By] FROM DutyExp WHERE DutyExpDate >= @from AND DutyExpDate <= @to";
+                    break;
+                case "Demurrage Expenses":
+                    query = "SELECT Chassis, DemurrageExpDate as Date, DemurrageExpAmount as Amount, DemurrageExpDetail as Detail, DemurrageExpPaidBy as [Paid By] FROM DemurrageExp WHERE DemurrageExpDate >= @from AND DemurrageExpDate <= @to";
+                    break;
+                case "No Plate Expenses":
+                    query = "SELECT Chassis, NoPlateExpDate as Date, NoPlateExpAmount as Amount, NoPlateExpDetail as Detail, NoPlateExpPaidBy as [Paid By] FROM NoPlateExp WHERE NoPlateExpDate >= @from AND NoPlateExpDate <= @to";
+                    break;
+                case "Commission Expenses":
+                    query = "SELECT Chassis, CommissionExpDate as Date, CommissionExpAmount as Amount, CommissionExpDetail as Detail, CommissionExpPaidBy as [Paid By] FROM CommissionExp WHERE CommissionExpDate >= @from AND CommissionExpDate <= @to";
+                    break;
+                case "Tax Expenses":
+                    query = "SELECT Chassis, TaxExpDate as Date, TaxExpAmount as Amount, TaxExpDetail as Detail, TaxExpPaidBy as [Paid By] FROM TaxExp WHERE TaxExpDate >= @from AND TaxExpDate <= @to";
                     break;
                 case "Receipts":
                     query = "SELECT ReceiptDate as Date, ReceiptAmount as Amount, ReceiptDetail as Detail, ReceivedIn as [Received In], ReceivedFrom as [Received From] FROM Receipt WHERE ReceiptDate >= @from AND ReceiptDate <= @to";

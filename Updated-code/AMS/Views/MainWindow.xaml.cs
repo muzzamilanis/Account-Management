@@ -31,6 +31,10 @@ namespace AMS.Views
             GridTransfers.ItemsSource = _accVm.Transfers;
             GridMiscExp.ItemsSource = _accVm.MiscExps;
             GridDutyExp.ItemsSource = _accVm.DutyExps;
+            GridDemurrageExp.ItemsSource = _accVm.DemurrageExps;
+            GridNoPlateExp.ItemsSource = _accVm.NoPlateExps;
+            GridCommissionExp.ItemsSource = _accVm.CommissionExps;
+            GridTaxExp.ItemsSource = _accVm.TaxExps;
             GridOfficeExp.ItemsSource = _accVm.OfficeExps;
             GridReceipts.ItemsSource = _accVm.Receipts;
             GridYenPayments.ItemsSource = _accVm.YenPayments;
@@ -196,13 +200,37 @@ namespace AMS.Views
 
         private void BtnNewMiscExp_Click(object sender, RoutedEventArgs e)
         {
-            try { GuardDb(); var d = new MiscExpDialog(); if (d.ShowDialog() == true) _accVm.LoadAll(); }
+            try { GuardDb(); var d = new MiscExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void BtnNewDutyExp_Click(object sender, RoutedEventArgs e)
         {
             try { GuardDb(); var d = new DutyExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _agentsVm.Load(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnNewDemurrageExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); var d = new DemurrageExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnNewNoPlateExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); var d = new NoPlateExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnNewCommissionExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); var d = new CommissionExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void BtnNewTaxExp_Click(object sender, RoutedEventArgs e)
+        {
+            try { GuardDb(); var d = new TaxExpDialog(); if (d.ShowDialog() == true) { _accVm.LoadAll(); _stocksVm.Load(); } }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 

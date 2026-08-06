@@ -12,7 +12,8 @@ namespace AMS.ViewModels
     {
         public static string[] ReportTypes { get; } = {
             "Sold Cars", "Stocks", "Accounts", "Account Statement", "Accounts Receivable", "Accounts Payable",
-            "Trial Balance", "Office Expenses", "Misc. Auto Expenses", "Duty Expenses",
+            "Trial Balance", "Office Expenses", "Misc. Auto Expenses", "Clearance Expenses",
+            "Demurrage Expenses", "No Plate Expenses", "Commission Expenses", "Tax Expenses",
             "Receipts", "Yen Payments", "Party Payments", "Agent Payments", "Active Credit Sales", "Profit Breakdown"
         };
 
